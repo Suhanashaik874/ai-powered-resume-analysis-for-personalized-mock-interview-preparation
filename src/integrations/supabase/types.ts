@@ -14,13 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      extracted_skills: {
+        Row: {
+          created_at: string
+          id: string
+          proficiency_level: string
+          resume_id: string
+          skill_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          proficiency_level?: string
+          resume_id: string
+          skill_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          proficiency_level?: string
+          resume_id?: string
+          skill_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extracted_skills_resume_id_fkey"
+            columns: ["resume_id"]
+            isOneToOne: false
+            referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_questions: {
+        Row: {
+          ai_feedback: string | null
+          created_at: string
+          id: string
+          interview_id: string
+          max_score: number | null
+          order_index: number
+          question_text: string
+          question_type: string
+          score: number | null
+          user_answer: string | null
+        }
+        Insert: {
+          ai_feedback?: string | null
+          created_at?: string
+          id?: string
+          interview_id: string
+          max_score?: number | null
+          order_index?: number
+          question_text: string
+          question_type?: string
+          score?: number | null
+          user_answer?: string | null
+        }
+        Update: {
+          ai_feedback?: string | null
+          created_at?: string
+          id?: string
+          interview_id?: string
+          max_score?: number | null
+          order_index?: number
+          question_text?: string
+          question_type?: string
+          score?: number | null
+          user_answer?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_questions_interview_id_fkey"
+            columns: ["interview_id"]
+            isOneToOne: false
+            referencedRelation: "interviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interviews: {
+        Row: {
+          completed_at: string | null
+          id: string
+          interview_type: string
+          max_score: number
+          started_at: string
+          status: string
+          total_score: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          interview_type?: string
+          max_score?: number
+          started_at?: string
+          status?: string
+          total_score?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          interview_type?: string
+          max_score?: number
+          started_at?: string
+          status?: string
+          total_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      resumes: {
+        Row: {
+          created_at: string
+          file_name: string
+          id: string
+          raw_text: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          id?: string
+          raw_text?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          id?: string
+          raw_text?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      owns_interview: {
+        Args: { _interview_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
