@@ -42,8 +42,8 @@ export default function Dashboard() {
     if (!user) return;
     const fetchData = async () => {
       const [interviewRes, resumeRes] = await Promise.all([
-        supabase.from("interviews").select("*").eq("user_id", user.id).order("started_at", { ascending: false }).limit(10),
-        supabase.from("resumes").select("id").eq("user_id", user.id),
+        (supabase as any).from("interviews").select("*").eq("user_id", user.id).order("started_at", { ascending: false }).limit(10),
+        (supabase as any).from("resumes").select("id").eq("user_id", user.id),
       ]);
       if (interviewRes.data) setInterviews(interviewRes.data);
       if (resumeRes.data) setResumeCount(resumeRes.data.length);
