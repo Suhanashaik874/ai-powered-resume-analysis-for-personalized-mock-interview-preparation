@@ -19,11 +19,16 @@ serve(async (req) => {
     const skillList = skills.map((s: { skill_name: string; proficiency_level: string }) =>
       `${s.skill_name} (${s.proficiency_level})`).join(', ') || 'general programming';
 
+    const questionCounts: Record<string, number> = {
+      coding: 5, hr: 8, aptitude: 15, combined: 20,
+    };
+    const count = questionCounts[interviewType] || 5;
+
     const typePrompts: Record<string, string> = {
-      coding: `Generate 5 coding interview questions for a candidate with skills: ${skillList}. Mix easy/medium/hard. Include DSA problems, algorithm design.`,
-      hr: `Generate 8 HR behavioral interview questions. Focus on leadership, teamwork, conflict resolution, problem-solving with STAR method.`,
-      aptitude: `Generate 15 aptitude questions covering: logical reasoning (5), verbal ability (5), quantitative aptitude (5). Multiple choice format.`,
-      combined: `Generate 20 mixed interview questions: 7 coding (DSA), 7 HR behavioral, 6 aptitude (logical/verbal/quant). Skills: ${skillList}.`,
+      coding: `Generate ${count} coding interview questions for a candidate with skills: ${skillList}. Mix easy/medium/hard. Include DSA problems, algorithm design.`,
+      hr: `Generate ${count} HR behavioral interview questions. Focus on leadership, teamwork, conflict resolution, problem-solving with STAR method.`,
+      aptitude: `Generate ${count} aptitude questions covering: logical reasoning, verbal ability, quantitative aptitude. Multiple choice format.`,
+      combined: `Generate ${count} mixed interview questions: 7 coding (DSA), 7 HR behavioral, 6 aptitude (logical/verbal/quant). Skills: ${skillList}.`,
     };
 
     const prompt = typePrompts[interviewType] || typePrompts.coding;
@@ -35,10 +40,10 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: 'You are an expert technical interviewer. Return ONLY valid JSON array of questions, no markdown.',
+          content: 'You are an expert technical interviewer. Return ONLY a valid JSON array. Do not use markdown code fences. Do not use single quotes inside strings - use double quotes only. Keep expected_answer short (max 200 chars) with no code blocks.',
         }, {
           role: 'user',
-          content: `${prompt}\n\nReturn JSON array: [{"question_type": "coding|hr|aptitude|logical|verbal", "difficulty": "easy|medium|hard", "question_text": "...", "expected_answer": "...", "skill_name": "..." }]`,
+          content: `${prompt}\n\nReturn a JSON array where each element has these exact fields:\n- "question_type": one of "coding", "hr", "aptitude"\n- "question_text": the question string\n- "order_index": integer starting from 0\n\nReturn ONLY the JSON array, nothing else.`,
         }],
         temperature: 0.7,
         max_tokens: 4000,
@@ -56,12 +61,38 @@ serve(async (req) => {
     
     let questions = [];
     try {
-      const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      // Remove markdown fences and trim
+      let cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      // Try to extract JSON array if wrapped in other text
+      const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+      if (arrayMatch) {
+        cleaned = arrayMatch[0];
+      }
       questions = JSON.parse(cleaned);
-    } catch {
-      console.error('Failed to parse questions JSON:', content);
-      questions = [];
+    } catch (parseErr) {
+      console.error('Failed to parse questions JSON, attempting recovery...');
+      // Try a more aggressive cleanup
+      try {
+        let cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+        if (arrayMatch) {
+          cleaned = arrayMatch[0];
+        }
+        // Replace problematic escape sequences
+        cleaned = cleaned.replace(/\\'/g, "'");
+        questions = JSON.parse(cleaned);
+      } catch {
+        console.error('Recovery also failed, returning empty questions');
+        questions = [];
+      }
     }
+
+    // Normalize questions to match DB schema
+    questions = questions.map((q: Record<string, unknown>, i: number) => ({
+      question_type: q.question_type || interviewType,
+      question_text: q.question_text || '',
+      order_index: q.order_index ?? i,
+    }));
 
     return new Response(JSON.stringify({ questions, interviewId }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
