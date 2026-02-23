@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 serve(async (req) => {
@@ -11,7 +11,12 @@ serve(async (req) => {
 
   try {
     const { interviewId } = await req.json();
-    const apiKey = Deno.env.get('AI_API_KEY');
+    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+
+    if (!apiKey) {
+      throw new Error('LOVABLE_API_KEY is not configured');
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -38,11 +43,11 @@ serve(async (req) => {
         continue;
       }
 
-      const evalResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      const evalResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'google/gemini-2.5-flash',
           messages: [{
             role: 'system',
             content: 'You are an expert interviewer. Evaluate the answer and return ONLY valid JSON.',
@@ -54,6 +59,12 @@ serve(async (req) => {
           max_tokens: 800,
         }),
       });
+
+      if (!evalResponse.ok) {
+        console.error('AI eval error:', evalResponse.status);
+        evaluations.push({ id: q.id, score: 0 });
+        continue;
+      }
 
       const evalData = await evalResponse.json();
       const content = evalData.choices?.[0]?.message?.content || '{}';
@@ -77,11 +88,11 @@ serve(async (req) => {
     }
 
     // Overall feedback
-    const overallResp = await fetch('https://api.openai.com/v1/chat/completions', {
+    const overallResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'user',
           content: `Score: ${totalScore}/${maxScore} (${Math.round(totalScore/maxScore*100)}%). Write 3-4 sentences of overall interview feedback with key strengths and top 2 improvement areas. Use markdown.`,
@@ -102,6 +113,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
+    console.error('evaluate-interview error:', err.message);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

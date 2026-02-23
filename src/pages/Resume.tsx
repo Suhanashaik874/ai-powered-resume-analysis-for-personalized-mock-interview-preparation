@@ -1,11 +1,12 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Skill {
   skill_name: string;
@@ -258,7 +259,22 @@ export default function Resume() {
                       }`}
                     >
                       {skill.skill_name}
-                      <span className="text-xs opacity-60">· {skill.proficiency_level}</span>
+                      <Select
+                        value={skill.proficiency_level}
+                        onValueChange={(val) => {
+                          setSkills(prev => prev.map((s, idx) => idx === i ? { ...s, proficiency_level: val } : s));
+                        }}
+                      >
+                        <SelectTrigger className="h-5 w-auto border-0 bg-transparent p-0 pl-1 text-xs opacity-70 hover:opacity-100 shadow-none focus:ring-0 [&>svg]:h-3 [&>svg]:w-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="beginner">beginner</SelectItem>
+                          <SelectItem value="intermediate">intermediate</SelectItem>
+                          <SelectItem value="advanced">advanced</SelectItem>
+                          <SelectItem value="expert">expert</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </motion.div>
                   ))}
                 </div>

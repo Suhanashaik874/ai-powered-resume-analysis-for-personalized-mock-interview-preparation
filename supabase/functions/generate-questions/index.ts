@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 serve(async (req) => {
@@ -10,7 +10,11 @@ serve(async (req) => {
 
   try {
     const { interviewType, skills = [], interviewId } = await req.json();
-    const apiKey = Deno.env.get('AI_API_KEY');
+    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+
+    if (!apiKey) {
+      throw new Error('LOVABLE_API_KEY is not configured');
+    }
 
     const skillList = skills.map((s: { skill_name: string; proficiency_level: string }) =>
       `${s.skill_name} (${s.proficiency_level})`).join(', ') || 'general programming';
@@ -24,11 +28,11 @@ serve(async (req) => {
 
     const prompt = typePrompts[interviewType] || typePrompts.coding;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
           content: 'You are an expert technical interviewer. Return ONLY valid JSON array of questions, no markdown.',
@@ -41,6 +45,12 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('AI gateway error:', response.status, errorText);
+      throw new Error(`AI gateway error: ${response.status}`);
+    }
+
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || '[]';
     
@@ -49,6 +59,7 @@ serve(async (req) => {
       const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       questions = JSON.parse(cleaned);
     } catch {
+      console.error('Failed to parse questions JSON:', content);
       questions = [];
     }
 
@@ -56,6 +67,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
+    console.error('generate-questions error:', err.message);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
