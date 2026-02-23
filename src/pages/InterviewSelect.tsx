@@ -77,8 +77,7 @@ export default function InterviewSelect() {
 
     try {
       // Create interview record
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: interview, error: interviewError } = await (supabase as any)
+      const { data: interview, error: interviewError } = await supabase
         .from("interviews")
         .insert({
           user_id: user.id,
@@ -90,11 +89,10 @@ export default function InterviewSelect() {
 
       if (interviewError) throw interviewError;
 
-      const interviewId = (interview as { id: string }).id;
+      const interviewId = interview.id;
 
       // Get user skills for personalization
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data: skills } = await (supabase as any)
+      const { data: skills } = await supabase
         .from("extracted_skills")
         .select("skill_name, proficiency_level")
         .eq("user_id", user.id)
@@ -114,18 +112,16 @@ export default function InterviewSelect() {
       // Save questions to DB
       const questions = questionsData?.questions || [];
       if (questions.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase as any).from("interview_questions").insert(
+        const { error: insertError } = await supabase.from("interview_questions").insert(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          questions.map((q: any) => ({
+          questions.map((q: any, i: number) => ({
             interview_id: interviewId,
             question_type: q.question_type || selected,
-            difficulty: q.difficulty || "medium",
             question_text: q.question_text,
-            expected_answer: q.expected_answer || "",
-            skill_name: q.skill_name || null,
+            order_index: q.order_index ?? i,
           }))
         );
+        if (insertError) throw insertError;
       }
 
       // Navigate to appropriate interview page
