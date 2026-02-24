@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const { interviewType, skills = [], interviewId } = await req.json();
+    const { interviewType, skills = [], interviewId, resumeText = '' } = await req.json();
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!apiKey) {
@@ -24,14 +24,75 @@ serve(async (req) => {
     };
     const count = questionCounts[interviewType] || 5;
 
+    // Extract project info hint for HR
+    const projectContext = resumeText
+      ? `\n\nThe candidate's resume includes the following content (use it to generate project-specific questions):\n${resumeText.substring(0, 3000)}`
+      : '';
+
     const typePrompts: Record<string, string> = {
-      coding: `Generate ${count} coding interview questions for a candidate with skills: ${skillList}. Mix easy/medium/hard. Include DSA problems, algorithm design.`,
-      hr: `Generate ${count} HR behavioral interview questions. Focus on leadership, teamwork, conflict resolution, problem-solving with STAR method.`,
-      aptitude: `Generate ${count} aptitude questions covering: logical reasoning, verbal ability, quantitative aptitude. Multiple choice format.`,
-      combined: `Generate ${count} mixed interview questions: 7 coding (DSA), 7 HR behavioral, 6 aptitude (logical/verbal/quant). Skills: ${skillList}.`,
+      coding: `Generate ${count} coding interview questions for a candidate with skills: ${skillList}. Mix easy/medium/hard difficulties. Include:
+- DSA problems (arrays, strings, trees, graphs, dynamic programming)
+- Algorithm design problems
+- Each question MUST include 2-3 test cases with input and expected output
+- Include the expected optimal time and space complexity in the question text
+Format each question with clear problem statement, constraints, and test cases.`,
+
+      hr: `Generate ${count} HR behavioral interview questions for a candidate.${projectContext}
+Requirements:
+- 3-4 questions should be specifically about projects mentioned in the resume (if available)
+- Ask about specific technologies used, challenges faced, and contributions
+- Include questions about leadership, teamwork, conflict resolution
+- Include STAR method scenario questions
+- Mix behavioral and situational questions`,
+
+      aptitude: `Generate ${count} aptitude MCQ questions covering:
+- 5 logical reasoning questions
+- 5 verbal ability questions  
+- 5 quantitative aptitude questions
+Each question MUST have exactly 4 options (A, B, C, D) and one correct answer.
+Format: Include the options as part of the question or as a separate field.`,
+
+      combined: `Generate ${count} mixed interview questions:
+- 7 coding questions (DSA with test cases, mix easy/medium/hard)
+- 7 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
+- 6 aptitude MCQ questions (with 4 options each)
+Skills: ${skillList}.${projectContext}`,
     };
 
     const prompt = typePrompts[interviewType] || typePrompts.coding;
+
+    // Build the JSON schema instructions based on type
+    let jsonFields = '';
+    if (interviewType === 'aptitude') {
+      jsonFields = `- "question_type": "aptitude"
+- "question_text": the question string
+- "options": {"A": "option text", "B": "option text", "C": "option text", "D": "option text"}
+- "expected_answer": the correct option letter (e.g. "B")
+- "difficulty": "easy", "medium", or "hard"
+- "order_index": integer starting from 0`;
+    } else if (interviewType === 'coding') {
+      jsonFields = `- "question_type": "coding"
+- "question_text": full problem with test cases and complexity hints embedded in markdown
+- "expected_answer": brief description of optimal approach with time/space complexity
+- "difficulty": "easy", "medium", or "hard"
+- "skill_name": relevant skill (e.g. "Arrays", "Dynamic Programming")
+- "order_index": integer starting from 0`;
+    } else if (interviewType === 'hr') {
+      jsonFields = `- "question_type": "hr"
+- "question_text": the question string
+- "expected_answer": key points that a good answer should cover
+- "difficulty": "easy", "medium", or "hard"
+- "skill_name": category like "Leadership", "Teamwork", "Project Experience"
+- "order_index": integer starting from 0`;
+    } else {
+      jsonFields = `- "question_type": one of "coding", "hr", "aptitude"
+- "question_text": the question (for aptitude include options in text)
+- "options": for aptitude questions only: {"A": "...", "B": "...", "C": "...", "D": "..."}
+- "expected_answer": correct answer or key points
+- "difficulty": "easy", "medium", or "hard"
+- "skill_name": relevant skill or category
+- "order_index": integer starting from 0`;
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -40,13 +101,13 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: 'You are an expert technical interviewer. Return ONLY a valid JSON array. Do not use markdown code fences. Do not use single quotes inside strings - use double quotes only. Keep expected_answer short (max 200 chars) with no code blocks.',
+          content: 'You are an expert technical interviewer. Return ONLY a valid JSON array. Do not use markdown code fences. Keep all string values properly escaped for JSON.',
         }, {
           role: 'user',
-          content: `${prompt}\n\nReturn a JSON array where each element has these exact fields:\n- "question_type": one of "coding", "hr", "aptitude"\n- "question_text": the question string\n- "order_index": integer starting from 0\n\nReturn ONLY the JSON array, nothing else.`,
+          content: `${prompt}\n\nReturn a JSON array where each element has these exact fields:\n${jsonFields}\n\nReturn ONLY the JSON array, nothing else.`,
         }],
         temperature: 0.7,
-        max_tokens: 4000,
+        max_tokens: 6000,
       }),
     });
 
@@ -61,37 +122,33 @@ serve(async (req) => {
     
     let questions = [];
     try {
-      // Remove markdown fences and trim
       let cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      // Try to extract JSON array if wrapped in other text
       const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
-      if (arrayMatch) {
-        cleaned = arrayMatch[0];
-      }
+      if (arrayMatch) cleaned = arrayMatch[0];
       questions = JSON.parse(cleaned);
-    } catch (parseErr) {
+    } catch {
       console.error('Failed to parse questions JSON, attempting recovery...');
-      // Try a more aggressive cleanup
       try {
         let cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
         const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
-        if (arrayMatch) {
-          cleaned = arrayMatch[0];
-        }
-        // Replace problematic escape sequences
+        if (arrayMatch) cleaned = arrayMatch[0];
         cleaned = cleaned.replace(/\\'/g, "'");
         questions = JSON.parse(cleaned);
       } catch {
-        console.error('Recovery also failed, returning empty questions');
+        console.error('Recovery also failed');
         questions = [];
       }
     }
 
-    // Normalize questions to match DB schema
+    // Normalize questions
     questions = questions.map((q: Record<string, unknown>, i: number) => ({
       question_type: q.question_type || interviewType,
       question_text: q.question_text || '',
       order_index: q.order_index ?? i,
+      options: q.options || null,
+      expected_answer: q.expected_answer || null,
+      difficulty: q.difficulty || 'medium',
+      skill_name: q.skill_name || null,
     }));
 
     return new Response(JSON.stringify({ questions, interviewId }), {

@@ -98,12 +98,25 @@ export default function InterviewSelect() {
         .eq("user_id", user.id)
         .limit(20);
 
+      // Get resume text for project-based questions
+      let resumeText = '';
+      if (selected === 'hr' || selected === 'combined') {
+        const { data: resumes } = await supabase
+          .from("resumes")
+          .select("raw_text")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1);
+        resumeText = resumes?.[0]?.raw_text || '';
+      }
+
       // Generate questions via edge function
       const { data: questionsData, error: qError } = await supabase.functions.invoke("generate-questions", {
         body: {
           interviewType: selected,
           interviewId: interviewId,
           skills: skills || [],
+          resumeText,
         },
       });
 
@@ -112,13 +125,18 @@ export default function InterviewSelect() {
       // Save questions to DB
       const questions = questionsData?.questions || [];
       if (questions.length > 0) {
-        const { error: insertError } = await supabase.from("interview_questions").insert(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: insertError } = await (supabase as any).from("interview_questions").insert(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           questions.map((q: any, i: number) => ({
             interview_id: interviewId,
             question_type: q.question_type || selected,
             question_text: q.question_text,
             order_index: q.order_index ?? i,
+            options: q.options || null,
+            expected_answer: q.expected_answer || null,
+            difficulty: q.difficulty || 'medium',
+            skill_name: q.skill_name || null,
           }))
         );
         if (insertError) throw insertError;
@@ -127,6 +145,8 @@ export default function InterviewSelect() {
       // Navigate to appropriate interview page
       if (selected === "hr") {
         navigate(`/interview/hr/${interviewId}`);
+      } else if (selected === "aptitude") {
+        navigate(`/interview/aptitude/${interviewId}`);
       } else {
         navigate(`/interview/${interviewId}`);
       }

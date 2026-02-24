@@ -53,38 +53,59 @@ export type Database = {
         Row: {
           ai_feedback: string | null
           created_at: string
+          difficulty: string | null
+          expected_answer: string | null
           id: string
           interview_id: string
+          is_correct: boolean | null
           max_score: number | null
+          options: Json | null
           order_index: number
           question_text: string
           question_type: string
           score: number | null
+          skill_name: string | null
+          time_taken_seconds: number | null
           user_answer: string | null
+          user_code: string | null
         }
         Insert: {
           ai_feedback?: string | null
           created_at?: string
+          difficulty?: string | null
+          expected_answer?: string | null
           id?: string
           interview_id: string
+          is_correct?: boolean | null
           max_score?: number | null
+          options?: Json | null
           order_index?: number
           question_text: string
           question_type?: string
           score?: number | null
+          skill_name?: string | null
+          time_taken_seconds?: number | null
           user_answer?: string | null
+          user_code?: string | null
         }
         Update: {
           ai_feedback?: string | null
           created_at?: string
+          difficulty?: string | null
+          expected_answer?: string | null
           id?: string
           interview_id?: string
+          is_correct?: boolean | null
           max_score?: number | null
+          options?: Json | null
           order_index?: number
           question_text?: string
           question_type?: string
           score?: number | null
+          skill_name?: string | null
+          time_taken_seconds?: number | null
           user_answer?: string | null
+          user_code?: string | null
         }
         Relationships: [
           {
@@ -99,6 +120,7 @@ export type Database = {
       interviews: {
         Row: {
           completed_at: string | null
+          feedback: string | null
           id: string
           interview_type: string
           max_score: number
@@ -109,6 +131,7 @@ export type Database = {
         }
         Insert: {
           completed_at?: string | null
+          feedback?: string | null
           id?: string
           interview_type?: string
           max_score?: number
@@ -119,6 +142,7 @@ export type Database = {
         }
         Update: {
           completed_at?: string | null
+          feedback?: string | null
           id?: string
           interview_type?: string
           max_score?: number
