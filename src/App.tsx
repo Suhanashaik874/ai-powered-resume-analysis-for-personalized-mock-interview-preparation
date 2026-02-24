@@ -12,6 +12,7 @@ import Resume from "./pages/Resume";
 import InterviewSelect from "./pages/InterviewSelect";
 import CodingInterview from "./pages/CodingInterview";
 import HRInterview from "./pages/HRInterview";
+import AptitudeInterview from "./pages/AptitudeInterview";
 import InterviewResults from "./pages/InterviewResults";
 import NotFound from "./pages/NotFound";
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/interview/select" element={<ProtectedRoute><InterviewSelect /></ProtectedRoute>} />
             <Route path="/interview/:id" element={<ProtectedRoute><CodingInterview /></ProtectedRoute>} />
             <Route path="/interview/hr/:id" element={<ProtectedRoute><HRInterview /></ProtectedRoute>} />
+            <Route path="/interview/aptitude/:id" element={<ProtectedRoute><AptitudeInterview /></ProtectedRoute>} />
             <Route path="/interview/results/:id" element={<ProtectedRoute><InterviewResults /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
