@@ -93,6 +93,14 @@ export default function Resume() {
     fetchHistory();
   }, [user]);
 
+  const deleteExistingResume = async () => {
+    if (!user) return;
+    // Delete all existing skills and resumes for this user
+    await (supabase as any).from("extracted_skills").delete().eq("user_id", user.id);
+    await (supabase as any).from("resumes").delete().eq("user_id", user.id);
+    setSavedResumes([]);
+  };
+
   const handleFile = useCallback(async (f: File) => {
     if (!user) return;
     setFile(f);
@@ -101,6 +109,10 @@ export default function Resume() {
     setErrorMsg("");
 
     try {
+      // Delete existing resume and skills first (one resume per account)
+      await (supabase as any).from("extracted_skills").delete().eq("user_id", user.id);
+      await (supabase as any).from("resumes").delete().eq("user_id", user.id);
+
       let text = "";
       if (f.type === "application/pdf" || f.name.endsWith(".pdf")) {
         text = await extractTextFromPDF(f);
@@ -139,13 +151,13 @@ export default function Resume() {
         );
       }
 
-      // Add to saved resumes list
-      setSavedResumes(prev => [{
+      // Replace saved resumes with the new one
+      setSavedResumes([{
         id: resumeId,
         file_name: f.name,
         created_at: new Date().toISOString(),
         skills: extractedSkills,
-      }, ...prev]);
+      }]);
 
       setStep("done");
       toast({ title: "Resume analyzed!", description: `Found ${extractedSkills.length} skills.` });
@@ -292,7 +304,7 @@ export default function Resume() {
             <SkillsList skills={skills} onUpdate={setSkills} />
 
             <div className="flex gap-3">
-              <Button onClick={reset} variant="outline" className="flex-1">Upload Another</Button>
+              <Button onClick={reset} variant="outline" className="flex-1">Replace Resume</Button>
               <Button asChild className="flex-1 bg-gradient-primary text-primary-foreground hover:opacity-90">
                 <a href="/interview/select">Start Interview</a>
               </Button>
@@ -310,7 +322,7 @@ export default function Resume() {
           >
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              Previously Uploaded Resumes
+              Your Resume
             </h2>
 
             {loadingHistory ? (
