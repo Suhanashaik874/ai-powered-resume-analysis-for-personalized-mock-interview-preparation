@@ -93,6 +93,14 @@ export default function Resume() {
     fetchHistory();
   }, [user]);
 
+  const deleteExistingResume = async () => {
+    if (!user) return;
+    // Delete all existing skills and resumes for this user
+    await (supabase as any).from("extracted_skills").delete().eq("user_id", user.id);
+    await (supabase as any).from("resumes").delete().eq("user_id", user.id);
+    setSavedResumes([]);
+  };
+
   const handleFile = useCallback(async (f: File) => {
     if (!user) return;
     setFile(f);
@@ -101,6 +109,10 @@ export default function Resume() {
     setErrorMsg("");
 
     try {
+      // Delete existing resume and skills first (one resume per account)
+      await (supabase as any).from("extracted_skills").delete().eq("user_id", user.id);
+      await (supabase as any).from("resumes").delete().eq("user_id", user.id);
+
       let text = "";
       if (f.type === "application/pdf" || f.name.endsWith(".pdf")) {
         text = await extractTextFromPDF(f);
@@ -139,13 +151,13 @@ export default function Resume() {
         );
       }
 
-      // Add to saved resumes list
-      setSavedResumes(prev => [{
+      // Replace saved resumes with the new one
+      setSavedResumes([{
         id: resumeId,
         file_name: f.name,
         created_at: new Date().toISOString(),
         skills: extractedSkills,
-      }, ...prev]);
+      }]);
 
       setStep("done");
       toast({ title: "Resume analyzed!", description: `Found ${extractedSkills.length} skills.` });
