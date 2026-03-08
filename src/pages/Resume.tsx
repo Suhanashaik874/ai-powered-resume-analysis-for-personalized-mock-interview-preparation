@@ -322,7 +322,7 @@ export default function Resume() {
           >
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
-              Previously Uploaded Resumes
+              Your Resume
             </h2>
 
             {loadingHistory ? (
