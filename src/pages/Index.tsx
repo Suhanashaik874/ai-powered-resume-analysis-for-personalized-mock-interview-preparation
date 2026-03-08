@@ -161,10 +161,10 @@ export default function Index() {
             className="mb-16 text-center"
           >
             <h2 className="mb-4 text-4xl font-bold">Everything You Need to{" "}
-              <span className="gradient-text">Succeed</span>
+              <span className="gradient-text">Prepare & Succeed</span>
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground text-lg">
-              A complete interview preparation platform powered by cutting-edge AI technology.
+              A complete resume-driven interview preparation platform powered by cutting-edge AI technology.
             </p>
           </motion.div>
 
