@@ -56,12 +56,19 @@ export default function HRInterview() {
     fetchQuestions();
   }, [user, id]);
 
+  // Load saved answer when changing question
   useEffect(() => {
+    if (questions.length > 0 && questions[currentIdx]) {
+      setAnswer(questions[currentIdx].user_answer || "");
+    } else {
+      setAnswer("");
+    }
     setTimer(0);
-    setAnswer("");
+    baseTextRef.current = "";
+    finalTranscriptRef.current = "";
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [currentIdx]);
+  }, [currentIdx, questions]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
