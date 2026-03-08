@@ -162,7 +162,16 @@ export default function Dashboard() {
             transition={{ delay: 0.3 }}
             className="lg:col-span-2"
           >
-            <h2 className="mb-4 text-lg font-semibold">Recent Interviews</h2>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Recent Interviews</h2>
+              {interviews.length > 5 && (
+                <Link to="/interviews">
+                  <Button variant="ghost" size="sm" className="text-primary text-xs">
+                    View all ({interviews.length}) <ChevronRight className="h-3 w-3 ml-1" />
+                  </Button>
+                </Link>
+              )}
+            </div>
             {loading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
@@ -185,7 +194,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {interviews.map((interview) => {
+                {interviews.slice(0, 5).map((interview) => {
                   const config = typeConfig[interview.interview_type] || typeConfig.coding;
                   const scorePercent = interview.max_score > 0
                     ? Math.round((interview.total_score / interview.max_score) * 100)
