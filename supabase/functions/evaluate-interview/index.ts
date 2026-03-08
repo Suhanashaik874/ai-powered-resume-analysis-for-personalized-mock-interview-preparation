@@ -52,12 +52,17 @@ Question: ${q.question_text}
 Expected Approach: ${q.expected_answer || 'N/A'}
 User's Code: ${userResponse}
 
+CRITICAL RULES FOR OPTIMAL SOLUTION:
+- First determine the best possible time/space complexity for this problem.
+- If the user's solution ALREADY achieves the best possible complexity, set "optimal_solution" to "" (empty string) and clearly state in the feedback that the user's solution is already optimal. Do NOT repeat their code as the optimal solution.
+- ONLY if the user's solution is NOT optimal, provide a better approach in "optimal_solution" with a clear complexity comparison showing why it is better.
+
 Return JSON with these fields:
 {
   "score": 0-10,
   "is_correct": true/false,
-  "feedback": "Detailed markdown feedback including:\n- **Correctness**: Does the solution work for all test cases?\n- **Time Complexity**: What is the time complexity of the user's solution?\n- **Space Complexity**: What is the space complexity?\n- **Strengths**: What did the user do well?\n- **Areas to Improve**: What could be better?\n- **Edge Cases**: Any missed edge cases?",
-  "optimal_solution": "The most optimal solution code with O(n)/O(1) complexity explanation. Include the code and explain why it's optimal.",
+  "feedback": "Detailed markdown feedback including:\n- **Correctness**: Does the solution work for all test cases?\n- **Time Complexity**: What is the time complexity?\n- **Space Complexity**: What is the space complexity?\n- **Optimality**: Is this the best possible approach? If YES, clearly state 'Your solution is already optimal!' If NO, explain what a better approach would be.\n- **Strengths**: What did the user do well?\n- **Areas to Improve**: Only if applicable\n- **Edge Cases**: Any missed edge cases?",
+  "optimal_solution": "ONLY if the user's solution is NOT optimal. Provide a more efficient solution with complexity comparison. If user's solution IS already optimal, set this to empty string.",
   "correct_answer": "Brief description of the correct approach"
 }`;
       } else if (q.question_type === 'aptitude') {
