@@ -52,7 +52,7 @@ export default function PreparationCourse() {
         </div>
       );
     }
-    return <TopicDetail category={category} topic={topic} />;
+    return <TopicDetail category={category} topic={topic} categoryId={categoryId!} topicId={topicId!} />;
   }
 
   // Category overview — list of topics
