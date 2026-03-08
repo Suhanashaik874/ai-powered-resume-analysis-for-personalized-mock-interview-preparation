@@ -304,7 +304,7 @@ export default function Resume() {
             <SkillsList skills={skills} onUpdate={setSkills} />
 
             <div className="flex gap-3">
-              <Button onClick={reset} variant="outline" className="flex-1">Upload Another</Button>
+              <Button onClick={reset} variant="outline" className="flex-1">Replace Resume</Button>
               <Button asChild className="flex-1 bg-gradient-primary text-primary-foreground hover:opacity-90">
                 <a href="/interview/select">Start Interview</a>
               </Button>
