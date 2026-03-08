@@ -271,7 +271,7 @@ export default function Index() {
             </div>
             <span className="font-bold gradient-text">AIPIP</span>
           </div>
-          <p className="text-sm text-muted-foreground">© 2024 AIPIP. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© 2025 AIPIP. All rights reserved.</p>
         </div>
       </footer>
     </div>
