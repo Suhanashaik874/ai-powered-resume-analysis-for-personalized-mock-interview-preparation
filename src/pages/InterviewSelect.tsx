@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Code2, MessageSquare, Brain, Target, ChevronRight, Loader2, Clock, Zap } from "lucide-react";
+import { Code2, MessageSquare, Brain, Target, ChevronRight, Loader2, Clock, Zap, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -69,6 +69,7 @@ export default function InterviewSelect() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [selected, setSelected] = useState<string | null>(searchParams.get("type"));
+  const [difficulty, setDifficulty] = useState<string>("medium");
   const [loading, setLoading] = useState(false);
 
   const handleStart = async () => {
@@ -117,6 +118,7 @@ export default function InterviewSelect() {
           interviewId: interviewId,
           skills: skills || [],
           resumeText,
+          difficulty,
         },
       });
 
@@ -216,11 +218,42 @@ export default function InterviewSelect() {
           ))}
         </div>
 
+        {/* Difficulty Selection */}
+        {selected && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 flex flex-col items-center"
+          >
+            <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+              <Gauge className="h-4 w-4" />
+              Select Difficulty
+            </h3>
+            <div className="flex gap-2">
+              {[
+                { value: "easy", label: "Easy", color: "border-emerald-500/40 hover:border-emerald-400 bg-emerald-500/10", active: "ring-2 ring-emerald-500 border-emerald-400 bg-emerald-500/20" },
+                { value: "medium", label: "Medium", color: "border-amber-500/40 hover:border-amber-400 bg-amber-500/10", active: "ring-2 ring-amber-500 border-amber-400 bg-amber-500/20" },
+                { value: "hard", label: "Hard", color: "border-rose-500/40 hover:border-rose-400 bg-rose-500/10", active: "ring-2 ring-rose-500 border-rose-400 bg-rose-500/20" },
+              ].map((d) => (
+                <button
+                  key={d.value}
+                  onClick={() => setDifficulty(d.value)}
+                  className={`px-5 py-2 rounded-full border text-sm font-medium transition-all ${
+                    difficulty === d.value ? d.active : d.color
+                  }`}
+                >
+                  {d.label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 flex justify-center"
+          className="mt-6 flex justify-center"
         >
           <Button
             onClick={handleStart}
