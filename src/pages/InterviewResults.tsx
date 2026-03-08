@@ -249,9 +249,9 @@ export default function InterviewResults() {
 
                     {/* AI Feedback */}
                     {q.ai_feedback && (
-                      <div className="rounded-xl bg-primary/10 border border-primary/20 p-4">
+                      <div className="rounded-xl bg-primary/10 border border-primary/20 p-4 overflow-hidden">
                         <div className="text-xs font-semibold text-primary uppercase mb-2">AI Feedback</div>
-                        <div className="prose prose-invert prose-sm max-w-none">
+                        <div className="prose prose-invert prose-sm max-w-none break-words overflow-x-auto [&_pre]:overflow-x-auto [&_pre]:max-w-full [&_code]:break-words [&_code]:whitespace-pre-wrap">
                           <ReactMarkdown>{q.ai_feedback}</ReactMarkdown>
                         </div>
                       </div>
