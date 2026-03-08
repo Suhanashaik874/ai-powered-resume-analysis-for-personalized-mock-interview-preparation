@@ -154,7 +154,7 @@ Skills: ${skillList}.${projectContext}`,
       order_index: q.order_index ?? i,
       options: q.options || null,
       expected_answer: q.expected_answer || null,
-      difficulty: q.difficulty || 'medium',
+      difficulty: q.difficulty || difficulty,
       skill_name: q.skill_name || null,
     }));
 
