@@ -96,27 +96,29 @@ export default function Auth() {
           </div>
 
           {/* Toggle */}
-          <div className="mb-6 flex rounded-lg bg-secondary p-1">
-            <button
-              onClick={() => setIsSignUp(false)}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
-                !isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setIsSignUp(true)}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
-                isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
+          {!forgotMode && (
+            <div className="mb-6 flex rounded-lg bg-secondary p-1">
+              <button
+                onClick={() => setIsSignUp(false)}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
+                  !isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setIsSignUp(true)}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
+                  isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
+            {isSignUp && !forgotMode && (
               <div>
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input
