@@ -118,6 +118,7 @@ export default function InterviewSelect() {
           interviewId: interviewId,
           skills: skills || [],
           resumeText,
+          difficulty,
         },
       });
 
