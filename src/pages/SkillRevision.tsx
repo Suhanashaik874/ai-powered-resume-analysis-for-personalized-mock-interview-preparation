@@ -300,6 +300,17 @@ export default function SkillRevision() {
                         </div>
                       )}
 
+                      {/* Architecture Flow (Expert only) */}
+                      {summaryData.architectureFlow && (
+                        <div className="glass-card rounded-2xl p-6 border border-primary/20 bg-primary/5">
+                          <h3 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
+                            🏗️ Architecture Flow
+                          </h3>
+                          <pre className="bg-muted/30 rounded-xl p-4 overflow-x-auto text-sm leading-relaxed whitespace-pre-wrap">
+                            <code className="text-muted-foreground font-mono">{summaryData.architectureFlow}</code>
+                          </pre>
+                        </div>
+
                       {/* Related Technologies */}
                       {summaryData.relatedTechnologies?.length > 0 && (
                         <div className="glass-card rounded-2xl p-6 border border-border/50">
