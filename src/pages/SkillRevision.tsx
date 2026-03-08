@@ -310,6 +310,7 @@ export default function SkillRevision() {
                             <code className="text-muted-foreground font-mono">{summaryData.architectureFlow}</code>
                           </pre>
                         </div>
+                      )}
 
                       {/* Related Technologies */}
                       {summaryData.relatedTechnologies?.length > 0 && (
