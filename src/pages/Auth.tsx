@@ -30,7 +30,12 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      if (isSignUp) {
+      if (forgotMode) {
+        const { error } = await resetPassword(email);
+        if (error) throw error;
+        toast({ title: "Reset link sent!", description: "Check your email for a password reset link." });
+        setForgotMode(false);
+      } else if (isSignUp) {
         const { error } = await signUp(email, password, fullName);
         if (error) throw error;
         toast({ title: "Account created!", description: "Please check your email to verify your account." });
