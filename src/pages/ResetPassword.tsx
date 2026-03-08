@@ -79,7 +79,7 @@ export default function ResetPassword() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-primary shadow-glow">
               <Brain className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold gradient-text">InterviewPro</span>
+            <span className="text-2xl font-bold gradient-text">AIPIP</span>
           </Link>
         </motion.div>
 

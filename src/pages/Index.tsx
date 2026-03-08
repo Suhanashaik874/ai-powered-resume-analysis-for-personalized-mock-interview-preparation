@@ -269,9 +269,9 @@ export default function Index() {
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-primary">
               <Brain className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-bold gradient-text">InterviewPro</span>
+            <span className="font-bold gradient-text">AIPIP</span>
           </div>
-          <p className="text-sm text-muted-foreground">© 2024 InterviewPro. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© 2024 AIPIP. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -30,7 +30,7 @@ export function Navbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
             <Brain className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="font-bold text-lg gradient-text">InterviewPro</span>
+          <span className="font-bold text-lg gradient-text">AIPIP</span>
         </Link>
 
         {/* Desktop Nav */}
