@@ -15,6 +15,7 @@ import CodingInterview from "./pages/CodingInterview";
 import HRInterview from "./pages/HRInterview";
 import AptitudeInterview from "./pages/AptitudeInterview";
 import InterviewResults from "./pages/InterviewResults";
+import AllInterviews from "./pages/AllInterviews";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/interview/hr/:id" element={<ProtectedRoute><HRInterview /></ProtectedRoute>} />
             <Route path="/interview/aptitude/:id" element={<ProtectedRoute><AptitudeInterview /></ProtectedRoute>} />
             <Route path="/interview/results/:id" element={<ProtectedRoute><InterviewResults /></ProtectedRoute>} />
+            <Route path="/interviews" element={<ProtectedRoute><AllInterviews /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
