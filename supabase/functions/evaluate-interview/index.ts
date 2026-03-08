@@ -36,9 +36,78 @@ serve(async (req) => {
     for (const q of questions) {
       const userResponse = q.user_code || q.user_answer || '';
       if (!userResponse.trim()) {
-        await supabase.from('interview_questions').update({
-          score: 0, is_correct: false, ai_feedback: 'No answer provided.',
-        }).eq('id', q.id);
+        // Still get the correct solution from AI even when no answer provided
+        let noAnswerPrompt = '';
+        if (q.question_type === 'coding') {
+          noAnswerPrompt = `The user did not attempt this coding question. Provide the correct solution.
+
+Question: ${q.question_text}
+
+Return JSON:
+{
+  "feedback": "**No answer was provided.**\\n\\n**Correct Approach:**\\n[Explain the approach clearly]\\n\\n**Solution:**\\n\\\`\\\`\\\`\\n[Write the optimal solution code]\\n\\\`\\\`\\\`\\n\\n**Time Complexity:** O(?)\\n**Space Complexity:** O(?)",
+  "correct_answer": "Brief description of correct approach"
+}`;
+        } else if (q.question_type === 'aptitude') {
+          noAnswerPrompt = `The user did not answer this aptitude question.
+
+Question: ${q.question_text}
+Correct Answer: ${q.expected_answer || 'N/A'}
+
+Return JSON:
+{
+  "feedback": "**No answer was provided.**\\n\\n**Correct Answer:** [answer]\\n\\n**Explanation:** [step-by-step solution]",
+  "correct_answer": "The correct answer"
+}`;
+        } else {
+          noAnswerPrompt = `The user did not answer this HR interview question.
+
+Question: ${q.question_text}
+Key Points: ${q.expected_answer || 'N/A'}
+
+Return JSON:
+{
+  "feedback": "**No answer was provided.**\\n\\n**Ideal Answer:**\\n[Write a strong sample answer covering all key points using the STAR method]",
+  "correct_answer": "Key points for an ideal answer"
+}`;
+        }
+
+        try {
+          const noAnswerResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                { role: 'system', content: 'Return ONLY valid JSON. No markdown fences.' },
+                { role: 'user', content: noAnswerPrompt },
+              ],
+              temperature: 0.3,
+              max_tokens: 1200,
+            }),
+          });
+
+          if (noAnswerResp.ok) {
+            const noAnswerData = await noAnswerResp.json();
+            const content = noAnswerData.choices?.[0]?.message?.content || '{}';
+            const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            const parsed = JSON.parse(cleaned);
+            await supabase.from('interview_questions').update({
+              score: 0, is_correct: false,
+              ai_feedback: parsed.feedback || 'No answer provided.',
+              expected_answer: parsed.correct_answer || q.expected_answer || null,
+            }).eq('id', q.id);
+          } else {
+            await supabase.from('interview_questions').update({
+              score: 0, is_correct: false, ai_feedback: 'No answer provided.',
+            }).eq('id', q.id);
+          }
+        } catch {
+          await supabase.from('interview_questions').update({
+            score: 0, is_correct: false, ai_feedback: 'No answer provided.',
+          }).eq('id', q.id);
+        }
+
         evaluations.push({ id: q.id, score: 0 });
         continue;
       }
