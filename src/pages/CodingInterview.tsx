@@ -130,6 +130,9 @@ export default function CodingInterview() {
   };
 
   const saveAnswer = useCallback(async (questionId: string, userCode: string, timeTaken: number) => {
+    // Save to local map
+    codeMapRef.current[questionId] = userCode;
+    // Save to DB
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any)
       .from("interview_questions")
@@ -139,20 +142,28 @@ export default function CodingInterview() {
 
   const handleNext = async () => {
     if (!questions[currentIdx]) return;
+    // Save current code before navigating
+    codeMapRef.current[questions[currentIdx].id] = code;
     await saveAnswer(questions[currentIdx].id, code, timer);
     if (currentIdx < questions.length - 1) {
-      setCurrentIdx(currentIdx + 1);
-      setCode(DEFAULT_CODE[language]);
+      const nextIdx = currentIdx + 1;
+      setCurrentIdx(nextIdx);
+      // Load saved code for next question
+      setCode(codeMapRef.current[questions[nextIdx].id] || DEFAULT_CODE[language]);
       setOutput("");
     }
   };
 
   const handlePrev = async () => {
     if (!questions[currentIdx]) return;
+    // Save current code before navigating
+    codeMapRef.current[questions[currentIdx].id] = code;
     await saveAnswer(questions[currentIdx].id, code, timer);
     if (currentIdx > 0) {
-      setCurrentIdx(currentIdx - 1);
-      setCode(questions[currentIdx - 1].user_code || DEFAULT_CODE[language]);
+      const prevIdx = currentIdx - 1;
+      setCurrentIdx(prevIdx);
+      // Load saved code for previous question
+      setCode(codeMapRef.current[questions[prevIdx].id] || DEFAULT_CODE[language]);
       setOutput("");
     }
   };
