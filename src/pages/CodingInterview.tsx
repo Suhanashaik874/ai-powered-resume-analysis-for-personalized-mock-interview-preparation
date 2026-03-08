@@ -317,7 +317,11 @@ export default function CodingInterview() {
               height="100%"
               language={language === "cpp" ? "cpp" : language}
               value={code}
-              onChange={(v) => setCode(v || "")}
+              onChange={(v) => {
+                const newCode = v || "";
+                setCode(newCode);
+                if (currentQ) codeMapRef.current[currentQ.id] = newCode;
+              }}
               theme="vs-dark"
               options={{
                 fontSize: 14,
