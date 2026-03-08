@@ -258,13 +258,52 @@ export default function SkillRevision() {
                         </div>
                       )}
 
+                      {/* Pros and Cons */}
+                      {summaryData.prosAndCons?.length > 0 && (
+                        <div className="glass-card rounded-2xl p-6 border border-border/50">
+                          <h3 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
+                            <ThumbsUp className="h-4 w-4" />
+                            Pros & Cons
+                          </h3>
+                          <div className="space-y-2">
+                            {summaryData.prosAndCons.map((item, i) => (
+                              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                {item.type === "pro" ? (
+                                  <ThumbsUp className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                                ) : (
+                                  <ThumbsDown className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+                                )}
+                                <span>{item.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Real World Example */}
                       {summaryData.realWorldExample && (
                         <div className="glass-card rounded-2xl p-6 border border-primary/20 bg-primary/5">
                           <h3 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
                             🌍 Real-World Application
                           </h3>
-                          <p className="text-sm text-muted-foreground leading-relaxed">{summaryData.realWorldExample}</p>
+                          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{summaryData.realWorldExample}</p>
+                        </div>
+                      )}
+
+                      {/* Related Technologies */}
+                      {summaryData.relatedTechnologies?.length > 0 && (
+                        <div className="glass-card rounded-2xl p-6 border border-border/50">
+                          <h3 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
+                            <Link2 className="h-4 w-4" />
+                            Related Technologies
+                          </h3>
+                          <div className="flex flex-wrap gap-2">
+                            {summaryData.relatedTechnologies.map((tech, i) => (
+                              <span key={i} className="rounded-full border border-border/60 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </motion.div>
