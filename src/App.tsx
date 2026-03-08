@@ -15,6 +15,7 @@ import CodingInterview from "./pages/CodingInterview";
 import HRInterview from "./pages/HRInterview";
 import AptitudeInterview from "./pages/AptitudeInterview";
 import InterviewResults from "./pages/InterviewResults";
+import AllInterviews from "./pages/AllInterviews";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
