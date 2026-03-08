@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const { interviewType, skills = [], interviewId, resumeText = '' } = await req.json();
+    const { interviewType, skills = [], interviewId, resumeText = '', difficulty = 'medium' } = await req.json();
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!apiKey) {
