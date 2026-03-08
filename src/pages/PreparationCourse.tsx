@@ -238,9 +238,12 @@ function TopicDetail({ category, topic, categoryId, topicId }: { category: typeo
                 )}
 
                 {/* Quiz Section */}
-                {lesson.quiz && lesson.quiz.length > 0 && (
-                  <LessonQuiz key={`quiz-${activeLesson}`} questions={lesson.quiz} />
-                )}
+                {(() => {
+                  const quizQuestions = lesson.quiz ?? quizData[categoryId]?.[topicId]?.[activeLesson];
+                  return quizQuestions && quizQuestions.length > 0 ? (
+                    <LessonQuiz key={`quiz-${activeLesson}`} questions={quizQuestions} />
+                  ) : null;
+                })()}
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">
