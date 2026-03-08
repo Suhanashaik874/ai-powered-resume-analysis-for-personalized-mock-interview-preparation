@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface Skill {
   skill_name: string;
   proficiency_level: string;
+  category?: string; // "skill" or "tool"
 }
 
 interface SavedResume {
