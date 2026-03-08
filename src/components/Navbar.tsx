@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Brain, LayoutDashboard, FileText, LogOut, Menu, X, ChevronRight } from "lucide-react";
+import { Brain, LayoutDashboard, FileText, LogOut, Menu, X, ChevronRight, User } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
