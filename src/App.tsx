@@ -18,6 +18,7 @@ import InterviewResults from "./pages/InterviewResults";
 import AllInterviews from "./pages/AllInterviews";
 import ResetPassword from "./pages/ResetPassword";
 import PreparationCourse from "./pages/PreparationCourse";
+import Preparation from "./pages/Preparation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
