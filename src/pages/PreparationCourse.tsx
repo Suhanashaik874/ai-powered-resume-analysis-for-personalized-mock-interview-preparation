@@ -2,6 +2,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, BookOpen, ChevronRight, CheckCircle2, Code2, Lightbulb, FileCode2, PenTool, BarChart3 } from "lucide-react";
+import { LessonQuiz } from "@/components/LessonQuiz";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { preparationCourses, type Topic, type Lesson } from "@/data/preparationCourses";
