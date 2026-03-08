@@ -109,7 +109,7 @@ export default function Index() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
-            Practice real coding challenges, HR behavioral questions, and aptitude tests. Get instant AI feedback, personalized to your resume.
+            Upload your resume and let AI analyze your skills to generate personalized mock interviews — coding, HR, and aptitude — with instant feedback.
           </motion.p>
 
           <motion.div
