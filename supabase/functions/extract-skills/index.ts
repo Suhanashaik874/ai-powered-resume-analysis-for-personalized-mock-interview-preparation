@@ -23,10 +23,10 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: 'You are an expert resume analyzer. Extract ONLY technologies, tools, frameworks, programming languages, libraries, platforms, and software. Do NOT include soft skills, methodologies, or concepts. Return ONLY valid JSON array, no markdown.',
+          content: 'You are an expert resume analyzer. Extract ONLY programming languages, frameworks, libraries, databases, cloud platforms, and DevOps tools. Do NOT include IDEs, code editors, soft skills, methodologies, or concepts. Return ONLY valid JSON array, no markdown.',
         }, {
           role: 'user',
-          content: `Analyze this resume and extract ONLY technologies, tools, frameworks, programming languages, libraries, and platforms with proficiency levels.\n\nExamples of what TO include: React, Python, Docker, AWS, MongoDB, Git, TensorFlow, SQL, Kubernetes, VS Code\nExamples of what NOT to include: Problem Solving, Communication, Agile, Leadership, Data Structures\n\nResume:\n${resumeText.slice(0, 8000)}\n\nReturn JSON: [{"skill_name": "React", "proficiency_level": "advanced"}]\nProficiency levels: beginner, intermediate, advanced, expert`,
+          content: `Analyze this resume and extract ONLY programming languages, frameworks, libraries, databases, cloud platforms, and DevOps tools with proficiency levels.\n\nExamples of what TO include: React, Python, Docker, AWS, MongoDB, Git, TensorFlow, SQL, Kubernetes, Node.js, PostgreSQL\nExamples of what NOT to include: VS Code, PyCharm, IntelliJ, Eclipse, Sublime Text, Problem Solving, Communication, Agile, Leadership\n\nResume:\n${resumeText.slice(0, 8000)}\n\nReturn JSON: [{"skill_name": "React", "proficiency_level": "advanced"}]\nProficiency levels: beginner, intermediate, advanced, expert`,
         }],
         temperature: 0.3,
         max_tokens: 2000,
