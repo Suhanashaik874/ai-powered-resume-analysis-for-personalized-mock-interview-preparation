@@ -189,7 +189,7 @@ export default function Auth() {
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  {isSignUp ? "Create Account" : "Sign In"}
+                  {forgotMode ? "Send Reset Link" : isSignUp ? "Create Account" : "Sign In"}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </>
               )}
@@ -197,13 +197,24 @@ export default function Auth() {
           </form>
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            {isSignUp ? "Already have an account? " : "Don't have an account? "}
-            <button
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-primary hover:underline font-medium"
-            >
-              {isSignUp ? "Sign In" : "Sign Up"}
-            </button>
+            {forgotMode ? (
+              <button
+                onClick={() => setForgotMode(false)}
+                className="text-primary hover:underline font-medium"
+              >
+                ← Back to Sign In
+              </button>
+            ) : (
+              <>
+                {isSignUp ? "Already have an account? " : "Don't have an account? "}
+                <button
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-primary hover:underline font-medium"
+                >
+                  {isSignUp ? "Sign In" : "Sign Up"}
+                </button>
+              </>
+            )}
           </p>
         </motion.div>
       </div>
