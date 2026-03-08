@@ -83,9 +83,15 @@ export default function Auth() {
           className="glass-card rounded-2xl p-8"
         >
           <div className="mb-6">
-            <h1 className="text-2xl font-bold">{isSignUp ? "Create Account" : "Welcome Back"}</h1>
+            <h1 className="text-2xl font-bold">
+              {forgotMode ? "Reset Password" : isSignUp ? "Create Account" : "Welcome Back"}
+            </h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              {isSignUp ? "Start your interview preparation journey" : "Sign in to continue practicing"}
+              {forgotMode
+                ? "Enter your email and we'll send a reset link"
+                : isSignUp
+                ? "Start your interview preparation journey"
+                : "Sign in to continue practicing"}
             </p>
           </div>
 
