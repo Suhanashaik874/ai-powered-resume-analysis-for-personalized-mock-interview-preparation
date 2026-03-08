@@ -144,28 +144,41 @@ export default function Auth() {
                 className="mt-1.5 bg-secondary/50 border-border/60"
               />
             </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <div className="relative mt-1.5">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="pr-10 bg-secondary/50 border-border/60"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+            {!forgotMode && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  {!isSignUp && (
+                    <button
+                      type="button"
+                      onClick={() => setForgotMode(true)}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Forgot Password?
+                    </button>
+                  )}
+                </div>
+                <div className="relative mt-1.5">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="pr-10 bg-secondary/50 border-border/60"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             <Button
               type="submit"
