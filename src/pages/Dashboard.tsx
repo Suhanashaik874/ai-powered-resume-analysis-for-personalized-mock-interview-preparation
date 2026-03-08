@@ -108,142 +108,158 @@ export default function Dashboard() {
           ))}
         </motion.div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Quick Start */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-1"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Quick Start</h2>
-              <Link to="/interview/select">
-                <Button variant="ghost" size="sm" className="text-primary text-xs">
-                  All options <ChevronRight className="h-3 w-3 ml-1" />
-                </Button>
-              </Link>
-            </div>
-            <div className="space-y-3">
-              {quickStart.map((qs) => (
-                <button
-                  key={qs.type}
-                  onClick={() => handleQuickStart(qs.type)}
-                  className={`w-full text-left glass-card rounded-xl p-4 border bg-gradient-to-r transition-all hover:shadow-glow group ${qs.color}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <qs.icon className="h-5 w-5 text-foreground/70 group-hover:text-foreground transition-colors" />
-                    <div>
-                      <div className="font-medium text-sm">{qs.label}</div>
-                      <div className="text-xs text-muted-foreground">{qs.desc}</div>
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </button>
-              ))}
+        <Tabs defaultValue="mock-interview" className="w-full">
+          <TabsList className="mb-6 bg-muted/50 border border-border/50">
+            <TabsTrigger value="mock-interview" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <GraduationCap className="h-4 w-4" />
+              Mock Interview
+            </TabsTrigger>
+            <TabsTrigger value="preparation" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <BookOpen className="h-4 w-4" />
+              Preparation
+            </TabsTrigger>
+          </TabsList>
 
-              <Link to="/resume" className="block">
-                <div className="glass-card rounded-xl p-4 border border-dashed border-border/60 hover:border-primary/40 transition-all group">
-                  <div className="flex items-center gap-3">
-                    <Upload className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    <div>
-                      <div className="font-medium text-sm">Upload Resume</div>
-                      <div className="text-xs text-muted-foreground">AI skill extraction</div>
-                    </div>
-                    <Plus className="h-4 w-4 text-muted-foreground ml-auto" />
-                  </div>
+          <TabsContent value="mock-interview">
+            <div className="grid gap-8 lg:grid-cols-3">
+              {/* Quick Start */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="lg:col-span-1"
+              >
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">Quick Start</h2>
+                  <Link to="/interview/select">
+                    <Button variant="ghost" size="sm" className="text-primary text-xs">
+                      All options <ChevronRight className="h-3 w-3 ml-1" />
+                    </Button>
+                  </Link>
                 </div>
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Recent Interviews */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="lg:col-span-2"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Recent Interviews</h2>
-              {interviews.length > 5 && (
-                <Link to="/interviews">
-                  <Button variant="ghost" size="sm" className="text-primary text-xs">
-                    View all ({interviews.length}) <ChevronRight className="h-3 w-3 ml-1" />
-                  </Button>
-                </Link>
-              )}
-            </div>
-            {loading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="glass-card rounded-xl p-5 animate-pulse">
-                    <div className="h-4 bg-muted/50 rounded w-1/3 mb-2" />
-                    <div className="h-3 bg-muted/30 rounded w-1/2" />
-                  </div>
-                ))}
-              </div>
-            ) : interviews.length === 0 ? (
-              <div className="glass-card rounded-xl p-12 text-center">
-                <Brain className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">No interviews yet</h3>
-                <p className="text-sm text-muted-foreground mb-4">Start your first mock interview to see your progress here.</p>
-                <Link to="/interview/select">
-                  <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90">
-                    Start Interview
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {interviews.slice(0, 5).map((interview) => {
-                  const config = typeConfig[interview.interview_type] || typeConfig.coding;
-                  const scorePercent = interview.max_score > 0
-                    ? Math.round((interview.total_score / interview.max_score) * 100)
-                    : 0;
-                  return (
-                    <div
-                      key={interview.id}
-                      className="glass-card rounded-xl p-5 flex items-center gap-4 hover:border-primary/30 transition-all cursor-pointer group"
-                      onClick={() => interview.status === "completed" && navigate(`/interview/results/${interview.id}`)}
+                <div className="space-y-3">
+                  {quickStart.map((qs) => (
+                    <button
+                      key={qs.type}
+                      onClick={() => handleQuickStart(qs.type)}
+                      className={`w-full text-left glass-card rounded-xl p-4 border bg-gradient-to-r transition-all hover:shadow-glow group ${qs.color}`}
                     >
-                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${config.bg}`}>
-                        <config.icon className={`h-5 w-5 ${config.color}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{config.label} Interview</span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            interview.status === "completed"
-                              ? "bg-emerald-500/15 text-emerald-400"
-                              : "bg-amber-500/15 text-amber-400"
-                          }`}>
-                            {interview.status}
-                          </span>
+                      <div className="flex items-center gap-3">
+                        <qs.icon className="h-5 w-5 text-foreground/70 group-hover:text-foreground transition-colors" />
+                        <div>
+                          <div className="font-medium text-sm">{qs.label}</div>
+                          <div className="text-xs text-muted-foreground">{qs.desc}</div>
                         </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">{formatDate(interview.started_at)}</div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto group-hover:translate-x-1 transition-transform" />
                       </div>
-                      {interview.status === "completed" && (
-                        <div className="text-right">
-                          <div className={`text-lg font-bold ${scorePercent >= 70 ? "text-brand-emerald" : scorePercent >= 50 ? "text-brand-amber" : "text-brand-rose"}`}>
-                            {scorePercent}%
-                          </div>
-                          <div className="text-xs text-muted-foreground">{interview.total_score}/{interview.max_score}</div>
-                        </div>
-                      )}
-                      {interview.status === "completed" && (
-                        <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </motion.div>
-        </div>
+                    </button>
+                  ))}
 
-        {/* Preparation Resources */}
-        <PreparationModule />
+                  <Link to="/resume" className="block">
+                    <div className="glass-card rounded-xl p-4 border border-dashed border-border/60 hover:border-primary/40 transition-all group">
+                      <div className="flex items-center gap-3">
+                        <Upload className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <div>
+                          <div className="font-medium text-sm">Upload Resume</div>
+                          <div className="text-xs text-muted-foreground">AI skill extraction</div>
+                        </div>
+                        <Plus className="h-4 w-4 text-muted-foreground ml-auto" />
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              </motion.div>
+
+              {/* Recent Interviews */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="lg:col-span-2"
+              >
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-lg font-semibold">Recent Interviews</h2>
+                  {interviews.length > 5 && (
+                    <Link to="/interviews">
+                      <Button variant="ghost" size="sm" className="text-primary text-xs">
+                        View all ({interviews.length}) <ChevronRight className="h-3 w-3 ml-1" />
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+                {loading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="glass-card rounded-xl p-5 animate-pulse">
+                        <div className="h-4 bg-muted/50 rounded w-1/3 mb-2" />
+                        <div className="h-3 bg-muted/30 rounded w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                ) : interviews.length === 0 ? (
+                  <div className="glass-card rounded-xl p-12 text-center">
+                    <Brain className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+                    <h3 className="font-semibold mb-2">No interviews yet</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Start your first mock interview to see your progress here.</p>
+                    <Link to="/interview/select">
+                      <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90">
+                        Start Interview
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {interviews.slice(0, 5).map((interview) => {
+                      const config = typeConfig[interview.interview_type] || typeConfig.coding;
+                      const scorePercent = interview.max_score > 0
+                        ? Math.round((interview.total_score / interview.max_score) * 100)
+                        : 0;
+                      return (
+                        <div
+                          key={interview.id}
+                          className="glass-card rounded-xl p-5 flex items-center gap-4 hover:border-primary/30 transition-all cursor-pointer group"
+                          onClick={() => interview.status === "completed" && navigate(`/interview/results/${interview.id}`)}
+                        >
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${config.bg}`}>
+                            <config.icon className={`h-5 w-5 ${config.color}`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{config.label} Interview</span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                interview.status === "completed"
+                                  ? "bg-emerald-500/15 text-emerald-400"
+                                  : "bg-amber-500/15 text-amber-400"
+                              }`}>
+                                {interview.status}
+                              </span>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-0.5">{formatDate(interview.started_at)}</div>
+                          </div>
+                          {interview.status === "completed" && (
+                            <div className="text-right">
+                              <div className={`text-lg font-bold ${scorePercent >= 70 ? "text-brand-emerald" : scorePercent >= 50 ? "text-brand-amber" : "text-brand-rose"}`}>
+                                {scorePercent}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">{interview.total_score}/{interview.max_score}</div>
+                            </div>
+                          )}
+                          {interview.status === "completed" && (
+                            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="preparation">
+            <PreparationModule />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
