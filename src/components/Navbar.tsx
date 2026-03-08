@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Brain, LayoutDashboard, FileText, LogOut, Menu, X, ChevronRight } from "lucide-react";
+import { Brain, LayoutDashboard, FileText, LogOut, Menu, X, ChevronRight, User } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -61,9 +61,9 @@ export function Navbar() {
           {user ? (
             <>
               <div className="hidden md:flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground">
+                <Link to="/profile" className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-xs font-bold text-primary-foreground hover:opacity-80 transition-opacity cursor-pointer">
                   {user.email?.[0]?.toUpperCase() ?? "U"}
-                </div>
+                </Link>
                 <Button
                   variant="ghost"
                   size="sm"
