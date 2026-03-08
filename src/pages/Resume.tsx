@@ -167,6 +167,16 @@ export default function Resume() {
     if (f) handleFile(f);
   };
 
+  const handleDeleteResume = async (resumeId: string) => {
+    const { error } = await (supabase as any).from("resumes").delete().eq("id", resumeId);
+    if (error) {
+      toast({ title: "Error", description: "Failed to delete resume", variant: "destructive" });
+    } else {
+      setSavedResumes(prev => prev.filter(r => r.id !== resumeId));
+      toast({ title: "Resume deleted" });
+    }
+  };
+
   const reset = () => {
     setFile(null);
     setSkills([]);
@@ -313,7 +323,7 @@ export default function Resume() {
             ) : (
               <div className="space-y-4">
                 {savedResumes.map((resume) => (
-                  <ResumeCard key={resume.id} resume={resume} />
+                  <ResumeCard key={resume.id} resume={resume} onDelete={handleDeleteResume} />
                 ))}
               </div>
             )}
@@ -372,29 +382,44 @@ function SkillsList({ skills, onUpdate }: { skills: Skill[]; onUpdate?: (s: Skil
   );
 }
 
-function ResumeCard({ resume }: { resume: SavedResume }) {
+function ResumeCard({ resume, onDelete }: { resume: SavedResume; onDelete: (id: string) => void }) {
   const [expanded, setExpanded] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   return (
     <div className="glass-card rounded-xl overflow-hidden">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full p-4 flex items-center gap-4 text-left hover:bg-secondary/30 transition-colors"
-      >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-          <FileText className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm truncate">{resume.file_name}</div>
-          <div className="text-xs text-muted-foreground">
-            {new Date(resume.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-            {" · "}{resume.skills.length} skills
+      <div className="flex items-center">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex-1 p-4 flex items-center gap-4 text-left hover:bg-secondary/30 transition-colors"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
+            <FileText className="h-5 w-5 text-primary" />
           </div>
-        </div>
-        <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-        </motion.div>
-      </button>
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-sm truncate">{resume.file_name}</div>
+            <div className="text-xs text-muted-foreground">
+              {new Date(resume.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {" · "}{resume.skills.length} skills
+            </div>
+          </div>
+          <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </motion.div>
+        </button>
+        <button
+          onClick={async (e) => {
+            e.stopPropagation();
+            setDeleting(true);
+            await onDelete(resume.id);
+            setDeleting(false);
+          }}
+          className="p-3 mr-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+          title="Delete resume"
+        >
+          {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+        </button>
+      </div>
       {expanded && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
