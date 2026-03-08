@@ -17,6 +17,7 @@ import AptitudeInterview from "./pages/AptitudeInterview";
 import InterviewResults from "./pages/InterviewResults";
 import AllInterviews from "./pages/AllInterviews";
 import ResetPassword from "./pages/ResetPassword";
+import PreparationCourse from "./pages/PreparationCourse";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,8 @@ const App = () => (
             <Route path="/interview/aptitude/:id" element={<ProtectedRoute><AptitudeInterview /></ProtectedRoute>} />
             <Route path="/interview/results/:id" element={<ProtectedRoute><InterviewResults /></ProtectedRoute>} />
             <Route path="/interviews" element={<ProtectedRoute><AllInterviews /></ProtectedRoute>} />
+            <Route path="/preparation/:categoryId" element={<ProtectedRoute><PreparationCourse /></ProtectedRoute>} />
+            <Route path="/preparation/:categoryId/:topicId" element={<ProtectedRoute><PreparationCourse /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
