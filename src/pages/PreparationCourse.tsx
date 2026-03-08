@@ -236,6 +236,11 @@ function TopicDetail({ category, topic }: { category: typeof preparationCourses[
                   </div>
                 )}
 
+                {/* Quiz Section */}
+                {lesson.quiz && lesson.quiz.length > 0 && (
+                  <LessonQuiz key={`quiz-${activeLesson}`} questions={lesson.quiz} />
+                )}
+
                 {/* Actions */}
                 <div className="flex items-center gap-3">
                   <Button
