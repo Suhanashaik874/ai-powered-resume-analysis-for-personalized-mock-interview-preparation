@@ -187,6 +187,14 @@ export default function SkillRevision() {
                       exit={{ opacity: 0, x: -20 }}
                       className="space-y-5"
                     >
+                      {/* Proficiency Note */}
+                      {summaryData.proficiencyNote && (
+                        <div className="rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 text-sm text-primary flex items-center gap-2">
+                          <Brain className="h-4 w-4 shrink-0" />
+                          {summaryData.proficiencyNote}
+                        </div>
+                      )}
+
                       {/* Overview */}
                       <div className="glass-card rounded-2xl p-6 border border-border/50">
                         <h2 className="text-xl font-bold mb-3">{summaryData.title}</h2>
