@@ -1,9 +1,17 @@
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+}
+
 export interface Lesson {
   title: string;
   content: string;
   keyPoints: string[];
   example?: string;
   realWorldScenario?: string;
+  quiz?: QuizQuestion[];
 }
 
 export interface Topic {
@@ -52,7 +60,12 @@ export const preparationCourses: CourseCategory[] = [
               "Multi-dimensional arrays are used for grids, matrices, and game boards"
             ],
             example: "// Two Pointer Technique — finding a pair that sums to target\nfunction twoSum(arr: number[], target: number): [number, number] {\n  let left = 0, right = arr.length - 1;\n  arr.sort((a, b) => a - b);\n  while (left < right) {\n    const sum = arr[left] + arr[right];\n    if (sum === target) return [arr[left], arr[right]];\n    sum < target ? left++ : right--;\n  }\n  return [-1, -1];\n}",
-            realWorldScenario: "🏪 E-commerce Product Filtering: When a user applies price range filters on Amazon, the backend often uses a sorted array of product prices with two pointers to quickly find products within the range. This avoids scanning all 10M+ products — instead, binary search finds the range boundaries in O(log n).\n\n🎮 Game Leaderboards: Online games like PUBG store player scores in arrays. When rendering the top 100 leaderboard, array indexing gives instant O(1) access to any rank position, making it blazing fast even with millions of players."
+            realWorldScenario: "🏪 E-commerce Product Filtering: When a user applies price range filters on Amazon, the backend often uses a sorted array of product prices with two pointers to quickly find products within the range. This avoids scanning all 10M+ products — instead, binary search finds the range boundaries in O(log n).\n\n🎮 Game Leaderboards: Online games like PUBG store player scores in arrays. When rendering the top 100 leaderboard, array indexing gives instant O(1) access to any rank position, making it blazing fast even with millions of players.",
+            quiz: [
+              { question: "What is the time complexity of accessing an element by index in an array?", options: ["O(n)", "O(log n)", "O(1)", "O(n²)"], correctAnswer: 2, explanation: "Arrays store elements in contiguous memory, so accessing by index is a direct memory address calculation — O(1)." },
+              { question: "In the two-pointer technique for a sorted array, what happens when the sum is less than the target?", options: ["Move right pointer left", "Move left pointer right", "Reset both pointers", "Swap the pointers"], correctAnswer: 1, explanation: "If the sum is too small, we need a larger value, so we move the left pointer right to increase the sum." },
+              { question: "Why are arrays considered cache-friendly?", options: ["They use less memory", "Elements are stored in contiguous memory locations", "They have O(1) deletion", "They are immutable"], correctAnswer: 1, explanation: "Contiguous memory allocation means accessing one element loads nearby elements into the CPU cache, making sequential access very fast." }
+            ]
           },
           {
             title: "String Manipulation Patterns",
@@ -66,7 +79,11 @@ export const preparationCourses: CourseCategory[] = [
               "Regular expressions are powerful but can be slow for complex patterns"
             ],
             example: "// Sliding Window — longest substring without repeating characters\nfunction lengthOfLongestSubstring(s: string): number {\n  const seen = new Map<string, number>();\n  let maxLen = 0, start = 0;\n  for (let end = 0; end < s.length; end++) {\n    if (seen.has(s[end]) && seen.get(s[end])! >= start) {\n      start = seen.get(s[end])! + 1;\n    }\n    seen.set(s[end], end);\n    maxLen = Math.max(maxLen, end - start + 1);\n  }\n  return maxLen;\n}",
-            realWorldScenario: "🔐 Password Validation: Applications like Gmail use string pattern matching to enforce password rules — checking for uppercase, lowercase, digits, special chars, and minimum length. Character frequency counting ensures variety.\n\n🔍 Autocomplete/Search Suggestions: When you type in Google Search, the sliding window technique helps match partial substrings against millions of search queries. The Trie data structure (built from strings) powers the suggestion engine, returning results in milliseconds."
+            realWorldScenario: "🔐 Password Validation: Applications like Gmail use string pattern matching to enforce password rules — checking for uppercase, lowercase, digits, special chars, and minimum length. Character frequency counting ensures variety.\n\n🔍 Autocomplete/Search Suggestions: When you type in Google Search, the sliding window technique helps match partial substrings against millions of search queries. The Trie data structure (built from strings) powers the suggestion engine, returning results in milliseconds.",
+            quiz: [
+              { question: "Why is string concatenation in a loop inefficient?", options: ["Strings are mutable", "Each concatenation creates a new string object", "Strings can't be looped", "It causes memory leaks"], correctAnswer: 1, explanation: "Strings are immutable — each concatenation creates a new string, copying all previous characters. Use StringBuilder or array join instead." },
+              { question: "What technique is best for finding the longest substring without repeating characters?", options: ["Binary search", "Sliding window", "Divide and conquer", "Dynamic programming"], correctAnswer: 1, explanation: "The sliding window technique maintains a window of unique characters, expanding and contracting as needed — O(n) time." }
+            ]
           },
           {
             title: "Common Array Algorithms",
@@ -79,7 +96,11 @@ export const preparationCourses: CourseCategory[] = [
               "Reservoir Sampling: Select k random items from a stream of unknown length"
             ],
             example: "// Kadane's Algorithm — Maximum Subarray Sum\nfunction maxSubArray(nums: number[]): number {\n  let maxSum = nums[0], currentSum = nums[0];\n  for (let i = 1; i < nums.length; i++) {\n    currentSum = Math.max(nums[i], currentSum + nums[i]);\n    maxSum = Math.max(maxSum, currentSum);\n  }\n  return maxSum;\n}\n\n// Prefix Sum — Range Sum Query\nfunction buildPrefixSum(arr: number[]): number[] {\n  const prefix = [0];\n  for (const num of arr) prefix.push(prefix[prefix.length - 1] + num);\n  return prefix;\n}\nfunction rangeSum(prefix: number[], l: number, r: number): number {\n  return prefix[r + 1] - prefix[l];\n}",
-            realWorldScenario: "📈 Stock Trading (Kadane's): Robinhood and trading platforms use Kadane's algorithm to find the maximum profit period — the best time to buy and sell. Given daily price changes as an array, the max subarray sum gives the maximum possible profit.\n\n📊 Analytics Dashboards (Prefix Sum): When Stripe shows 'revenue from day X to day Y', they don't re-sum millions of transactions. A prefix sum array allows any date range query in O(1) — critical when users drag date sliders in real-time.\n\n🗳️ Election Vote Counting (Boyer-Moore): Finding which candidate got the majority vote across billions of ballots. Boyer-Moore does this in a single pass with constant memory."
+            realWorldScenario: "📈 Stock Trading (Kadane's): Robinhood and trading platforms use Kadane's algorithm to find the maximum profit period — the best time to buy and sell. Given daily price changes as an array, the max subarray sum gives the maximum possible profit.\n\n📊 Analytics Dashboards (Prefix Sum): When Stripe shows 'revenue from day X to day Y', they don't re-sum millions of transactions. A prefix sum array allows any date range query in O(1) — critical when users drag date sliders in real-time.\n\n🗳️ Election Vote Counting (Boyer-Moore): Finding which candidate got the majority vote across billions of ballots. Boyer-Moore does this in a single pass with constant memory.",
+            quiz: [
+              { question: "What is the time complexity of Kadane's algorithm?", options: ["O(n²)", "O(n log n)", "O(n)", "O(1)"], correctAnswer: 2, explanation: "Kadane's algorithm makes a single pass through the array, tracking the maximum subarray sum ending at each position — O(n)." },
+              { question: "What does a prefix sum array enable?", options: ["O(1) element insertion", "O(1) range sum queries", "O(log n) searching", "O(1) sorting"], correctAnswer: 1, explanation: "With a precomputed prefix sum, any range sum query can be answered in O(1) by subtracting two prefix values." }
+            ]
           },
           {
             title: "Matrix & 2D Array Problems",
@@ -92,7 +113,11 @@ export const preparationCourses: CourseCategory[] = [
               "BFS on grid: treat each cell as a graph node with 4 neighbors"
             ],
             example: "// Rotate Matrix 90° Clockwise (in-place)\nfunction rotate(matrix: number[][]): void {\n  const n = matrix.length;\n  // Transpose\n  for (let i = 0; i < n; i++)\n    for (let j = i + 1; j < n; j++)\n      [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]];\n  // Reverse each row\n  for (const row of matrix) row.reverse();\n}\n\n// Count Islands (BFS)\nfunction numIslands(grid: string[][]): number {\n  let count = 0;\n  const rows = grid.length, cols = grid[0].length;\n  for (let i = 0; i < rows; i++)\n    for (let j = 0; j < cols; j++)\n      if (grid[i][j] === '1') { count++; bfs(grid, i, j); }\n  return count;\n}",
-            realWorldScenario: "🗺️ Google Maps (Grid BFS): Finding the shortest path on a map is essentially BFS on a 2D grid. Each tile is a cell, roads are passable cells, and buildings are blocked cells. Google Maps uses advanced versions of this (A* algorithm) for GPS navigation.\n\n📱 Image Processing (Matrix Rotation): When you rotate a photo on Instagram, the underlying pixel matrix is rotated using the transpose + reverse technique. Image filters like blur apply convolution matrices — a 2D array operation on each pixel.\n\n🎮 Minesweeper (Flood Fill): When you click an empty cell in Minesweeper, the game reveals all connected empty cells — this is exactly the island/flood-fill BFS algorithm."
+            realWorldScenario: "🗺️ Google Maps (Grid BFS): Finding the shortest path on a map is essentially BFS on a 2D grid. Each tile is a cell, roads are passable cells, and buildings are blocked cells. Google Maps uses advanced versions of this (A* algorithm) for GPS navigation.\n\n📱 Image Processing (Matrix Rotation): When you rotate a photo on Instagram, the underlying pixel matrix is rotated using the transpose + reverse technique. Image filters like blur apply convolution matrices — a 2D array operation on each pixel.\n\n🎮 Minesweeper (Flood Fill): When you click an empty cell in Minesweeper, the game reveals all connected empty cells — this is exactly the island/flood-fill BFS algorithm.",
+            quiz: [
+              { question: "How do you rotate a matrix 90° clockwise in-place?", options: ["Reverse rows then transpose", "Transpose then reverse each row", "Reverse columns then transpose", "Sort each row"], correctAnswer: 1, explanation: "First transpose the matrix (swap rows and columns), then reverse each row. This gives a 90° clockwise rotation." },
+              { question: "In a grid BFS, how many neighbors does each cell typically have?", options: ["2", "4", "8", "6"], correctAnswer: 1, explanation: "In a standard grid BFS with 4-directional movement (up, down, left, right), each cell has 4 neighbors." }
+            ]
           }
         ]
       },

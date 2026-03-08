@@ -2,9 +2,11 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, BookOpen, ChevronRight, CheckCircle2, Code2, Lightbulb, FileCode2, PenTool, BarChart3 } from "lucide-react";
+import { LessonQuiz } from "@/components/LessonQuiz";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { preparationCourses, type Topic, type Lesson } from "@/data/preparationCourses";
+import { quizData } from "@/data/quizData";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileCode2, Lightbulb, PenTool, BarChart3,
@@ -50,7 +52,7 @@ export default function PreparationCourse() {
         </div>
       );
     }
-    return <TopicDetail category={category} topic={topic} />;
+    return <TopicDetail category={category} topic={topic} categoryId={categoryId!} topicId={topicId!} />;
   }
 
   // Category overview — list of topics
@@ -108,7 +110,7 @@ export default function PreparationCourse() {
   );
 }
 
-function TopicDetail({ category, topic }: { category: typeof preparationCourses[0]; topic: Topic }) {
+function TopicDetail({ category, topic, categoryId, topicId }: { category: typeof preparationCourses[0]; topic: Topic; categoryId: string; topicId: string }) {
   const [activeLesson, setActiveLesson] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
   const navigate = useNavigate();
@@ -234,6 +236,14 @@ function TopicDetail({ category, topic }: { category: typeof preparationCourses[
                     <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{lesson.realWorldScenario}</p>
                   </div>
                 )}
+
+                {/* Quiz Section */}
+                {(() => {
+                  const quizQuestions = lesson.quiz ?? quizData[categoryId]?.[topicId]?.[activeLesson];
+                  return quizQuestions && quizQuestions.length > 0 ? (
+                    <LessonQuiz key={`quiz-${activeLesson}`} questions={quizQuestions} />
+                  ) : null;
+                })()}
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">
