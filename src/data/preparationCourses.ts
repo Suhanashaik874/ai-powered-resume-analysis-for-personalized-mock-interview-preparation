@@ -1,9 +1,17 @@
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+}
+
 export interface Lesson {
   title: string;
   content: string;
   keyPoints: string[];
   example?: string;
   realWorldScenario?: string;
+  quiz?: QuizQuestion[];
 }
 
 export interface Topic {
