@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag, ChevronDown } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -13,6 +13,13 @@ interface Skill {
   proficiency_level: string;
 }
 
+interface SavedResume {
+  id: string;
+  file_name: string;
+  created_at: string;
+  skills: Skill[];
+}
+
 const proficiencyColors: Record<string, string> = {
   beginner: "bg-amber-500/15 text-amber-400 border-amber-500/30",
   intermediate: "bg-blue-500/15 text-blue-400 border-blue-500/30",
@@ -22,7 +29,6 @@ const proficiencyColors: Record<string, string> = {
 
 async function extractTextFromPDF(file: File): Promise<string> {
   const pdfjs = await import("pdfjs-dist");
-  // Keep API and worker versions in sync to avoid "API version does not match Worker version" errors
   pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
@@ -49,10 +55,42 @@ export default function Resume() {
   const { toast } = useToast();
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [extractedText, setExtractedText] = useState("");
   const [skills, setSkills] = useState<Skill[]>([]);
   const [step, setStep] = useState<"idle" | "extracting" | "analyzing" | "done" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+
+  // Fetch previously uploaded resumes and their skills
+  useEffect(() => {
+    if (!user) return;
+    const fetchHistory = async () => {
+      const { data: resumes } = await (supabase as any)
+        .from("resumes")
+        .select("id, file_name, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (!resumes?.length) {
+        setLoadingHistory(false);
+        return;
+      }
+
+      const resumeIds = resumes.map((r: any) => r.id);
+      const { data: allSkills } = await (supabase as any)
+        .from("extracted_skills")
+        .select("resume_id, skill_name, proficiency_level")
+        .in("resume_id", resumeIds);
+
+      const mapped: SavedResume[] = resumes.map((r: any) => ({
+        ...r,
+        skills: (allSkills || []).filter((s: any) => s.resume_id === r.id),
+      }));
+      setSavedResumes(mapped);
+      setLoadingHistory(false);
+    };
+    fetchHistory();
+  }, [user]);
 
   const handleFile = useCallback(async (f: File) => {
     if (!user) return;
@@ -70,10 +108,7 @@ export default function Resume() {
       } else {
         throw new Error("Unsupported file type. Please upload a PDF or DOCX.");
       }
-      setExtractedText(text);
 
-      // Save resume to DB
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: resumeData, error: resumeError } = await (supabase as any).from("resumes").insert({
         user_id: user.id,
         file_name: f.name,
@@ -81,23 +116,18 @@ export default function Resume() {
       }).select().single();
 
       if (resumeError) throw resumeError;
-
       const resumeId = (resumeData as { id: string })?.id;
 
-      // Call edge function to extract skills
       setStep("analyzing");
       const { data, error } = await supabase.functions.invoke("extract-skills", {
         body: { resumeText: text, resumeId, userId: user.id },
       });
-
       if (error) throw error;
 
       const extractedSkills: Skill[] = data?.skills || [];
       setSkills(extractedSkills);
 
-      // Save skills to DB
       if (extractedSkills.length > 0 && resumeId) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase as any).from("extracted_skills").insert(
           extractedSkills.map((s) => ({
             user_id: user.id,
@@ -107,6 +137,14 @@ export default function Resume() {
           }))
         );
       }
+
+      // Add to saved resumes list
+      setSavedResumes(prev => [{
+        id: resumeId,
+        file_name: f.name,
+        created_at: new Date().toISOString(),
+        skills: extractedSkills,
+      }, ...prev]);
 
       setStep("done");
       toast({ title: "Resume analyzed!", description: `Found ${extractedSkills.length} skills.` });
@@ -131,11 +169,13 @@ export default function Resume() {
 
   const reset = () => {
     setFile(null);
-    setExtractedText("");
     setSkills([]);
     setStep("idle");
     setErrorMsg("");
   };
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   return (
     <div className="min-h-screen bg-background pt-16">
@@ -218,14 +258,13 @@ export default function Resume() {
           </motion.div>
         )}
 
-        {/* Success State */}
+        {/* Success State (just uploaded) */}
         {step === "done" && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            {/* File Info */}
             <div className="glass-card rounded-xl p-4 flex items-center gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30">
                 <CheckCircle className="h-5 w-5 text-brand-emerald" />
@@ -239,48 +278,7 @@ export default function Resume() {
               </button>
             </div>
 
-            {/* Skills */}
-            <div className="glass-card rounded-xl p-6">
-              <h2 className="font-semibold mb-4 flex items-center gap-2">
-                <Tag className="h-4 w-4 text-primary" />
-                Extracted Skills ({skills.length})
-              </h2>
-              {skills.length === 0 ? (
-                <p className="text-muted-foreground text-sm">No skills could be extracted. Try a more detailed resume.</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.05 }}
-                      className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
-                        proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner
-                      }`}
-                    >
-                      {skill.skill_name}
-                      <Select
-                        value={skill.proficiency_level}
-                        onValueChange={(val) => {
-                          setSkills(prev => prev.map((s, idx) => idx === i ? { ...s, proficiency_level: val } : s));
-                        }}
-                      >
-                        <SelectTrigger className="h-5 w-auto border-0 bg-transparent p-0 pl-1 text-xs opacity-70 hover:opacity-100 shadow-none focus:ring-0 [&>svg]:h-3 [&>svg]:w-3">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="beginner">beginner</SelectItem>
-                          <SelectItem value="intermediate">intermediate</SelectItem>
-                          <SelectItem value="advanced">advanced</SelectItem>
-                          <SelectItem value="expert">expert</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SkillsList skills={skills} onUpdate={setSkills} />
 
             <div className="flex gap-3">
               <Button onClick={reset} variant="outline" className="flex-1">Upload Another</Button>
@@ -290,7 +288,138 @@ export default function Resume() {
             </div>
           </motion.div>
         )}
+
+        {/* Previously Uploaded Resumes */}
+        {step === "idle" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8"
+          >
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Previously Uploaded Resumes
+            </h2>
+
+            {loadingHistory ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : savedResumes.length === 0 ? (
+              <div className="glass-card rounded-xl p-8 text-center">
+                <p className="text-muted-foreground text-sm">No resumes uploaded yet. Upload one above!</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {savedResumes.map((resume) => (
+                  <ResumeCard key={resume.id} resume={resume} />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
       </div>
+    </div>
+  );
+}
+
+function SkillsList({ skills, onUpdate }: { skills: Skill[]; onUpdate?: (s: Skill[]) => void }) {
+  return (
+    <div className="glass-card rounded-xl p-6">
+      <h2 className="font-semibold mb-4 flex items-center gap-2">
+        <Tag className="h-4 w-4 text-primary" />
+        Extracted Skills ({skills.length})
+      </h2>
+      {skills.length === 0 ? (
+        <p className="text-muted-foreground text-sm">No skills could be extracted.</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {skills.map((skill, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.03 }}
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
+                proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner
+              }`}
+            >
+              {skill.skill_name}
+              {onUpdate && (
+                <Select
+                  value={skill.proficiency_level}
+                  onValueChange={(val) => {
+                    onUpdate(skills.map((s, idx) => idx === i ? { ...s, proficiency_level: val } : s));
+                  }}
+                >
+                  <SelectTrigger className="h-5 w-auto border-0 bg-transparent p-0 pl-1 text-xs opacity-70 hover:opacity-100 shadow-none focus:ring-0 [&>svg]:h-3 [&>svg]:w-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="beginner">beginner</SelectItem>
+                    <SelectItem value="intermediate">intermediate</SelectItem>
+                    <SelectItem value="advanced">advanced</SelectItem>
+                    <SelectItem value="expert">expert</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ResumeCard({ resume }: { resume: SavedResume }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="glass-card rounded-xl overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full p-4 flex items-center gap-4 text-left hover:bg-secondary/30 transition-colors"
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
+          <FileText className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-medium text-sm truncate">{resume.file_name}</div>
+          <div className="text-xs text-muted-foreground">
+            {new Date(resume.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            {" · "}{resume.skills.length} skills
+          </div>
+        </div>
+        <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+        </motion.div>
+      </button>
+      {expanded && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="px-4 pb-4"
+        >
+          {resume.skills.length === 0 ? (
+            <p className="text-muted-foreground text-sm">No skills extracted.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {resume.skills.map((skill, i) => (
+                <span
+                  key={i}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner
+                  }`}
+                >
+                  {skill.skill_name}
+                </span>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      )}
     </div>
   );
 }
