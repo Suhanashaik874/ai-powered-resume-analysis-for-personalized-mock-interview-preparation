@@ -110,7 +110,7 @@ export default function PreparationCourse() {
   );
 }
 
-function TopicDetail({ category, topic }: { category: typeof preparationCourses[0]; topic: Topic }) {
+function TopicDetail({ category, topic, categoryId, topicId }: { category: typeof preparationCourses[0]; topic: Topic; categoryId: string; topicId: string }) {
   const [activeLesson, setActiveLesson] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
   const navigate = useNavigate();
