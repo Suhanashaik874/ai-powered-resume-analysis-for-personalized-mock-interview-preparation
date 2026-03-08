@@ -83,6 +83,9 @@ export default function HRInterview() {
     if (listening) {
       recognitionRef.current?.stop();
       setListening(false);
+      // Commit final transcript to base
+      baseTextRef.current = baseTextRef.current + finalTranscriptRef.current;
+      finalTranscriptRef.current = "";
       return;
     }
 
@@ -91,17 +94,22 @@ export default function HRInterview() {
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
-    recognition.onresult = (event) => {
+    // Capture the current text as the base before speech starts
+    baseTextRef.current = answer;
+    finalTranscriptRef.current = "";
+
+    recognition.onresult = (event: any) => {
       let interim = "";
-      let final = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      let finalText = "";
+      for (let i = 0; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
+          finalText += event.results[i][0].transcript;
         } else {
           interim += event.results[i][0].transcript;
         }
       }
-      setAnswer((prev) => prev + final + interim);
+      finalTranscriptRef.current = finalText;
+      setAnswer(baseTextRef.current + finalText + interim);
     };
 
     recognition.onerror = () => {
@@ -109,7 +117,11 @@ export default function HRInterview() {
       toast({ title: "Speech error", description: "Could not capture speech.", variant: "destructive" });
     };
 
-    recognition.onend = () => setListening(false);
+    recognition.onend = () => {
+      setListening(false);
+      baseTextRef.current = baseTextRef.current + finalTranscriptRef.current;
+      finalTranscriptRef.current = "";
+    };
 
     recognitionRef.current = recognition;
     recognition.start();
