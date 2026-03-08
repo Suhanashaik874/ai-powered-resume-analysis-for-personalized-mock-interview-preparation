@@ -159,11 +159,12 @@ Return JSON:
           role: 'user',
           content: `Interview score: ${totalScore}/${maxScore} (${Math.round(totalScore/maxScore*100)}%).
 
-Write a comprehensive interview feedback in markdown with:
-1. **Overall Performance** - 2-3 sentence summary
-2. **Key Strengths** - Top 3 things done well
-3. **Areas for Improvement** - Top 3 things to work on with specific action items
-4. **Recommendations** - Resources or topics to study`,
+Write a SHORT, punchy interview summary in markdown. Be direct, no fluff. Max 5-6 lines total:
+- One bold opening line with the vibe (e.g. "🔥 Solid performance!" or "⚡ Room to grow")
+- 2-3 bullet points: mix of strengths and improvements, be specific not generic
+- One actionable tip to level up
+
+Keep it conversational and motivating. No headers, no sections, no walls of text.`,
         }],
         max_tokens: 500,
       }),
