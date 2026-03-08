@@ -19,6 +19,8 @@ serve(async (req) => {
     const { code, language } = await req.json();
     const langConfig = LANGUAGE_MAP[language] || LANGUAGE_MAP.javascript;
 
+    console.log('Executing code with language:', langConfig.language, 'version:', langConfig.version);
+
     const response = await fetch('https://emkc.org/api/v2/piston/execute', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -33,13 +35,29 @@ serve(async (req) => {
       }),
     });
 
-    const data = await response.json();
-    const output = data?.run?.output || data?.compile?.output || data?.run?.stderr || 'No output';
+    const rawText = await response.text();
+    console.log('Piston raw response status:', response.status);
+    console.log('Piston raw response:', rawText);
 
-    return new Response(JSON.stringify({ output, stderr: data?.run?.stderr || '' }), {
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      return new Response(JSON.stringify({ output: `Execution service error: ${rawText}`, stderr: '' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const stdout = data?.run?.stdout || '';
+    const stderr = data?.run?.stderr || '';
+    const compileOutput = data?.compile?.stderr || data?.compile?.output || '';
+    const output = stdout || compileOutput || stderr || 'No output (did you forget to print?)';
+
+    return new Response(JSON.stringify({ output, stderr }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
+    console.error('execute-code error:', err);
     return new Response(JSON.stringify({ error: err.message, output: `Error: ${err.message}` }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
