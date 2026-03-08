@@ -94,7 +94,7 @@ export default function CodingInterview() {
     setOutput("");
     try {
       const { data, error } = await supabase.functions.invoke("execute-code", {
-        body: { code, language },
+        body: { code, language, questionText: currentQ?.question_text || "" },
       });
       if (error) throw error;
       setOutput(data?.output || data?.stderr || "No output");
