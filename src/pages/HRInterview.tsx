@@ -139,6 +139,7 @@ export default function HRInterview() {
   const handleNext = async () => {
     if (!questions[currentIdx]) return;
     await saveAnswer(questions[currentIdx].id, answer, timer);
+    setQuestions(prev => prev.map((q, i) => i === currentIdx ? { ...q, user_answer: answer, time_taken_seconds: timer } : q));
     if (currentIdx < questions.length - 1) {
       setCurrentIdx(currentIdx + 1);
     }
@@ -147,9 +148,9 @@ export default function HRInterview() {
   const handlePrev = async () => {
     if (!questions[currentIdx]) return;
     await saveAnswer(questions[currentIdx].id, answer, timer);
+    setQuestions(prev => prev.map((q, i) => i === currentIdx ? { ...q, user_answer: answer, time_taken_seconds: timer } : q));
     if (currentIdx > 0) {
       setCurrentIdx(currentIdx - 1);
-      setAnswer(questions[currentIdx - 1].user_answer || "");
     }
   };
 
