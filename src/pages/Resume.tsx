@@ -22,7 +22,8 @@ const proficiencyColors: Record<string, string> = {
 
 async function extractTextFromPDF(file: File): Promise<string> {
   const pdfjs = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs`;
+  // Keep API and worker versions in sync to avoid "API version does not match Worker version" errors
+  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
   let text = "";
