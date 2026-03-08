@@ -16,6 +16,7 @@ interface ExtractedSkill {
 interface SkillSummary {
   title: string;
   summary: string;
+  proficiencyNote?: string;
   keyConcepts: string[];
   commonUseCases: string[];
   interviewTips: string[];
@@ -23,6 +24,7 @@ interface SkillSummary {
   realWorldExample: string;
   prosAndCons?: { type: "pro" | "con"; text: string }[];
   relatedTechnologies?: string[];
+  architectureFlow?: string;
 }
 
 const proficiencyColors: Record<string, string> = {
