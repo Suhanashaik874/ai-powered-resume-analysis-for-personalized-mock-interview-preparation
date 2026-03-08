@@ -5,6 +5,57 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+const levelInstructions: Record<string, string> = {
+  beginner: `The user is a BEGINNER. Focus on:
+- Simple, jargon-free explanations with analogies
+- What this technology is and WHY someone would use it (motivation)
+- Basic foundational concepts only (no advanced patterns)
+- A very simple "Hello World" style code example with heavy comments explaining every line
+- Common beginner mistakes and how to avoid them
+- Simple use cases that a beginner can relate to
+- Interview tips should focus on basic definition questions and simple scenarios
+- Keep real-world examples simple and relatable
+- Do NOT include advanced patterns, architecture, or optimization topics`,
+
+  intermediate: `The user is INTERMEDIATE. Focus on:
+- Deeper explanations assuming basic knowledge exists
+- Important patterns, best practices, and common pitfalls
+- A practical code example showing a real-world pattern (not just hello world)
+- Performance considerations and when to use vs not use this tech
+- Interview tips with medium-difficulty questions and how to structure answers
+- Real-world use cases with company examples
+- Include pros/cons with practical implications`,
+
+  advanced: `The user is ADVANCED. Focus on:
+- Deep technical concepts, internal workings, and architecture patterns
+- Advanced patterns, optimization techniques, and edge cases
+- Complex code example showing advanced usage (design patterns, performance optimization, etc.)
+- Detailed comparison with alternatives and when each is better
+- Interview tips focusing on system design, trade-offs, and deep-dive questions
+- Under-the-hood explanations (how it works internally, memory model, event loop, etc.)
+- Advanced real-world scenarios at scale`,
+
+  expert: `The user is an EXPERT. Focus on:
+- Production-grade architecture and system design with this technology
+- A complete real-world application flow example showing end-to-end architecture (e.g., how Netflix uses this in their microservices pipeline, request flow from user click to response)
+- Performance tuning, benchmarking, and optimization at scale
+- Contributing to the ecosystem, extending the technology, custom plugins/middleware
+- Interview tips for Staff/Principal level — system design, trade-off analysis, leading technical decisions
+- Detailed production incident scenarios and debugging strategies
+- Code example should be production-grade: error handling, edge cases, monitoring
+- Include architecture diagrams described in text (e.g., "User → API Gateway → Service A → Cache → DB")
+- Focus on SCALE: millions of users, distributed systems, fault tolerance`,
+};
+
+function getMaxTokens(level: string): number {
+  switch (level) {
+    case 'expert': return 6000;
+    case 'advanced': return 5000;
+    case 'beginner': return 3500;
+    default: return 4000;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
@@ -15,6 +66,24 @@ serve(async (req) => {
     if (!apiKey) throw new Error('LOVABLE_API_KEY is not configured');
     if (!skillName) throw new Error('skillName is required');
 
+    const level = (proficiencyLevel || 'intermediate').toLowerCase();
+    const instruction = levelInstructions[level] || levelInstructions.intermediate;
+    const conceptCount = level === 'beginner' ? '5-6 foundational' : level === 'expert' ? '8-10 advanced' : '6-8';
+    const useCaseCount = level === 'beginner' ? '3-4 simple' : level === 'expert' ? '5-6 production-scale' : '5-6';
+    const codeInstruction = level === 'beginner'
+      ? 'A simple, heavily-commented example (10-15 lines) showing basic usage. Comment EVERY line.'
+      : level === 'expert'
+        ? 'A production-grade example (30-50 lines) with error handling, edge cases, and performance considerations.'
+        : 'A practical example (15-30 lines) showing a real-world pattern with comments.';
+    const realWorldInstruction = level === 'expert'
+      ? 'A detailed end-to-end production flow (8-10 sentences) showing how a major company uses this at scale. Include request flow, architecture decisions, scale numbers, and lessons learned.'
+      : level === 'advanced'
+        ? 'A detailed 5-7 sentence scenario with specific architecture details and scale.'
+        : 'A 4-6 sentence real-world scenario that is relatable and educational.';
+    const architectureField = level === 'expert'
+      ? ',\n  "architectureFlow": "A text-based architecture diagram showing end-to-end flow. Use arrows like: User → CDN → Load Balancer → API Gateway → Service → Cache → Database. Include 5-8 components with brief notes on each."'
+      : '';
+
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
@@ -22,46 +91,60 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: `You are an expert software engineering mentor who creates detailed, easy-to-understand revision guides for technical skills. Your explanations should be thorough, beginner-friendly even for advanced topics, and include practical examples. Write as if you're explaining to a student preparing for a tech interview. Return ONLY valid JSON, no markdown wrapping.`,
+          content: `You are an expert software engineering mentor creating revision guides tailored to the student's proficiency level. Adjust depth, complexity, and examples based on their level. Return ONLY valid JSON, no markdown wrapping.`,
         }, {
           role: 'user',
-          content: `Create a comprehensive and detailed revision guide for the technology/skill: "${skillName}" (user proficiency: ${proficiencyLevel || 'intermediate'}).
+          content: `Create a comprehensive revision guide for: "${skillName}" (proficiency level: ${level}).
 
-Make every section rich and educational. Do NOT use one-liners — explain things properly so someone can actually learn from this.
+${instruction}
 
 Return JSON with this exact structure:
 {
   "title": "Descriptive title like 'React - A JavaScript Library for Building User Interfaces'",
-  "summary": "A detailed 5-8 sentence paragraph explaining what this technology is, its history/origin, why it was created, what problems it solves, why it's popular today, and how it fits in the broader tech ecosystem. Make it informative enough that someone unfamiliar can understand it.",
+  "proficiencyNote": "A 1-2 sentence note like 'This guide is tailored for ${level} level. It focuses on [what this level covers].'",
+  "summary": "A detailed 5-8 sentence paragraph explaining this technology. Adjust complexity to ${level} level — beginners need simple language and analogies, experts need technical depth and architecture context.",
   "keyConcepts": [
-    "Concept Name: 2-3 sentence explanation of this concept with a practical example of when you'd use it",
-    "Another Concept: Detailed explanation...",
-    "(provide 6-8 key concepts, each with proper explanation, not just keywords)"
+    "Concept Name: Detailed explanation adjusted to ${level} level. Beginners get 2-3 simple sentences with analogies. Experts get deep technical details with internals.",
+    "(provide ${conceptCount} concepts)"
   ],
   "commonUseCases": [
-    "Use Case Title — Detailed 2-3 sentence description of how this technology is used in this scenario. Mention real companies or products if possible.",
-    "(provide 5-6 detailed use cases)"
+    "Use Case — Description adjusted to ${level} level. Experts get production-scale scenarios with architecture details.",
+    "(provide ${useCaseCount} use cases)"
   ],
   "interviewTips": [
-    "Tip with context: A detailed interview tip with an example of how to articulate it in an interview. Include a sample question and how to approach answering it.",
-    "(provide 5-6 detailed tips with example questions)"
+    "Sample Question: How to answer it at ${level} level. Include what interviewers expect at this level.",
+    "(provide 5-6 tips with sample Q&A)"
   ],
-  "codeExample": "A practical, well-commented code example (15-30 lines) showing a realistic usage pattern. Include comments explaining each important line. If not a programming language/framework, provide a configuration example or CLI commands instead.",
-  "realWorldExample": "A detailed 4-6 sentence real-world scenario describing how a well-known company (like Netflix, Uber, Airbnb, Google etc.) uses this technology in production. Include specific details like scale, why they chose it, and what problems it solved for them.",
+  "codeExample": "${codeInstruction}",
+  "realWorldExample": "${realWorldInstruction}",
   "prosAndCons": [
-    {"type": "pro", "text": "Advantage with explanation of why this matters in practice"},
-    {"type": "pro", "text": "Another advantage..."},
-    {"type": "con", "text": "Limitation with explanation and common workaround"},
-    {"type": "con", "text": "Another limitation..."},
-    "(provide 3-4 pros and 2-3 cons)"
+    {"type": "pro", "text": "Advantage explained at ${level} level"},
+    {"type": "con", "text": "Limitation explained at ${level} level with workaround"},
+    "(3-4 pros, 2-3 cons)"
   ],
-  "relatedTechnologies": ["Tech 1 - brief note on how it relates", "Tech 2 - brief note", "(3-5 related technologies)"]
+  "relatedTechnologies": ["Tech - how it relates (3-5 items)"]${architectureField}
 }`,
         }],
         temperature: 0.5,
-        max_tokens: 4000,
+        max_tokens: getMaxTokens(level),
       }),
     });
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
+          status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
+          status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const t = await response.text();
+      console.error("AI gateway error:", response.status, t);
+      throw new Error("AI gateway error");
+    }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || '{}';
@@ -71,7 +154,7 @@ Return JSON with this exact structure:
       const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       result = JSON.parse(cleaned);
     } catch {
-      result = { title: skillName, summary: 'Could not generate summary.', keyConcepts: [], commonUseCases: [], interviewTips: [], codeExample: '', realWorldExample: '' };
+      result = { title: skillName, summary: 'Could not generate summary.', keyConcepts: [], commonUseCases: [], interviewTips: [], codeExample: '', realWorldExample: '', prosAndCons: [], relatedTechnologies: [] };
     }
 
     return new Response(JSON.stringify(result), {
