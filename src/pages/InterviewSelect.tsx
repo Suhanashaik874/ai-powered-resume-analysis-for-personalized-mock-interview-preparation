@@ -162,182 +162,112 @@ export default function InterviewSelect() {
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-3">Interview Hub</h1>
-          <p className="text-muted-foreground text-lg">Practice mock interviews or prepare with topic-wise study material.</p>
+          <h1 className="text-4xl font-bold mb-3">Select Interview Type</h1>
+          <p className="text-muted-foreground text-lg">Choose a mock interview to practice.</p>
         </motion.div>
 
-        <Tabs defaultValue="mock" className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 bg-secondary/60 h-12">
-            <TabsTrigger value="mock" className="text-sm font-medium gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <GraduationCap className="h-4 w-4" />
-              Mock Interviews
-            </TabsTrigger>
-            <TabsTrigger value="prep" className="text-sm font-medium gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <BookOpen className="h-4 w-4" />
-              Preparation
-            </TabsTrigger>
-          </TabsList>
+        <div className="grid gap-6 md:grid-cols-2">
+          {interviewTypes.map((interview, i) => (
+            <motion.div
+              key={interview.type}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              onClick={() => setSelected(interview.type)}
+              className={`relative cursor-pointer rounded-2xl border bg-gradient-to-br p-6 transition-all ${interview.color} ${interview.border} ${
+                selected === interview.type ? "ring-2 ring-primary shadow-glow" : ""
+              }`}
+            >
+              {selected === interview.type && (
+                <div className="absolute top-4 right-4">
+                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
+                    <div className="h-2 w-2 rounded-full bg-primary-foreground" />
+                  </div>
+                </div>
+              )}
 
-          {/* Mock Interviews Tab */}
-          <TabsContent value="mock">
-            <div className="grid gap-6 md:grid-cols-2">
-              {interviewTypes.map((interview, i) => (
-                <motion.div
-                  key={interview.type}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  onClick={() => setSelected(interview.type)}
-                  className={`relative cursor-pointer rounded-2xl border bg-gradient-to-br p-6 transition-all ${interview.color} ${interview.border} ${
-                    selected === interview.type ? "ring-2 ring-primary shadow-glow" : ""
+              <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border ${interview.iconBg}`}>
+                <interview.icon className={`h-6 w-6 ${interview.iconColor}`} />
+              </div>
+
+              <h3 className="text-xl font-bold mb-2">{interview.label}</h3>
+              <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{interview.description}</p>
+
+              <div className="flex gap-4 mb-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Zap className="h-3 w-3" /> {interview.questions} questions
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" /> ~{interview.duration}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {interview.features.map((f) => (
+                  <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-background/50 border border-border/60">
+                    {f}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Difficulty Selection */}
+        {selected && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 flex flex-col items-center"
+          >
+            <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+              <Gauge className="h-4 w-4" />
+              Select Difficulty
+            </h3>
+            <div className="flex gap-2">
+              {[
+                { value: "easy", label: "Easy", color: "border-emerald-500/40 hover:border-emerald-400 bg-emerald-500/10", active: "ring-2 ring-emerald-500 border-emerald-400 bg-emerald-500/20" },
+                { value: "medium", label: "Medium", color: "border-amber-500/40 hover:border-amber-400 bg-amber-500/10", active: "ring-2 ring-amber-500 border-amber-400 bg-amber-500/20" },
+                { value: "hard", label: "Hard", color: "border-rose-500/40 hover:border-rose-400 bg-rose-500/10", active: "ring-2 ring-rose-500 border-rose-400 bg-rose-500/20" },
+              ].map((d) => (
+                <button
+                  key={d.value}
+                  onClick={() => setDifficulty(d.value)}
+                  className={`px-5 py-2 rounded-full border text-sm font-medium transition-all ${
+                    difficulty === d.value ? d.active : d.color
                   }`}
                 >
-                  {selected === interview.type && (
-                    <div className="absolute top-4 right-4">
-                      <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                        <div className="h-2 w-2 rounded-full bg-primary-foreground" />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl border ${interview.iconBg}`}>
-                    <interview.icon className={`h-6 w-6 ${interview.iconColor}`} />
-                  </div>
-
-                  <h3 className="text-xl font-bold mb-2">{interview.label}</h3>
-                  <p className="text-muted-foreground text-sm mb-4 leading-relaxed">{interview.description}</p>
-
-                  <div className="flex gap-4 mb-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Zap className="h-3 w-3" /> {interview.questions} questions
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" /> ~{interview.duration}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {interview.features.map((f) => (
-                      <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-background/50 border border-border/60">
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
+                  {d.label}
+                </button>
               ))}
             </div>
+          </motion.div>
+        )}
 
-            {/* Difficulty Selection */}
-            {selected && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-8 flex flex-col items-center"
-              >
-                <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                  <Gauge className="h-4 w-4" />
-                  Select Difficulty
-                </h3>
-                <div className="flex gap-2">
-                  {[
-                    { value: "easy", label: "Easy", color: "border-emerald-500/40 hover:border-emerald-400 bg-emerald-500/10", active: "ring-2 ring-emerald-500 border-emerald-400 bg-emerald-500/20" },
-                    { value: "medium", label: "Medium", color: "border-amber-500/40 hover:border-amber-400 bg-amber-500/10", active: "ring-2 ring-amber-500 border-amber-400 bg-amber-500/20" },
-                    { value: "hard", label: "Hard", color: "border-rose-500/40 hover:border-rose-400 bg-rose-500/10", active: "ring-2 ring-rose-500 border-rose-400 bg-rose-500/20" },
-                  ].map((d) => (
-                    <button
-                      key={d.value}
-                      onClick={() => setDifficulty(d.value)}
-                      className={`px-5 py-2 rounded-full border text-sm font-medium transition-all ${
-                        difficulty === d.value ? d.active : d.color
-                      }`}
-                    >
-                      {d.label}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 flex justify-center"
+        >
+          <Button
+            onClick={handleStart}
+            disabled={!selected || loading}
+            className="px-10 py-6 text-base bg-gradient-primary text-primary-foreground hover:opacity-90 glow"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating Questions...
+              </>
+            ) : (
+              <>
+                Start Interview
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </>
             )}
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="mt-6 flex justify-center"
-            >
-              <Button
-                onClick={handleStart}
-                disabled={!selected || loading}
-                className="px-10 py-6 text-base bg-gradient-primary text-primary-foreground hover:opacity-90 glow"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating Questions...
-                  </>
-                ) : (
-                  <>
-                    Start Interview
-                    <ChevronRight className="ml-2 h-5 w-5" />
-                  </>
-                )}
-              </Button>
-            </motion.div>
-          </TabsContent>
-
-          {/* Preparation Tab */}
-          <TabsContent value="prep">
-            <div className="grid gap-6 md:grid-cols-2">
-              {preparationResources.map((resource, i) => (
-                <motion.div
-                  key={resource.category}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`rounded-2xl border bg-gradient-to-br p-6 ${resource.color} ${resource.border}`}
-                >
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border ${resource.iconBg}`}>
-                      <resource.icon className={`h-5 w-5 ${resource.iconColor}`} />
-                    </div>
-                    <h3 className="text-lg font-bold">{resource.category}</h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    {resource.topics.map((topic) => (
-                      <div
-                        key={topic.title}
-                        className="flex items-center justify-between rounded-xl bg-background/40 border border-border/40 px-4 py-3 hover:bg-background/60 transition-colors"
-                      >
-                        <div className="min-w-0">
-                          <div className="font-medium text-sm">{topic.title}</div>
-                          <div className="text-xs text-muted-foreground truncate">{topic.desc}</div>
-                        </div>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-3 ${difficultyColor[topic.difficulty]}`}>
-                          {topic.difficulty}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mt-4 w-full text-xs text-muted-foreground hover:text-foreground"
-                    disabled
-                  >
-                    Coming Soon
-                  </Button>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="mt-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                📚 Preparation modules with interactive lessons and practice problems are coming soon!
-              </p>
-            </div>
-          </TabsContent>
-        </Tabs>
+          </Button>
+        </motion.div>
       </div>
     </div>
   );
