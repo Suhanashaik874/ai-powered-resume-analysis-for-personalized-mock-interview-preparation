@@ -53,13 +53,15 @@ export default function CodingInterview() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [language, setLanguage] = useState("javascript");
-  const [code, setCode] = useState(DEFAULT_CODE.javascript);
+  const [language, setLanguage] = useState("python");
+  const [code, setCode] = useState(DEFAULT_CODE.python);
   const [output, setOutput] = useState("");
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Store code per question so it persists across navigation
+  const codeMapRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     if (!user || !id) return;
@@ -69,8 +71,20 @@ export default function CodingInterview() {
         .from("interview_questions")
         .select("*")
         .eq("interview_id", id)
-        .order("created_at", { ascending: true });
-      if (data) setQuestions(data);
+        .order("order_index", { ascending: true });
+      if (data) {
+        setQuestions(data);
+        // Initialize code map from any previously saved code
+        const map: Record<string, string> = {};
+        data.forEach((q: Question) => {
+          map[q.id] = q.user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python;
+        });
+        codeMapRef.current = map;
+        // Load code for first question
+        if (data.length > 0) {
+          setCode(data[0].user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python);
+        }
+      }
       setLoading(false);
     };
     fetchQuestions();
