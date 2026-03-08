@@ -23,10 +23,10 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: 'You are an expert resume analyzer. Extract technical skills and tools/technologies separately. Return ONLY valid JSON array, no markdown.',
+          content: 'You are an expert resume analyzer. Extract ONLY technologies, tools, frameworks, programming languages, libraries, platforms, and software. Do NOT include soft skills, methodologies, or concepts. Return ONLY valid JSON array, no markdown.',
         }, {
           role: 'user',
-          content: `Analyze this resume and extract all technical skills and tools/technologies with proficiency levels.\n\nIMPORTANT: Classify each item as either a "skill" or "tool":\n- "skill" = concepts, methodologies, soft skills (e.g. Data Structures, Problem Solving, Agile, Machine Learning, REST API Design)\n- "tool" = specific technologies, frameworks, languages, software, platforms (e.g. React, Python, Docker, Git, AWS, VS Code, MongoDB)\n\nResume:\n${resumeText.slice(0, 8000)}\n\nReturn JSON: [{"skill_name": "React", "proficiency_level": "advanced", "category": "tool"}]\nProficiency levels: beginner, intermediate, advanced, expert\nCategories: skill, tool`,
+          content: `Analyze this resume and extract ONLY technologies, tools, frameworks, programming languages, libraries, and platforms with proficiency levels.\n\nExamples of what TO include: React, Python, Docker, AWS, MongoDB, Git, TensorFlow, SQL, Kubernetes, VS Code\nExamples of what NOT to include: Problem Solving, Communication, Agile, Leadership, Data Structures\n\nResume:\n${resumeText.slice(0, 8000)}\n\nReturn JSON: [{"skill_name": "React", "proficiency_level": "advanced"}]\nProficiency levels: beginner, intermediate, advanced, expert`,
         }],
         temperature: 0.3,
         max_tokens: 2000,
