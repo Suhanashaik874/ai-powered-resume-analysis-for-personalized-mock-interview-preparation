@@ -38,6 +38,8 @@ export default function HRInterview() {
   const [timer, setTimer] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const recognitionRef = useRef<SpeechRecognitionAPI>(null);
+  const baseTextRef = useRef("");
+  const finalTranscriptRef = useRef("");
 
   useEffect(() => {
     if (!user || !id) return;
@@ -54,12 +56,19 @@ export default function HRInterview() {
     fetchQuestions();
   }, [user, id]);
 
+  // Load saved answer when changing question
   useEffect(() => {
+    if (questions.length > 0 && questions[currentIdx]) {
+      setAnswer(questions[currentIdx].user_answer || "");
+    } else {
+      setAnswer("");
+    }
     setTimer(0);
-    setAnswer("");
+    baseTextRef.current = "";
+    finalTranscriptRef.current = "";
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [currentIdx]);
+  }, [currentIdx, questions]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
@@ -74,6 +83,9 @@ export default function HRInterview() {
     if (listening) {
       recognitionRef.current?.stop();
       setListening(false);
+      // Commit final transcript to base
+      baseTextRef.current = baseTextRef.current + finalTranscriptRef.current;
+      finalTranscriptRef.current = "";
       return;
     }
 
@@ -82,17 +94,22 @@ export default function HRInterview() {
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
-    recognition.onresult = (event) => {
+    // Capture the current text as the base before speech starts
+    baseTextRef.current = answer;
+    finalTranscriptRef.current = "";
+
+    recognition.onresult = (event: any) => {
       let interim = "";
-      let final = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      let finalText = "";
+      for (let i = 0; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
+          finalText += event.results[i][0].transcript;
         } else {
           interim += event.results[i][0].transcript;
         }
       }
-      setAnswer((prev) => prev + final + interim);
+      finalTranscriptRef.current = finalText;
+      setAnswer(baseTextRef.current + finalText + interim);
     };
 
     recognition.onerror = () => {
@@ -100,7 +117,11 @@ export default function HRInterview() {
       toast({ title: "Speech error", description: "Could not capture speech.", variant: "destructive" });
     };
 
-    recognition.onend = () => setListening(false);
+    recognition.onend = () => {
+      setListening(false);
+      baseTextRef.current = baseTextRef.current + finalTranscriptRef.current;
+      finalTranscriptRef.current = "";
+    };
 
     recognitionRef.current = recognition;
     recognition.start();
@@ -118,6 +139,7 @@ export default function HRInterview() {
   const handleNext = async () => {
     if (!questions[currentIdx]) return;
     await saveAnswer(questions[currentIdx].id, answer, timer);
+    setQuestions(prev => prev.map((q, i) => i === currentIdx ? { ...q, user_answer: answer, time_taken_seconds: timer } : q));
     if (currentIdx < questions.length - 1) {
       setCurrentIdx(currentIdx + 1);
     }
@@ -126,9 +148,9 @@ export default function HRInterview() {
   const handlePrev = async () => {
     if (!questions[currentIdx]) return;
     await saveAnswer(questions[currentIdx].id, answer, timer);
+    setQuestions(prev => prev.map((q, i) => i === currentIdx ? { ...q, user_answer: answer, time_taken_seconds: timer } : q));
     if (currentIdx > 0) {
       setCurrentIdx(currentIdx - 1);
-      setAnswer(questions[currentIdx - 1].user_answer || "");
     }
   };
 
