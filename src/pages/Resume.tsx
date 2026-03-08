@@ -429,37 +429,12 @@ function ResumeCard({ resume, onDelete }: { resume: SavedResume; onDelete: (id: 
           className="px-4 pb-4"
         >
           {resume.skills.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No skills extracted.</p>
+            <p className="text-muted-foreground text-sm">No technologies extracted.</p>
           ) : (
-            <div className="space-y-3">
-              {(() => {
-                const sk = resume.skills.filter(s => s.category !== "tool");
-                const tl = resume.skills.filter(s => s.category === "tool");
-                return (
-                  <>
-                    {sk.length > 0 && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1"><Lightbulb className="h-3 w-3" /> Skills</p>
-                        <div className="flex flex-wrap gap-2">
-                          {sk.map((skill, i) => (
-                            <span key={i} className={`rounded-full border px-3 py-1 text-xs ${proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner}`}>{skill.skill_name}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {tl.length > 0 && (
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1"><Wrench className="h-3 w-3" /> Tools</p>
-                        <div className="flex flex-wrap gap-2">
-                          {tl.map((skill, i) => (
-                            <span key={i} className={`rounded-full border px-3 py-1 text-xs ${proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner}`}>{skill.skill_name}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </>
-                );
-              })()}
+            <div className="flex flex-wrap gap-2">
+              {resume.skills.map((skill, i) => (
+                <span key={i} className={`rounded-full border px-3 py-1 text-xs ${proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner}`}>{skill.skill_name}</span>
+              ))}
             </div>
           )}
         </motion.div>
