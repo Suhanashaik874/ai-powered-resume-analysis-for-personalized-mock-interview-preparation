@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, BookOpen, Brain, ChevronRight, Loader2, Wrench, Lightbulb, Code2, Target, Briefcase, AlertCircle } from "lucide-react";
+import { ArrowLeft, BookOpen, Brain, ChevronRight, Loader2, Wrench, Lightbulb, Code2, Target, Briefcase, AlertCircle, ThumbsUp, ThumbsDown, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
