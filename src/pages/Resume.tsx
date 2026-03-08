@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag, Trash2 } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag, Trash2, Wrench, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
