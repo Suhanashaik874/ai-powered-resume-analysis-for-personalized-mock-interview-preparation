@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Code2, MessageSquare, Brain, Target, ChevronRight, Loader2, Clock, Zap, Gauge, BookOpen, GraduationCap, Lightbulb, FileCode2, BarChart3, PenTool } from "lucide-react";
+import { Code2, MessageSquare, Brain, Target, ChevronRight, Loader2, Clock, Zap, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
