@@ -53,13 +53,15 @@ export default function CodingInterview() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [language, setLanguage] = useState("javascript");
-  const [code, setCode] = useState(DEFAULT_CODE.javascript);
+  const [language, setLanguage] = useState("python");
+  const [code, setCode] = useState(DEFAULT_CODE.python);
   const [output, setOutput] = useState("");
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Store code per question so it persists across navigation
+  const codeMapRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     if (!user || !id) return;
@@ -69,8 +71,20 @@ export default function CodingInterview() {
         .from("interview_questions")
         .select("*")
         .eq("interview_id", id)
-        .order("created_at", { ascending: true });
-      if (data) setQuestions(data);
+        .order("order_index", { ascending: true });
+      if (data) {
+        setQuestions(data);
+        // Initialize code map from any previously saved code
+        const map: Record<string, string> = {};
+        data.forEach((q: Question) => {
+          map[q.id] = q.user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python;
+        });
+        codeMapRef.current = map;
+        // Load code for first question
+        if (data.length > 0) {
+          setCode(data[0].user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python);
+        }
+      }
       setLoading(false);
     };
     fetchQuestions();
@@ -83,8 +97,18 @@ export default function CodingInterview() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx]);
 
+  // When language changes, only update if the current code is still a default template
   useEffect(() => {
-    setCode(DEFAULT_CODE[language] || DEFAULT_CODE.javascript);
+    const currentQ = questions[currentIdx];
+    if (!currentQ) return;
+    const savedCode = codeMapRef.current[currentQ.id];
+    // Check if current code is a default template from any language
+    const isDefault = Object.values(DEFAULT_CODE).includes(savedCode || "");
+    if (isDefault || !savedCode) {
+      const newCode = DEFAULT_CODE[language] || DEFAULT_CODE.python;
+      setCode(newCode);
+      codeMapRef.current[currentQ.id] = newCode;
+    }
   }, [language]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
@@ -106,6 +130,9 @@ export default function CodingInterview() {
   };
 
   const saveAnswer = useCallback(async (questionId: string, userCode: string, timeTaken: number) => {
+    // Save to local map
+    codeMapRef.current[questionId] = userCode;
+    // Save to DB
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any)
       .from("interview_questions")
@@ -115,20 +142,28 @@ export default function CodingInterview() {
 
   const handleNext = async () => {
     if (!questions[currentIdx]) return;
+    // Save current code before navigating
+    codeMapRef.current[questions[currentIdx].id] = code;
     await saveAnswer(questions[currentIdx].id, code, timer);
     if (currentIdx < questions.length - 1) {
-      setCurrentIdx(currentIdx + 1);
-      setCode(DEFAULT_CODE[language]);
+      const nextIdx = currentIdx + 1;
+      setCurrentIdx(nextIdx);
+      // Load saved code for next question
+      setCode(codeMapRef.current[questions[nextIdx].id] || DEFAULT_CODE[language]);
       setOutput("");
     }
   };
 
   const handlePrev = async () => {
     if (!questions[currentIdx]) return;
+    // Save current code before navigating
+    codeMapRef.current[questions[currentIdx].id] = code;
     await saveAnswer(questions[currentIdx].id, code, timer);
     if (currentIdx > 0) {
-      setCurrentIdx(currentIdx - 1);
-      setCode(questions[currentIdx - 1].user_code || DEFAULT_CODE[language]);
+      const prevIdx = currentIdx - 1;
+      setCurrentIdx(prevIdx);
+      // Load saved code for previous question
+      setCode(codeMapRef.current[questions[prevIdx].id] || DEFAULT_CODE[language]);
       setOutput("");
     }
   };
@@ -282,7 +317,11 @@ export default function CodingInterview() {
               height="100%"
               language={language === "cpp" ? "cpp" : language}
               value={code}
-              onChange={(v) => setCode(v || "")}
+              onChange={(v) => {
+                const newCode = v || "";
+                setCode(newCode);
+                if (currentQ) codeMapRef.current[currentQ.id] = newCode;
+              }}
               theme="vs-dark"
               options={{
                 fontSize: 14,
