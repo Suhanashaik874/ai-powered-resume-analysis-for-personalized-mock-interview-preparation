@@ -88,7 +88,7 @@ export default function Index() {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary">
               <Zap className="h-3.5 w-3.5" />
-              AI-Powered Interview Preparation
+              AI-Powered Resume Analysis & Interview Preparation
             </div>
           </motion.div>
 
@@ -98,9 +98,9 @@ export default function Index() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mx-auto mb-6 max-w-4xl text-5xl font-bold leading-tight tracking-tight md:text-7xl"
           >
-            Ace Your Next{" "}
-            <span className="gradient-text">Tech Interview</span>
-            {" "}with AI
+            AI Powered{" "}
+            <span className="gradient-text">Resume Analysis</span>
+            {" "}for Personalized Mock Interview Preparation
           </motion.h1>
 
           <motion.p
