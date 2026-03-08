@@ -225,6 +225,16 @@ function TopicDetail({ category, topic }: { category: typeof preparationCourses[
                   </div>
                 )}
 
+                {/* Real World Scenario */}
+                {lesson.realWorldScenario && (
+                  <div className="glass-card rounded-2xl p-6 border border-primary/20 bg-primary/5">
+                    <h3 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
+                      🌍 Real-World Applications
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{lesson.realWorldScenario}</p>
+                  </div>
+                )}
+
                 {/* Actions */}
                 <div className="flex items-center gap-3">
                   <Button
