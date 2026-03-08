@@ -39,16 +39,19 @@ export default function Dashboard() {
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [loading, setLoading] = useState(true);
   const [resumeCount, setResumeCount] = useState(0);
+  const [fullName, setFullName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [interviewRes, resumeRes] = await Promise.all([
+      const [interviewRes, resumeRes, profileRes] = await Promise.all([
         (supabase as any).from("interviews").select("*").eq("user_id", user.id).order("started_at", { ascending: false }),
         (supabase as any).from("resumes").select("id").eq("user_id", user.id),
+        (supabase as any).from("profiles").select("full_name").eq("user_id", user.id).single(),
       ]);
       if (interviewRes.data) setInterviews(interviewRes.data);
       if (resumeRes.data) setResumeCount(resumeRes.data.length);
+      if (profileRes.data) setFullName(profileRes.data.full_name);
       setLoading(false);
     };
     fetchData();
@@ -82,7 +85,7 @@ export default function Dashboard() {
             <LayoutDashboard className="h-7 w-7 text-primary" />
             Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">Welcome back, {user?.email?.split("@")[0]}!</p>
+          <p className="text-muted-foreground mt-1">Welcome back, {fullName || user?.email?.split("@")[0]}!</p>
         </motion.div>
 
         {/* Stats */}
