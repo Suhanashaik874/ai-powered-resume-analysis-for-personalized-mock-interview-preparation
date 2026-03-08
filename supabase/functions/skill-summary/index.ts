@@ -22,24 +22,44 @@ serve(async (req) => {
         model: 'google/gemini-2.5-flash',
         messages: [{
           role: 'system',
-          content: `You are a concise technical educator. Provide a structured skill revision summary. Return ONLY valid JSON, no markdown wrapping.`,
+          content: `You are an expert software engineering mentor who creates detailed, easy-to-understand revision guides for technical skills. Your explanations should be thorough, beginner-friendly even for advanced topics, and include practical examples. Write as if you're explaining to a student preparing for a tech interview. Return ONLY valid JSON, no markdown wrapping.`,
         }, {
           role: 'user',
-          content: `Create a revision summary for the technology/skill: "${skillName}" (proficiency: ${proficiencyLevel || 'intermediate'}).
+          content: `Create a comprehensive and detailed revision guide for the technology/skill: "${skillName}" (user proficiency: ${proficiencyLevel || 'intermediate'}).
+
+Make every section rich and educational. Do NOT use one-liners — explain things properly so someone can actually learn from this.
 
 Return JSON with this exact structure:
 {
-  "title": "Brief title like 'React - Frontend Library'",
-  "summary": "2-3 sentence overview of what this technology is and why it matters",
-  "keyConcepts": ["concept1", "concept2", "concept3", "concept4", "concept5"],
-  "commonUseCases": ["use case 1", "use case 2", "use case 3"],
-  "interviewTips": ["tip1", "tip2", "tip3"],
-  "codeExample": "A short practical code snippet if applicable, or empty string if not a programming tool",
-  "realWorldExample": "A brief real-world scenario where this skill is used in production"
+  "title": "Descriptive title like 'React - A JavaScript Library for Building User Interfaces'",
+  "summary": "A detailed 5-8 sentence paragraph explaining what this technology is, its history/origin, why it was created, what problems it solves, why it's popular today, and how it fits in the broader tech ecosystem. Make it informative enough that someone unfamiliar can understand it.",
+  "keyConcepts": [
+    "Concept Name: 2-3 sentence explanation of this concept with a practical example of when you'd use it",
+    "Another Concept: Detailed explanation...",
+    "(provide 6-8 key concepts, each with proper explanation, not just keywords)"
+  ],
+  "commonUseCases": [
+    "Use Case Title — Detailed 2-3 sentence description of how this technology is used in this scenario. Mention real companies or products if possible.",
+    "(provide 5-6 detailed use cases)"
+  ],
+  "interviewTips": [
+    "Tip with context: A detailed interview tip with an example of how to articulate it in an interview. Include a sample question and how to approach answering it.",
+    "(provide 5-6 detailed tips with example questions)"
+  ],
+  "codeExample": "A practical, well-commented code example (15-30 lines) showing a realistic usage pattern. Include comments explaining each important line. If not a programming language/framework, provide a configuration example or CLI commands instead.",
+  "realWorldExample": "A detailed 4-6 sentence real-world scenario describing how a well-known company (like Netflix, Uber, Airbnb, Google etc.) uses this technology in production. Include specific details like scale, why they chose it, and what problems it solved for them.",
+  "prosAndCons": [
+    {"type": "pro", "text": "Advantage with explanation of why this matters in practice"},
+    {"type": "pro", "text": "Another advantage..."},
+    {"type": "con", "text": "Limitation with explanation and common workaround"},
+    {"type": "con", "text": "Another limitation..."},
+    "(provide 3-4 pros and 2-3 cons)"
+  ],
+  "relatedTechnologies": ["Tech 1 - brief note on how it relates", "Tech 2 - brief note", "(3-5 related technologies)"]
 }`,
         }],
-        temperature: 0.4,
-        max_tokens: 2000,
+        temperature: 0.5,
+        max_tokens: 4000,
       }),
     });
 
