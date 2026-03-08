@@ -79,7 +79,11 @@ export const preparationCourses: CourseCategory[] = [
               "Regular expressions are powerful but can be slow for complex patterns"
             ],
             example: "// Sliding Window — longest substring without repeating characters\nfunction lengthOfLongestSubstring(s: string): number {\n  const seen = new Map<string, number>();\n  let maxLen = 0, start = 0;\n  for (let end = 0; end < s.length; end++) {\n    if (seen.has(s[end]) && seen.get(s[end])! >= start) {\n      start = seen.get(s[end])! + 1;\n    }\n    seen.set(s[end], end);\n    maxLen = Math.max(maxLen, end - start + 1);\n  }\n  return maxLen;\n}",
-            realWorldScenario: "🔐 Password Validation: Applications like Gmail use string pattern matching to enforce password rules — checking for uppercase, lowercase, digits, special chars, and minimum length. Character frequency counting ensures variety.\n\n🔍 Autocomplete/Search Suggestions: When you type in Google Search, the sliding window technique helps match partial substrings against millions of search queries. The Trie data structure (built from strings) powers the suggestion engine, returning results in milliseconds."
+            realWorldScenario: "🔐 Password Validation: Applications like Gmail use string pattern matching to enforce password rules — checking for uppercase, lowercase, digits, special chars, and minimum length. Character frequency counting ensures variety.\n\n🔍 Autocomplete/Search Suggestions: When you type in Google Search, the sliding window technique helps match partial substrings against millions of search queries. The Trie data structure (built from strings) powers the suggestion engine, returning results in milliseconds.",
+            quiz: [
+              { question: "Why is string concatenation in a loop inefficient?", options: ["Strings are mutable", "Each concatenation creates a new string object", "Strings can't be looped", "It causes memory leaks"], correctAnswer: 1, explanation: "Strings are immutable — each concatenation creates a new string, copying all previous characters. Use StringBuilder or array join instead." },
+              { question: "What technique is best for finding the longest substring without repeating characters?", options: ["Binary search", "Sliding window", "Divide and conquer", "Dynamic programming"], correctAnswer: 1, explanation: "The sliding window technique maintains a window of unique characters, expanding and contracting as needed — O(n) time." }
+            ]
           },
           {
             title: "Common Array Algorithms",
