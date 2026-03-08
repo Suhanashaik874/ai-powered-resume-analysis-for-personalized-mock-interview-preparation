@@ -29,15 +29,22 @@ serve(async (req) => {
       ? `\n\nThe candidate's resume includes the following content (use it to generate project-specific questions):\n${resumeText.substring(0, 3000)}`
       : '';
 
+    const difficultyInstruction = {
+      easy: 'All questions should be EASY difficulty — basic concepts, straightforward problems, simple scenarios. Suitable for beginners or freshers.',
+      medium: 'All questions should be MEDIUM difficulty — moderate complexity requiring solid understanding. Suitable for intermediate candidates.',
+      hard: 'All questions should be HARD difficulty — complex problems, advanced concepts, tricky edge cases. Suitable for experienced candidates.',
+    }[difficulty] || '';
+
     const typePrompts: Record<string, string> = {
-      coding: `Generate ${count} coding interview questions for a candidate with skills: ${skillList}. Mix easy/medium/hard difficulties. Include:
+      coding: `Generate ${count} coding interview questions for a candidate with skills: ${skillList}. ${difficultyInstruction}
+Include:
 - DSA problems (arrays, strings, trees, graphs, dynamic programming)
 - Algorithm design problems
 - Each question MUST include 2-3 test cases with input and expected output
 - Include the expected optimal time and space complexity in the question text
 Format each question with clear problem statement, constraints, and test cases.`,
 
-      hr: `Generate ${count} HR behavioral interview questions for a candidate.${projectContext}
+      hr: `Generate ${count} HR behavioral interview questions for a candidate. ${difficultyInstruction}${projectContext}
 Requirements:
 - 3-4 questions should be specifically about projects mentioned in the resume (if available)
 - Ask about specific technologies used, challenges faced, and contributions
@@ -45,15 +52,15 @@ Requirements:
 - Include STAR method scenario questions
 - Mix behavioral and situational questions`,
 
-      aptitude: `Generate ${count} aptitude MCQ questions covering:
+      aptitude: `Generate ${count} aptitude MCQ questions. ${difficultyInstruction} Covering:
 - 5 logical reasoning questions
 - 5 verbal ability questions  
 - 5 quantitative aptitude questions
 Each question MUST have exactly 4 options (A, B, C, D) and one correct answer.
 Format: Include the options as part of the question or as a separate field.`,
 
-      combined: `Generate ${count} mixed interview questions:
-- 7 coding questions (DSA with test cases, mix easy/medium/hard)
+      combined: `Generate ${count} mixed interview questions. ${difficultyInstruction}
+- 7 coding questions (DSA with test cases)
 - 7 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
 - 6 aptitude MCQ questions (with 4 options each)
 Skills: ${skillList}.${projectContext}`,
