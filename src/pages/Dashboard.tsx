@@ -240,6 +240,9 @@ export default function Dashboard() {
             )}
           </motion.div>
         </div>
+
+        {/* Preparation Resources */}
+        <PreparationModule />
       </div>
     </div>
   );
