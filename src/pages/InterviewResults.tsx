@@ -257,15 +257,6 @@ export default function InterviewResults() {
                       </div>
                     )}
 
-                    {/* Expected Answer */}
-                    {q.expected_answer && (
-                      <div>
-                        <div className="text-xs font-semibold text-muted-foreground uppercase mb-2">Optimal Answer</div>
-                        <div className="prose prose-invert prose-sm max-w-none text-muted-foreground">
-                          <ReactMarkdown>{q.expected_answer}</ReactMarkdown>
-                        </div>
-                      </div>
-                    )}
                   </motion.div>
                 )}
               </div>
