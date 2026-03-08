@@ -38,6 +38,8 @@ export default function HRInterview() {
   const [timer, setTimer] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const recognitionRef = useRef<SpeechRecognitionAPI>(null);
+  const baseTextRef = useRef("");
+  const finalTranscriptRef = useRef("");
 
   useEffect(() => {
     if (!user || !id) return;
