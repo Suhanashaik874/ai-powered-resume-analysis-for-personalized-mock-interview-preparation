@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag, Trash2 } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X, Brain, Tag, Trash2, Wrench, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface Skill {
   skill_name: string;
   proficiency_level: string;
+  category?: string; // "skill" or "tool"
 }
 
 interface SavedResume {
@@ -335,48 +336,73 @@ export default function Resume() {
 }
 
 function SkillsList({ skills, onUpdate }: { skills: Skill[]; onUpdate?: (s: Skill[]) => void }) {
+  const skillItems = skills.filter(s => s.category !== "tool");
+  const toolItems = skills.filter(s => s.category === "tool");
+
+  const renderItems = (items: Skill[], allSkills: Skill[]) => (
+    <div className="flex flex-wrap gap-2">
+      {items.map((skill) => {
+        const globalIndex = allSkills.indexOf(skill);
+        return (
+          <motion.div
+            key={globalIndex}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: globalIndex * 0.03 }}
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
+              proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner
+            }`}
+          >
+            {skill.skill_name}
+            {onUpdate && (
+              <Select
+                value={skill.proficiency_level}
+                onValueChange={(val) => {
+                  onUpdate(allSkills.map((s, idx) => idx === globalIndex ? { ...s, proficiency_level: val } : s));
+                }}
+              >
+                <SelectTrigger className="h-5 w-auto border-0 bg-transparent p-0 pl-1 text-xs opacity-70 hover:opacity-100 shadow-none focus:ring-0 [&>svg]:h-3 [&>svg]:w-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="beginner">beginner</SelectItem>
+                  <SelectItem value="intermediate">intermediate</SelectItem>
+                  <SelectItem value="advanced">advanced</SelectItem>
+                  <SelectItem value="expert">expert</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <div className="glass-card rounded-xl p-6">
-      <h2 className="font-semibold mb-4 flex items-center gap-2">
-        <Tag className="h-4 w-4 text-primary" />
-        Extracted Skills ({skills.length})
-      </h2>
+    <div className="glass-card rounded-xl p-6 space-y-6">
       {skills.length === 0 ? (
         <p className="text-muted-foreground text-sm">No skills could be extracted.</p>
       ) : (
-        <div className="flex flex-wrap gap-2">
-          {skills.map((skill, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.03 }}
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
-                proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner
-              }`}
-            >
-              {skill.skill_name}
-              {onUpdate && (
-                <Select
-                  value={skill.proficiency_level}
-                  onValueChange={(val) => {
-                    onUpdate(skills.map((s, idx) => idx === i ? { ...s, proficiency_level: val } : s));
-                  }}
-                >
-                  <SelectTrigger className="h-5 w-auto border-0 bg-transparent p-0 pl-1 text-xs opacity-70 hover:opacity-100 shadow-none focus:ring-0 [&>svg]:h-3 [&>svg]:w-3">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">beginner</SelectItem>
-                    <SelectItem value="intermediate">intermediate</SelectItem>
-                    <SelectItem value="advanced">advanced</SelectItem>
-                    <SelectItem value="expert">expert</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            </motion.div>
-          ))}
-        </div>
+        <>
+          {skillItems.length > 0 && (
+            <div>
+              <h2 className="font-semibold mb-3 flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-brand-amber" />
+                Skills ({skillItems.length})
+              </h2>
+              {renderItems(skillItems, skills)}
+            </div>
+          )}
+          {toolItems.length > 0 && (
+            <div>
+              <h2 className="font-semibold mb-3 flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-brand-cyan" />
+                Tools & Technologies ({toolItems.length})
+              </h2>
+              {renderItems(toolItems, skills)}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -430,17 +456,35 @@ function ResumeCard({ resume, onDelete }: { resume: SavedResume; onDelete: (id: 
           {resume.skills.length === 0 ? (
             <p className="text-muted-foreground text-sm">No skills extracted.</p>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {resume.skills.map((skill, i) => (
-                <span
-                  key={i}
-                  className={`rounded-full border px-3 py-1 text-xs ${
-                    proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner
-                  }`}
-                >
-                  {skill.skill_name}
-                </span>
-              ))}
+            <div className="space-y-3">
+              {(() => {
+                const sk = resume.skills.filter(s => s.category !== "tool");
+                const tl = resume.skills.filter(s => s.category === "tool");
+                return (
+                  <>
+                    {sk.length > 0 && (
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1"><Lightbulb className="h-3 w-3" /> Skills</p>
+                        <div className="flex flex-wrap gap-2">
+                          {sk.map((skill, i) => (
+                            <span key={i} className={`rounded-full border px-3 py-1 text-xs ${proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner}`}>{skill.skill_name}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {tl.length > 0 && (
+                      <div>
+                        <p className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-1"><Wrench className="h-3 w-3" /> Tools</p>
+                        <div className="flex flex-wrap gap-2">
+                          {tl.map((skill, i) => (
+                            <span key={i} className={`rounded-full border px-3 py-1 text-xs ${proficiencyColors[skill.proficiency_level] || proficiencyColors.beginner}`}>{skill.skill_name}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
         </motion.div>
