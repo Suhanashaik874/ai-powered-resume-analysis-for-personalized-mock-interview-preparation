@@ -21,6 +21,8 @@ interface SkillSummary {
   interviewTips: string[];
   codeExample: string;
   realWorldExample: string;
+  prosAndCons?: { type: "pro" | "con"; text: string }[];
+  relatedTechnologies?: string[];
 }
 
 const proficiencyColors: Record<string, string> = {
