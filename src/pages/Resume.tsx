@@ -405,9 +405,6 @@ function SkillsList({ skills, onUpdate }: { skills: Skill[]; onUpdate?: (s: Skil
         </>
       )}
     </div>
-  );
-    </div>
-  );
 }
 
 function ResumeCard({ resume, onDelete }: { resume: SavedResume; onDelete: (id: string) => void }) {
