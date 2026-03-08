@@ -16,7 +16,8 @@ export default function Auth() {
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const [forgotMode, setForgotMode] = useState(false);
+  const { signIn, signUp, resetPassword, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -29,7 +30,12 @@ export default function Auth() {
     setLoading(true);
 
     try {
-      if (isSignUp) {
+      if (forgotMode) {
+        const { error } = await resetPassword(email);
+        if (error) throw error;
+        toast({ title: "Reset link sent!", description: "Check your email for a password reset link." });
+        setForgotMode(false);
+      } else if (isSignUp) {
         const { error } = await signUp(email, password, fullName);
         if (error) throw error;
         toast({ title: "Account created!", description: "Please check your email to verify your account." });
@@ -77,34 +83,42 @@ export default function Auth() {
           className="glass-card rounded-2xl p-8"
         >
           <div className="mb-6">
-            <h1 className="text-2xl font-bold">{isSignUp ? "Create Account" : "Welcome Back"}</h1>
+            <h1 className="text-2xl font-bold">
+              {forgotMode ? "Reset Password" : isSignUp ? "Create Account" : "Welcome Back"}
+            </h1>
             <p className="text-muted-foreground mt-1 text-sm">
-              {isSignUp ? "Start your interview preparation journey" : "Sign in to continue practicing"}
+              {forgotMode
+                ? "Enter your email and we'll send a reset link"
+                : isSignUp
+                ? "Start your interview preparation journey"
+                : "Sign in to continue practicing"}
             </p>
           </div>
 
           {/* Toggle */}
-          <div className="mb-6 flex rounded-lg bg-secondary p-1">
-            <button
-              onClick={() => setIsSignUp(false)}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
-                !isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setIsSignUp(true)}
-              className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
-                isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
+          {!forgotMode && (
+            <div className="mb-6 flex rounded-lg bg-secondary p-1">
+              <button
+                onClick={() => setIsSignUp(false)}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
+                  !isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => setIsSignUp(true)}
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition-all ${
+                  isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
+            {isSignUp && !forgotMode && (
               <div>
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input
@@ -130,28 +144,41 @@ export default function Auth() {
                 className="mt-1.5 bg-secondary/50 border-border/60"
               />
             </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <div className="relative mt-1.5">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="pr-10 bg-secondary/50 border-border/60"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+            {!forgotMode && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  {!isSignUp && (
+                    <button
+                      type="button"
+                      onClick={() => setForgotMode(true)}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Forgot Password?
+                    </button>
+                  )}
+                </div>
+                <div className="relative mt-1.5">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="pr-10 bg-secondary/50 border-border/60"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             <Button
               type="submit"
@@ -162,7 +189,7 @@ export default function Auth() {
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  {isSignUp ? "Create Account" : "Sign In"}
+                  {forgotMode ? "Send Reset Link" : isSignUp ? "Create Account" : "Sign In"}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </>
               )}
@@ -170,13 +197,24 @@ export default function Auth() {
           </form>
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            {isSignUp ? "Already have an account? " : "Don't have an account? "}
-            <button
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-primary hover:underline font-medium"
-            >
-              {isSignUp ? "Sign In" : "Sign Up"}
-            </button>
+            {forgotMode ? (
+              <button
+                onClick={() => setForgotMode(false)}
+                className="text-primary hover:underline font-medium"
+              >
+                ← Back to Sign In
+              </button>
+            ) : (
+              <>
+                {isSignUp ? "Already have an account? " : "Don't have an account? "}
+                <button
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-primary hover:underline font-medium"
+                >
+                  {isSignUp ? "Sign In" : "Sign Up"}
+                </button>
+              </>
+            )}
           </p>
         </motion.div>
       </div>
