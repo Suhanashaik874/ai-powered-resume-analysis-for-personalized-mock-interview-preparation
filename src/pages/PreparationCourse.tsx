@@ -6,6 +6,7 @@ import { LessonQuiz } from "@/components/LessonQuiz";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { preparationCourses, type Topic, type Lesson } from "@/data/preparationCourses";
+import { quizData } from "@/data/quizData";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileCode2, Lightbulb, PenTool, BarChart3,
