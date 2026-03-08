@@ -243,7 +243,7 @@ export default function Index() {
                 Ready to Land Your Dream Job?
               </h2>
               <p className="mb-8 text-primary-foreground/80 text-lg mx-auto max-w-xl">
-                Join thousands of engineers who've used InterviewPro to prepare and succeed.
+                Join thousands of engineers who've used AIPIP to prepare and succeed.
               </p>
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <Link to="/auth?mode=signup">
