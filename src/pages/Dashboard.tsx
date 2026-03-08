@@ -85,7 +85,7 @@ export default function Dashboard() {
             <LayoutDashboard className="h-7 w-7 text-primary" />
             Dashboard
           </h1>
-          <p className="text-muted-foreground mt-1">Welcome back, {user?.email?.split("@")[0]}!</p>
+          <p className="text-muted-foreground mt-1">Welcome back, {fullName || user?.email?.split("@")[0]}!</p>
         </motion.div>
 
         {/* Stats */}
