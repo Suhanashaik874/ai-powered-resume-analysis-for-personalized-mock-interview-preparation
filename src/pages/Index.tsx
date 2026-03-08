@@ -88,7 +88,7 @@ export default function Index() {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary">
               <Zap className="h-3.5 w-3.5" />
-              AI-Powered Interview Preparation
+              AI-Powered Resume Analysis & Interview Preparation
             </div>
           </motion.div>
 
@@ -98,9 +98,9 @@ export default function Index() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mx-auto mb-6 max-w-4xl text-5xl font-bold leading-tight tracking-tight md:text-7xl"
           >
-            Ace Your Next{" "}
-            <span className="gradient-text">Tech Interview</span>
-            {" "}with AI
+            AI Powered{" "}
+            <span className="gradient-text">Resume Analysis</span>
+            {" "}for Personalized Mock Interview Preparation
           </motion.h1>
 
           <motion.p
@@ -109,7 +109,7 @@ export default function Index() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
-            Practice real coding challenges, HR behavioral questions, and aptitude tests. Get instant AI feedback, personalized to your resume.
+            Upload your resume and let AI analyze your skills to generate personalized mock interviews — coding, HR, and aptitude — with instant feedback.
           </motion.p>
 
           <motion.div
@@ -161,10 +161,10 @@ export default function Index() {
             className="mb-16 text-center"
           >
             <h2 className="mb-4 text-4xl font-bold">Everything You Need to{" "}
-              <span className="gradient-text">Succeed</span>
+              <span className="gradient-text">Prepare & Succeed</span>
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground text-lg">
-              A complete interview preparation platform powered by cutting-edge AI technology.
+              A complete resume-driven interview preparation platform powered by cutting-edge AI technology.
             </p>
           </motion.div>
 
@@ -271,7 +271,7 @@ export default function Index() {
             </div>
             <span className="font-bold gradient-text">AIPIP</span>
           </div>
-          <p className="text-sm text-muted-foreground">© 2024 AIPIP. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© 2025 AIPIP. All rights reserved.</p>
         </div>
       </footer>
     </div>
