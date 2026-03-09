@@ -36,10 +36,13 @@ export default function HRInterview() {
   const [listening, setListening] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalTimer, setTotalTimer] = useState(20 * 60); // 20 minutes in seconds
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const recognitionRef = useRef<SpeechRecognitionAPI>(null);
   const baseTextRef = useRef("");
-  const finalTranscriptRef = useRef("");
+  const finalTranscriptRef.current = "";
+  const autoSubmitTriggered = useRef(false);
 
   useEffect(() => {
     if (!user || !id) return;
