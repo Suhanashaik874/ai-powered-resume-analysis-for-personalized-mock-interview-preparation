@@ -145,15 +145,15 @@ export default function Dashboard() {
           className="mb-8 grid gap-4 grid-cols-2 lg:grid-cols-4"
         >
           {[
-            { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false },
-            { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false },
-            { label: "Interview Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true },
-            { label: "Avg Score", value: `${avgScore}%`, icon: TrendingUp, color: "text-brand-amber", clickable: false },
+            { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false, onClick: null },
+            { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false, onClick: null },
+            { label: "Interview Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true, onClick: () => setShowReadinessDialog(true) },
+            { label: "Skills Identified", value: skillCount, icon: Brain, color: "text-brand-purple", clickable: true, onClick: () => setShowSkillsDialog(true) },
           ].map((stat) => (
             <div 
               key={stat.label} 
               className={`glass-card rounded-xl p-5 ${stat.clickable ? 'cursor-pointer hover:border-primary/40 transition-all' : ''}`}
-              onClick={() => stat.clickable && setShowReadinessDialog(true)}
+              onClick={stat.onClick || undefined}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-muted-foreground">{stat.label}</span>
