@@ -324,6 +324,9 @@ export default function HRInterview() {
             </Button>
           )}
         </div>
+        
+        {/* Hidden auto-submit trigger for 20-minute timeout */}
+        <button id="auto-submit-trigger" onClick={handleSubmit} className="hidden" />
       </div>
     </div>
   );
