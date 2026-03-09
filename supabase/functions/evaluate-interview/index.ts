@@ -56,7 +56,16 @@ serve(async (req) => {
 
     for (const q of questions) {
       const userResponse = q.user_code || q.user_answer || '';
-      if (!userResponse.trim()) {
+      // Detect empty or default template answers
+      const stripped = userResponse.replace(/\/\/.*|#.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
+      const templatePatterns = [
+        /^(def\s+solution\s*\(\s*\)\s*:\s*pass\s*(solution\s*\(\s*\)\s*)?)?$/i,
+        /^(function\s+solution\s*\(\s*\)\s*\{\s*\}\s*(solution\s*\(\s*\)\s*;?\s*)?)?$/i,
+        /^(public\s+static\s+void\s+main\s*\(.*\)\s*\{\s*\})?$/i,
+        /^(int\s+main\s*\(\s*\)\s*\{\s*(return\s+0\s*;?\s*)?\})?$/i,
+      ];
+      const isTemplate = !stripped || templatePatterns.some(p => p.test(stripped));
+      if (isTemplate) {
         let noAnswerPrompt = '';
         if (q.question_type === 'coding') {
           noAnswerPrompt = `The user did not attempt this coding question. Provide the correct solution.
