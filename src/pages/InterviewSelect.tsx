@@ -154,6 +154,8 @@ export default function InterviewSelect() {
         navigate(`/interview/hr/${interviewId}`);
       } else if (selected === "aptitude") {
         navigate(`/interview/aptitude/${interviewId}`);
+      } else if (selected === "combined") {
+        navigate(`/interview/combined/${interviewId}`);
       } else {
         navigate(`/interview/${interviewId}`);
       }

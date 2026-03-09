@@ -14,6 +14,7 @@ import InterviewSelect from "./pages/InterviewSelect";
 import CodingInterview from "./pages/CodingInterview";
 import HRInterview from "./pages/HRInterview";
 import AptitudeInterview from "./pages/AptitudeInterview";
+import CombinedInterview from "./pages/CombinedInterview";
 import InterviewResults from "./pages/InterviewResults";
 import AllInterviews from "./pages/AllInterviews";
 import ResetPassword from "./pages/ResetPassword";
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/interview/:id" element={<ProtectedRoute><CodingInterview /></ProtectedRoute>} />
             <Route path="/interview/hr/:id" element={<ProtectedRoute><HRInterview /></ProtectedRoute>} />
             <Route path="/interview/aptitude/:id" element={<ProtectedRoute><AptitudeInterview /></ProtectedRoute>} />
+            <Route path="/interview/combined/:id" element={<ProtectedRoute><CombinedInterview /></ProtectedRoute>} />
             <Route path="/interview/results/:id" element={<ProtectedRoute><InterviewResults /></ProtectedRoute>} />
             <Route path="/interviews" element={<ProtectedRoute><AllInterviews /></ProtectedRoute>} />
             <Route path="/preparation" element={<ProtectedRoute><Preparation /></ProtectedRoute>} />
