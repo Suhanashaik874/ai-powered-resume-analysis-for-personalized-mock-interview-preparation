@@ -67,6 +67,45 @@ export default function Dashboard() {
     ? Math.round(completedInterviews.reduce((a, b) => a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0) / completedInterviews.length)
     : 0;
 
+  // Calculate readiness score
+  const calculateReadiness = () => {
+    if (completedInterviews.length === 0) return 0;
+    
+    const types = ['coding', 'hr', 'aptitude'];
+    let totalReadiness = 0;
+    
+    types.forEach(type => {
+      const typeInterviews = completedInterviews.filter(i => i.interview_type === type);
+      if (typeInterviews.length > 0) {
+        const avgTypeScore = typeInterviews.reduce((a, b) => 
+          a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0
+        ) / typeInterviews.length;
+        totalReadiness += avgTypeScore / 3;
+      }
+    });
+    
+    return Math.round(totalReadiness);
+  };
+
+  const readinessScore = calculateReadiness();
+
+  // Calculate type-specific readiness
+  const getTypeReadiness = (type: string) => {
+    const typeInterviews = completedInterviews.filter(i => i.interview_type === type);
+    if (typeInterviews.length === 0) return { score: 0, count: 0, status: 'Not Started' };
+    
+    const avgScore = typeInterviews.reduce((a, b) => 
+      a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0
+    ) / typeInterviews.length;
+    
+    let status = 'Beginner';
+    if (avgScore >= 80) status = 'Ready';
+    else if (avgScore >= 60) status = 'Good Progress';
+    else if (avgScore >= 40) status = 'Improving';
+    
+    return { score: Math.round(avgScore), count: typeInterviews.length, status };
+  };
+
   const handleQuickStart = (type: string) => {
     navigate(`/interview/select?type=${type}`);
   };
