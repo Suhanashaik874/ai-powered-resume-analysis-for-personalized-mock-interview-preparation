@@ -227,7 +227,15 @@ Return JSON:
       try {
         const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
         result = JSON.parse(cleaned);
-      } catch { /* use defaults */ }
+      } catch (parseErr) {
+        console.error(`Failed to parse eval for question ${q.id}:`, parseErr.message);
+        console.error('Raw eval content:', content.substring(0, 500));
+        // Try to extract JSON from the content
+        try {
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          if (jsonMatch) result = JSON.parse(jsonMatch[0]);
+        } catch { /* use defaults */ }
+      }
 
       totalScore += result.score || 0;
       
