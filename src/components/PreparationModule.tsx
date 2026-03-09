@@ -10,12 +10,6 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileCode2, Lightbulb, PenTool, BarChart3,
 };
 
-const difficultyColor: Record<string, string> = {
-  Easy: "text-emerald-400 bg-emerald-500/15",
-  Medium: "text-amber-400 bg-amber-500/15",
-  Hard: "text-rose-400 bg-rose-500/15",
-};
-
 export function PreparationModule() {
   const navigate = useNavigate();
   const { user } = useAuth();
