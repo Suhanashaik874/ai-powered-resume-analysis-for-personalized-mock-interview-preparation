@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, TrendingUp, BookOpen, GraduationCap, Award } from "lucide-react";
+import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, BookOpen, GraduationCap, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Navbar } from "@/components/Navbar";
@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkillsDialog } from "@/components/SkillsDialog";
 
 interface Interview {
   id: string;
@@ -45,18 +46,22 @@ export default function Dashboard() {
   const [resumeCount, setResumeCount] = useState(0);
   const [fullName, setFullName] = useState<string | null>(null);
   const [showReadinessDialog, setShowReadinessDialog] = useState(false);
+  const [showSkillsDialog, setShowSkillsDialog] = useState(false);
+  const [skillCount, setSkillCount] = useState(0);
 
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [interviewRes, resumeRes, profileRes] = await Promise.all([
+      const [interviewRes, resumeRes, profileRes, skillsRes] = await Promise.all([
         (supabase as any).from("interviews").select("*").eq("user_id", user.id).order("started_at", { ascending: false }),
         (supabase as any).from("resumes").select("id").eq("user_id", user.id),
         (supabase as any).from("profiles").select("full_name").eq("user_id", user.id).single(),
+        (supabase as any).from("extracted_skills").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       ]);
       if (interviewRes.data) setInterviews(interviewRes.data);
       if (resumeRes.data) setResumeCount(resumeRes.data.length);
       if (profileRes.data) setFullName(profileRes.data.full_name);
+      setSkillCount(skillsRes.count ?? 0);
       setLoading(false);
     };
     fetchData();
@@ -140,15 +145,15 @@ export default function Dashboard() {
           className="mb-8 grid gap-4 grid-cols-2 lg:grid-cols-4"
         >
           {[
-            { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false },
-            { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false },
-            { label: "Interview Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true },
-            { label: "Avg Score", value: `${avgScore}%`, icon: TrendingUp, color: "text-brand-amber", clickable: false },
+            { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false, onClick: null },
+            { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false, onClick: null },
+            { label: "Interview Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true, onClick: () => setShowReadinessDialog(true) },
+            { label: "Skills Identified", value: skillCount, icon: Brain, color: "text-brand-purple", clickable: true, onClick: () => setShowSkillsDialog(true) },
           ].map((stat) => (
             <div 
               key={stat.label} 
               className={`glass-card rounded-xl p-5 ${stat.clickable ? 'cursor-pointer hover:border-primary/40 transition-all' : ''}`}
-              onClick={() => stat.clickable && setShowReadinessDialog(true)}
+              onClick={stat.onClick || undefined}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-muted-foreground">{stat.label}</span>
@@ -401,6 +406,9 @@ export default function Dashboard() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Skills Dialog */}
+        <SkillsDialog open={showSkillsDialog} onOpenChange={setShowSkillsDialog} />
       </div>
     </div>
   );
