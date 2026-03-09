@@ -105,11 +105,11 @@ export default function Dashboard() {
       a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0
     ) / typeInterviews.length;
     
-    let status = 'Beginner';
-    if (avgScore >= 80) status = 'Ready';
-    else if (avgScore >= 60) status = 'Good Progress';
-    else if (avgScore >= 40) status = 'Improving';
-    
+    let status = 'Needs Practice';
+    if (avgScore >= 80) status = 'Good to Go!';
+    else if (avgScore >= 60) status = 'Partially Ready';
+    else if (avgScore >= 40) status = 'Needs Improvement';
+
     return { score: Math.round(avgScore), count: typeInterviews.length, status };
   };
 
@@ -149,7 +149,7 @@ export default function Dashboard() {
           {[
             { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false, onClick: null },
             { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false, onClick: null },
-            { label: "Interview Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true, onClick: () => setShowReadinessDialog(true) },
+            { label: "Interview Readiness", value: readinessScore >= 80 ? "Good to Go!" : readinessScore >= 60 ? "Partially Ready" : readinessScore >= 40 ? "Needs Improvement" : completedInterviews.length > 0 ? "Needs Practice" : "Not Started", icon: Award, color: readinessScore >= 80 ? "text-brand-emerald" : readinessScore >= 60 ? "text-brand-amber" : readinessScore >= 40 ? "text-orange-400" : "text-brand-rose", clickable: true, onClick: () => setShowReadinessDialog(true) },
             { label: "Skills Identified", value: skillCount, icon: Brain, color: "text-brand-purple", clickable: true, onClick: () => setShowSkillsDialog(true) },
           ].map((stat) => (
             <div 
@@ -342,10 +342,10 @@ export default function Dashboard() {
                     <div className="flex-1">
                       <Progress value={readinessScore} className="h-3" />
                       <p className="text-sm text-muted-foreground mt-2">
-                        {readinessScore >= 80 ? "Excellent! You're interview-ready." :
-                         readinessScore >= 60 ? "Good progress! Keep practicing." :
-                         readinessScore >= 40 ? "You're improving! More practice needed." :
-                         completedInterviews.length > 0 ? "Keep going! Practice makes perfect." :
+                        {readinessScore >= 80 ? "🟢 Good to Go! You're interview-ready." :
+                         readinessScore >= 60 ? "🟡 Partially Ready — a few more sessions will help." :
+                         readinessScore >= 40 ? "🟠 Needs Improvement — keep practicing consistently." :
+                         completedInterviews.length > 0 ? "🔴 Needs Practice — practice more to build confidence." :
                          "Start your first interview to get assessed."}
                       </p>
                     </div>
@@ -380,9 +380,15 @@ export default function Dashboard() {
                                 </p>
                               </div>
                               <Badge variant={
-                                readiness.status === 'Ready' ? 'default' :
+                                readiness.status === 'Good to Go!' ? 'default' :
                                 readiness.status === 'Not Started' ? 'outline' :
                                 'secondary'
+                              } className={
+                                readiness.status === 'Good to Go!' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                                readiness.status === 'Partially Ready' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
+                                readiness.status === 'Needs Improvement' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
+                                readiness.status === 'Needs Practice' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                                ''
                               }>
                                 {readiness.status}
                               </Badge>
