@@ -20,7 +20,7 @@ serve(async (req) => {
       `${s.skill_name} (${s.proficiency_level})`).join(', ') || 'general programming';
 
     const questionCounts: Record<string, number> = {
-      coding: 5, hr: 8, aptitude: 15, combined: 20,
+      coding: 5, hr: 8, aptitude: 15, combined: 15,
     };
     const count = questionCounts[interviewType] || 5;
 
