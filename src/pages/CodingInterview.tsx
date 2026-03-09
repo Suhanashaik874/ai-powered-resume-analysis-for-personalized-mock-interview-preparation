@@ -76,12 +76,12 @@ export default function CodingInterview() {
         // Initialize code map from any previously saved code
         const map: Record<string, string> = {};
         data.forEach((q: Question) => {
-          map[q.id] = q.user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python;
+          map[q.id] = q.user_code || "// Write your solution here";
         });
         codeMapRef.current = map;
         // Load code for first question
         if (data.length > 0) {
-          setCode(data[0].user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python);
+          setCode(data[0].user_code || "// Write your solution here");
         }
       }
       setLoading(false);
