@@ -277,6 +277,7 @@ export default function CombinedInterview() {
         <div className="pt-16 flex-shrink-0">
           <HeaderBar questions={questions} currentIdx={currentIdx} totalTimer={totalTimer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
         </div>
+        <button id="auto-submit-trigger" onClick={handleSubmit} className="hidden" />
         <div className="flex flex-1 overflow-hidden">
           {/* Left: Question */}
           <div className="w-2/5 flex flex-col border-r border-border/50 overflow-y-auto">
