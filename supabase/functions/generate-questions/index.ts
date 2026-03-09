@@ -29,11 +29,25 @@ serve(async (req) => {
       ? `\n\nThe candidate's resume includes the following content (use it to generate project-specific questions):\n${resumeText.substring(0, 3000)}`
       : '';
 
-    const difficultyInstruction = {
-      easy: 'All questions should be EASY difficulty — basic concepts, straightforward problems, simple scenarios. Suitable for beginners or freshers.',
-      medium: 'All questions should be MEDIUM difficulty — moderate complexity requiring solid understanding. Suitable for intermediate candidates.',
-      hard: 'All questions should be HARD difficulty — complex problems, advanced concepts, tricky edge cases. Suitable for experienced candidates.',
-    }[difficulty] || '';
+    let difficultyInstruction = '';
+    if (difficulty === 'adaptive') {
+      // Build per-skill difficulty mapping
+      const skillDifficultyMap = skills.map((s: { skill_name: string; proficiency_level: string }) => {
+        const level = s.proficiency_level?.toLowerCase() || 'beginner';
+        let qDiff = 'easy';
+        if (level === 'intermediate' || level === 'medium') qDiff = 'medium';
+        else if (level === 'advanced' || level === 'expert') qDiff = 'hard';
+        return `- For "${s.skill_name}" (claimed ${s.proficiency_level}): generate ${qDiff.toUpperCase()} difficulty questions`;
+      }).join('\n');
+      
+      difficultyInstruction = `ADAPTIVE DIFFICULTY MODE: Vary question difficulty based on the candidate's claimed proficiency for each skill:\n${skillDifficultyMap}\n\nFor skills not listed, default to medium difficulty. Mark each question's difficulty field accordingly.`;
+    } else {
+      difficultyInstruction = {
+        easy: 'All questions should be EASY difficulty — basic concepts, straightforward problems, simple scenarios. Suitable for beginners or freshers.',
+        medium: 'All questions should be MEDIUM difficulty — moderate complexity requiring solid understanding. Suitable for intermediate candidates.',
+        hard: 'All questions should be HARD difficulty — complex problems, advanced concepts, tricky edge cases. Suitable for experienced candidates.',
+      }[difficulty] || '';
+    }
 
     const typePrompts: Record<string, string> = {
       coding: `Generate ${count} coding interview questions for a candidate with skills: ${skillList}. ${difficultyInstruction}
