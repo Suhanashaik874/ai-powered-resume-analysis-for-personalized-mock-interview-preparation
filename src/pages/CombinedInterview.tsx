@@ -72,8 +72,7 @@ export default function CombinedInterview() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Coding state
-  const [language, setLanguage] = useState("python");
-  const [code, setCode] = useState(DEFAULT_CODE.python);
+  const [code, setCode] = useState("// Write your solution here");
   const [output, setOutput] = useState("");
   const [running, setRunning] = useState(false);
   const codeMapRef = useRef<Record<string, string>>({});
