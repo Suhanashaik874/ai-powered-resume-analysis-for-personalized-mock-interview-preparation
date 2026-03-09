@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, TrendingUp, BookOpen, GraduationCap, Award } from "lucide-react";
+import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, BookOpen, GraduationCap, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Navbar } from "@/components/Navbar";
@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkillsDialog } from "@/components/SkillsDialog";
 
 interface Interview {
   id: string;
