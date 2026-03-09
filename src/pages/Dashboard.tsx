@@ -142,7 +142,7 @@ export default function Dashboard() {
           {[
             { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false },
             { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false },
-            { label: "Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true },
+            { label: "Interview Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true },
             { label: "Avg Score", value: `${avgScore}%`, icon: TrendingUp, color: "text-brand-amber", clickable: false },
           ].map((stat) => (
             <div 
