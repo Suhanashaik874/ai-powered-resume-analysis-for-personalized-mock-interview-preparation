@@ -1,0 +1,1 @@
+ALTER TABLE public.interviews ADD COLUMN solution_language text NOT NULL DEFAULT 'python';
