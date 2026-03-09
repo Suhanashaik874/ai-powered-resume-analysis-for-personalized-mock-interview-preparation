@@ -103,7 +103,7 @@ export default function CombinedInterview() {
         const aMap: Record<string, string> = {};
         data.forEach((q: Question) => {
           if (q.question_type === "coding") {
-            cMap[q.id] = q.user_code || DEFAULT_CODE[language];
+            cMap[q.id] = q.user_code || "// Write your solution here";
           }
           if (q.user_answer) aMap[q.id] = q.user_answer;
         });
