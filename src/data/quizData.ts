@@ -88,11 +88,13 @@ export const quizData: QuizMap = {
     "number-systems": {
       0: [
         { question: "What is the remainder when 7^100 is divided by 4?", options: ["0", "1", "2", "3"], correctAnswer: 1, explanation: "7 mod 4 = 3, 3² mod 4 = 1. Since 100 is even, 7^100 mod 4 = (3²)^50 mod 4 = 1^50 = 1." },
-        { question: "The HCF of two numbers is 12 and their LCM is 360. If one number is 60, what is the other?", options: ["36", "48", "72", "84"], correctAnswer: 2, explanation: "HCF × LCM = Product of two numbers. So 12 × 360 = 60 × x → x = 72." }
+        { question: "The HCF of two numbers is 12 and their LCM is 360. If one number is 60, what is the other?", options: ["36", "48", "72", "84"], correctAnswer: 2, explanation: "HCF × LCM = Product of two numbers. So 12 × 360 = 60 × x → x = 72." },
+        { question: "How many factors does 120 have?", options: ["8", "12", "16", "20"], correctAnswer: 1, explanation: "120 = 2³ × 3 × 5. Number of factors = (3+1)(1+1)(1+1) = 4 × 2 × 2 = 16." }
       ],
       1: [
         { question: "What is the sum of the first 50 natural numbers?", options: ["1225", "1250", "1275", "1300"], correctAnswer: 2, explanation: "Sum = n(n+1)/2 = 50 × 51/2 = 1275." },
-        { question: "In an AP with first term 3 and common difference 5, what is the 10th term?", options: ["45", "48", "50", "53"], correctAnswer: 1, explanation: "nth term = a + (n-1)d = 3 + 9×5 = 48." }
+        { question: "In an AP with first term 3 and common difference 5, what is the 10th term?", options: ["45", "48", "50", "53"], correctAnswer: 1, explanation: "nth term = a + (n-1)d = 3 + 9×5 = 48." },
+        { question: "The sum of an infinite GP with first term 4 and common ratio 1/3 is:", options: ["4", "6", "8", "12"], correctAnswer: 1, explanation: "Sum of infinite GP = a/(1-r) = 4/(1-1/3) = 4/(2/3) = 6." }
       ]
     },
     "percentages-ratios": {
