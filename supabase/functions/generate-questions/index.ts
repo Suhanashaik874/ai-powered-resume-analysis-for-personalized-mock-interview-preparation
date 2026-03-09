@@ -55,8 +55,8 @@ Include:
 - DSA problems (arrays, strings, trees, graphs, dynamic programming)
 - Algorithm design problems
 - Each question MUST include 2-3 test cases with input and expected output
-- Include the expected optimal time and space complexity in the question text
-Format each question with clear problem statement, constraints, and test cases.`,
+- Include the expected optimal time and space complexity
+IMPORTANT: Keep each question_text CONCISE — max 300 words. Use brief problem statements. Do NOT write essays or long explanations. Just state the problem, constraints, and test cases briefly.`,
 
       hr: `Generate ${count} HR behavioral interview questions for a candidate. ${difficultyInstruction}${projectContext}
 Requirements:
@@ -128,7 +128,7 @@ Skills: ${skillList}.${projectContext}`,
           content: `${prompt}\n\nReturn a JSON array where each element has these exact fields:\n${jsonFields}\n\nReturn ONLY the JSON array, nothing else.`,
         }],
         temperature: 0.7,
-        max_tokens: interviewType === 'combined' ? 12000 : interviewType === 'aptitude' ? 8000 : 6000,
+        max_tokens: interviewType === 'combined' ? 12000 : 8000,
       }),
     });
 
