@@ -26,7 +26,7 @@ const interviewTypes = [
     border: "border-cyan-500/30 hover:border-cyan-400",
     iconBg: "bg-cyan-500/15 border-cyan-500/30",
     iconColor: "text-brand-cyan",
-    questions: 5,
+    questions: 3,
     duration: "30 min",
   },
   {
