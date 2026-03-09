@@ -406,6 +406,9 @@ export default function Dashboard() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Skills Dialog */}
+        <SkillsDialog open={showSkillsDialog} onOpenChange={setShowSkillsDialog} />
       </div>
     </div>
   );
