@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,19 +31,6 @@ interface Question {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SpeechRecognitionAPI = any;
 
-const LANGUAGES = [
-  { value: "javascript", label: "JavaScript" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "cpp", label: "C++" },
-];
-
-const DEFAULT_CODE: Record<string, string> = {
-  javascript: `// Write your solution here\nfunction solution() {\n  \n}\n\nsolution();`,
-  python: `# Write your solution here\ndef solution():\n    pass\n\nsolution()`,
-  java: `public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}`,
-  cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    return 0;\n}`,
-};
 
 const difficultyColors: Record<string, string> = {
   easy: "text-brand-emerald bg-emerald-500/15 border-emerald-500/30",
@@ -72,8 +58,7 @@ export default function CombinedInterview() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Coding state
-  const [language, setLanguage] = useState("python");
-  const [code, setCode] = useState(DEFAULT_CODE.python);
+  const [code, setCode] = useState("// Write your solution here");
   const [output, setOutput] = useState("");
   const [running, setRunning] = useState(false);
   const codeMapRef = useRef<Record<string, string>>({});
@@ -104,7 +89,7 @@ export default function CombinedInterview() {
         const aMap: Record<string, string> = {};
         data.forEach((q: Question) => {
           if (q.question_type === "coding") {
-            cMap[q.id] = q.user_code || DEFAULT_CODE[language];
+            cMap[q.id] = q.user_code || "// Write your solution here";
           }
           if (q.user_answer) aMap[q.id] = q.user_answer;
         });
@@ -125,7 +110,7 @@ export default function CombinedInterview() {
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
 
     if (q.question_type === "coding") {
-      setCode(codeMapRef.current[q.id] || DEFAULT_CODE[language]);
+      setCode(codeMapRef.current[q.id] || "// Write your solution here");
     } else if (q.question_type === "hr") {
       setHrAnswer(q.user_answer || answers[q.id] || "");
       baseTextRef.current = "";
@@ -189,7 +174,7 @@ export default function CombinedInterview() {
     setOutput("");
     try {
       const { data, error } = await supabase.functions.invoke("execute-code", {
-        body: { code, language, questionText: currentQ?.question_text || "" },
+        body: { code, language: "any", questionText: currentQ?.question_text || "" },
       });
       if (error) throw error;
       setOutput(data?.output || data?.stderr || "No output");
@@ -297,12 +282,9 @@ export default function CombinedInterview() {
           {/* Right: Editor */}
           <div className="flex flex-1 flex-col overflow-hidden">
             <div className="flex items-center justify-between border-b border-border/50 px-4 py-2 bg-secondary/30">
-              <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="w-36 h-8 text-sm border-border/60 bg-secondary/50"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {LANGUAGES.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <div className="text-sm text-muted-foreground">
+                Write the solution here; AI will evaluate it
+              </div>
               <Button size="sm" onClick={handleRunCode} disabled={running} className="h-8 bg-gradient-primary text-primary-foreground hover:opacity-90">
                 {running ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Play className="h-3.5 w-3.5 mr-1" />} Run
               </Button>
@@ -310,7 +292,7 @@ export default function CombinedInterview() {
             <Suspense fallback={<div className="flex flex-1 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}>
               <MonacoEditor
                 height="100%"
-                language={language === "cpp" ? "cpp" : language}
+                language="plaintext"
                 value={code}
                 onChange={(v) => { const c = v || ""; setCode(c); if (currentQ) codeMapRef.current[currentQ.id] = c; }}
                 theme="vs-dark"

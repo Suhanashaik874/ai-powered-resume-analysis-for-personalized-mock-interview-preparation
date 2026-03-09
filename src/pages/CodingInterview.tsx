@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Timer, ChevronLeft, ChevronRight, Play, Loader2, Code2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,19 +23,6 @@ interface Question {
   time_taken_seconds: number | null;
 }
 
-const LANGUAGES = [
-  { value: "javascript", label: "JavaScript" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "cpp", label: "C++" },
-];
-
-const DEFAULT_CODE: Record<string, string> = {
-  javascript: `// Write your solution here\nfunction solution() {\n  \n}\n\nsolution();`,
-  python: `# Write your solution here\ndef solution():\n    pass\n\nsolution()`,
-  java: `public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}`,
-  cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    return 0;\n}`,
-};
 
 const difficultyColors: Record<string, string> = {
   easy: "text-brand-emerald bg-emerald-500/15 border-emerald-500/30",
@@ -53,8 +39,7 @@ export default function CodingInterview() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [language, setLanguage] = useState("python");
-  const [code, setCode] = useState(DEFAULT_CODE.python);
+  const [code, setCode] = useState("// Write your solution here");
   const [output, setOutput] = useState("");
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -77,12 +62,12 @@ export default function CodingInterview() {
         // Initialize code map from any previously saved code
         const map: Record<string, string> = {};
         data.forEach((q: Question) => {
-          map[q.id] = q.user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python;
+          map[q.id] = q.user_code || "// Write your solution here";
         });
         codeMapRef.current = map;
         // Load code for first question
         if (data.length > 0) {
-          setCode(data[0].user_code || DEFAULT_CODE[language] || DEFAULT_CODE.python);
+          setCode(data[0].user_code || "// Write your solution here");
         }
       }
       setLoading(false);
@@ -97,19 +82,6 @@ export default function CodingInterview() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx]);
 
-  // When language changes, only update if the current code is still a default template
-  useEffect(() => {
-    const currentQ = questions[currentIdx];
-    if (!currentQ) return;
-    const savedCode = codeMapRef.current[currentQ.id];
-    // Check if current code is a default template from any language
-    const isDefault = Object.values(DEFAULT_CODE).includes(savedCode || "");
-    if (isDefault || !savedCode) {
-      const newCode = DEFAULT_CODE[language] || DEFAULT_CODE.python;
-      setCode(newCode);
-      codeMapRef.current[currentQ.id] = newCode;
-    }
-  }, [language]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
@@ -118,7 +90,7 @@ export default function CodingInterview() {
     setOutput("");
     try {
       const { data, error } = await supabase.functions.invoke("execute-code", {
-        body: { code, language, questionText: currentQ?.question_text || "" },
+        body: { code, language: "any", questionText: currentQ?.question_text || "" },
       });
       if (error) throw error;
       setOutput(data?.output || data?.stderr || "No output");
@@ -149,7 +121,7 @@ export default function CodingInterview() {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
       // Load saved code for next question
-      setCode(codeMapRef.current[questions[nextIdx].id] || DEFAULT_CODE[language]);
+      setCode(codeMapRef.current[questions[nextIdx].id] || "// Write your solution here");
       setOutput("");
     }
   };
@@ -163,7 +135,7 @@ export default function CodingInterview() {
       const prevIdx = currentIdx - 1;
       setCurrentIdx(prevIdx);
       // Load saved code for previous question
-      setCode(codeMapRef.current[questions[prevIdx].id] || DEFAULT_CODE[language]);
+      setCode(codeMapRef.current[questions[prevIdx].id] || "// Write your solution here");
       setOutput("");
     }
   };
@@ -295,16 +267,9 @@ export default function CodingInterview() {
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Editor header */}
           <div className="flex items-center justify-between border-b border-border/50 px-4 py-2 bg-secondary/30">
-            <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-36 h-8 text-sm border-border/60 bg-secondary/50">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGES.map((l) => (
-                  <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="text-sm text-muted-foreground">
+              Write the solution here; AI will evaluate it
+            </div>
 
             <Button size="sm" onClick={handleRunCode} disabled={running} className="h-8 bg-gradient-primary text-primary-foreground hover:opacity-90">
               {running ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Play className="h-3.5 w-3.5 mr-1" />}
@@ -315,7 +280,7 @@ export default function CodingInterview() {
           <Suspense fallback={<div className="flex flex-1 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}>
             <MonacoEditor
               height="100%"
-              language={language === "cpp" ? "cpp" : language}
+              language="plaintext"
               value={code}
               onChange={(v) => {
                 const newCode = v || "";
