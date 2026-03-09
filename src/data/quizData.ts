@@ -117,13 +117,18 @@ export const quizData: QuizMap = {
     "time-work": {
       0: [
         { question: "A can do a job in 10 days, B in 15 days. Working together, how many days?", options: ["5", "6", "7", "8"], correctAnswer: 1, explanation: "LCM(10,15)=30. A's rate=3/day, B's rate=2/day. Combined=5/day. Time=30/5=6 days." },
-        { question: "If A is twice as efficient as B, and B finishes in 24 days, how long does A take?", options: ["48 days", "24 days", "12 days", "6 days"], correctAnswer: 2, explanation: "Twice as efficient means half the time. A takes 24/2 = 12 days." }
+        { question: "If A is twice as efficient as B, and B finishes in 24 days, how long does A take?", options: ["48 days", "24 days", "12 days", "6 days"], correctAnswer: 2, explanation: "Twice as efficient means half the time. A takes 24/2 = 12 days." },
+        { question: "A does 1/3 of work in 10 days. How long for complete work?", options: ["20 days", "25 days", "30 days", "35 days"], correctAnswer: 2, explanation: "If 1/3 work = 10 days, then total work = 10 × 3 = 30 days." }
       ],
       1: [
-        { question: "Pipe A fills a tank in 20 min, Pipe B empties it in 30 min. Both open — when does it fill?", options: ["60 min", "50 min", "45 min", "Never"], correctAnswer: 0, explanation: "LCM(20,30)=60. A's rate=+3, B's rate=-2. Net=1 unit/min. Time=60/1=60 min." }
+        { question: "Pipe A fills a tank in 20 min, Pipe B empties it in 30 min. Both open — when does it fill?", options: ["60 min", "50 min", "45 min", "Never"], correctAnswer: 0, explanation: "LCM(20,30)=60. A's rate=+3, B's rate=-2. Net=1 unit/min. Time=60/1=60 min." },
+        { question: "A fills a tank in 4 hours, B in 6 hours, C empties in 8 hours. All open — time to fill?", options: ["2.4 hours", "3 hours", "4 hours", "6 hours"], correctAnswer: 0, explanation: "A's rate = 1/4, B's rate = 1/6, C's rate = -1/8. Combined = 6/24 + 4/24 - 3/24 = 7/24. Time = 24/7 ≈ 2.4 hours." },
+        { question: "Average speed for a round trip at 40 km/h and 60 km/h is:", options: ["50 km/h", "48 km/h", "52 km/h", "45 km/h"], correctAnswer: 1, explanation: "Average speed for equal distances = 2×40×60/(40+60) = 4800/100 = 48 km/h. NOT the arithmetic mean." }
       ],
       2: [
-        { question: "Average speed for a round trip at 40 km/h and 60 km/h is:", options: ["50 km/h", "48 km/h", "52 km/h", "45 km/h"], correctAnswer: 1, explanation: "Average speed for equal distances = 2×40×60/(40+60) = 4800/100 = 48 km/h. NOT the arithmetic mean." }
+        { question: "A car travels 100 km at 50 km/h and 200 km at 100 km/h. Average speed?", options: ["80 km/h", "75 km/h", "66.67 km/h", "70 km/h"], correctAnswer: 2, explanation: "Total distance = 300 km. Total time = 2 + 2 = 4 hours. Average speed = 300/4 = 75 km/h." },
+        { question: "If A works for 5 days and B works for 3 days, they complete a job. If A works 3 days and B works 4 days, they still complete it. What is A's work rate?", options: ["1/5", "1/4", "1/7", "2/7"], correctAnswer: 2, explanation: "5a + 3b = 1 and 3a + 4b = 1. Solving: a = 1/7 (A completes 1/7 of job per day)." },
+        { question: "Two workers together take 6 days. One alone takes 9 days. How long for the other alone?", options: ["15 days", "18 days", "12 days", "10 days"], correctAnswer: 1, explanation: "Combined rate = 1/6. First worker rate = 1/9. Second = 1/6 - 1/9 = 1/18. Time = 18 days." }
       ]
     },
     "logical-reasoning": {
