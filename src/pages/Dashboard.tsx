@@ -380,9 +380,15 @@ export default function Dashboard() {
                                 </p>
                               </div>
                               <Badge variant={
-                                readiness.status === 'Ready' ? 'default' :
+                                readiness.status === 'Good to Go!' ? 'default' :
                                 readiness.status === 'Not Started' ? 'outline' :
                                 'secondary'
+                              } className={
+                                readiness.status === 'Good to Go!' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                                readiness.status === 'Partially Ready' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
+                                readiness.status === 'Needs Improvement' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
+                                readiness.status === 'Needs Practice' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                                ''
                               }>
                                 {readiness.status}
                               </Badge>
