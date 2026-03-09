@@ -59,7 +59,7 @@ const steps = [
 const stats = [
   { icon: Users, value: "10K+", label: "Candidates Prepared" },
   { icon: Trophy, value: "92%", label: "Interview Success Rate" },
-  { icon: Target, value: "∞", label: "AI-Generated Questions" },
+  { icon: Target, value: "AI", label: "Generated Questions" },
   { icon: Star, value: "4.9/5", label: "Average Rating" },
 ];
 
