@@ -52,14 +52,16 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
-      const [interviewRes, resumeRes, profileRes] = await Promise.all([
+      const [interviewRes, resumeRes, profileRes, skillsRes] = await Promise.all([
         (supabase as any).from("interviews").select("*").eq("user_id", user.id).order("started_at", { ascending: false }),
         (supabase as any).from("resumes").select("id").eq("user_id", user.id),
         (supabase as any).from("profiles").select("full_name").eq("user_id", user.id).single(),
+        (supabase as any).from("extracted_skills").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       ]);
       if (interviewRes.data) setInterviews(interviewRes.data);
       if (resumeRes.data) setResumeCount(resumeRes.data.length);
       if (profileRes.data) setFullName(profileRes.data.full_name);
+      setSkillCount(skillsRes.count ?? 0);
       setLoading(false);
     };
     fetchData();
