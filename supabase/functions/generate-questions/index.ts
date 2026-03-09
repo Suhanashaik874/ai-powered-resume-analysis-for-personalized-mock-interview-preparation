@@ -50,13 +50,13 @@ serve(async (req) => {
     }
 
     const typePrompts: Record<string, string> = {
-      coding: `Generate ${count} coding interview questions for a candidate with skills: ${skillList}. ${difficultyInstruction}
-Include:
-- DSA problems (arrays, strings, trees, graphs, dynamic programming)
-- Algorithm design problems
-- Each question MUST include 2-3 test cases with input and expected output
-- Include the expected optimal time and space complexity
-IMPORTANT: Keep each question_text CONCISE — max 300 words. Use brief problem statements. Do NOT write essays or long explanations. Just state the problem, constraints, and test cases briefly.`,
+      coding: `Generate ${count} ALGORITHMIC CODING problems solvable by writing a function in a code editor. Candidate skills: ${skillList}. ${difficultyInstruction}
+CRITICAL RULES:
+- Every problem MUST be solvable by writing actual executable code (a function that takes input and returns output)
+- ONLY generate: array/string manipulation, tree/graph traversal, dynamic programming, sorting, searching, linked lists, stacks, queues, recursion, math problems
+- NEVER generate: system design, cloud architecture, theoretical questions, or anything requiring a written description as the answer
+- Each problem must include: function signature, input/output format, constraints, and 2-3 test cases with concrete input/output
+- Keep each problem under 200 words. Be concise.`,
 
       hr: `Generate ${count} HR behavioral interview questions for a candidate. ${difficultyInstruction}${projectContext}
 Requirements:
