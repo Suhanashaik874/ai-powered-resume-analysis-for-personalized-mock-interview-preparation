@@ -59,6 +59,25 @@ export default function HRInterview() {
     fetchQuestions();
   }, [user, id]);
 
+  // Total interview timer (20 minutes auto-submit)
+  useEffect(() => {
+    totalTimerRef.current = setInterval(() => {
+      setTotalTimer((t) => {
+        if (t <= 1 && !autoSubmitTriggered.current) {
+          autoSubmitTriggered.current = true;
+          // Auto-submit when time runs out
+          setTimeout(() => {
+            const submitBtn = document.getElementById("auto-submit-trigger");
+            if (submitBtn) submitBtn.click();
+          }, 100);
+          return 0;
+        }
+        return t > 0 ? t - 1 : 0;
+      });
+    }, 1000);
+    return () => { if (totalTimerRef.current) clearInterval(totalTimerRef.current); };
+  }, []);
+
   // Load saved answer when changing question
   useEffect(() => {
     if (questions.length > 0 && questions[currentIdx]) {
