@@ -44,6 +44,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [resumeCount, setResumeCount] = useState(0);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [showReadinessDialog, setShowReadinessDialog] = useState(false);
 
   useEffect(() => {
     if (!user) return;
