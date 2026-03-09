@@ -86,12 +86,14 @@ export default function InterviewSelect() {
     setLoading(true);
 
     try {
-      const { data: interview, error: interviewError } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: interview, error: interviewError } = await (supabase as any)
         .from("interviews")
         .insert({
           user_id: user.id,
           interview_type: selected,
           status: "in_progress",
+          solution_language: solutionLanguage,
         })
         .select()
         .single();
