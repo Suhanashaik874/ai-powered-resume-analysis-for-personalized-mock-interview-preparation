@@ -76,7 +76,7 @@ export default function Dashboard() {
   const calculateReadiness = () => {
     if (completedInterviews.length === 0) return 0;
     
-    const types = ['coding', 'hr', 'aptitude', 'combined'];
+    const types = ['coding', 'hr', 'aptitude'];
     let totalReadiness = 0;
     let activeTypes = 0;
     
@@ -361,7 +361,6 @@ export default function Dashboard() {
                   { type: 'coding', label: 'Coding Interview', icon: Code2, color: 'text-brand-cyan', bg: 'bg-cyan-500/15' },
                   { type: 'hr', label: 'HR Interview', icon: MessageSquare, color: 'text-brand-emerald', bg: 'bg-emerald-500/15' },
                   { type: 'aptitude', label: 'Aptitude Test', icon: Brain, color: 'text-brand-amber', bg: 'bg-amber-500/15' },
-                  { type: 'combined', label: 'Combined Interview', icon: Target, color: 'text-brand-purple', bg: 'bg-purple-500/15' },
                 ].map(({ type, label, icon: Icon, color, bg }) => {
                   const readiness = getTypeReadiness(type);
                   return (
