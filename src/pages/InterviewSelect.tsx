@@ -53,7 +53,7 @@ const interviewTypes = [
     iconBg: "bg-amber-500/15 border-amber-500/30",
     iconColor: "text-brand-amber",
     questions: 15,
-    duration: "25 min",
+    duration: "20 min",
   },
   {
     type: "combined" as const,
