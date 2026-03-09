@@ -76,7 +76,7 @@ export default function Dashboard() {
   const calculateReadiness = () => {
     if (completedInterviews.length === 0) return 0;
     
-    const types = ['coding', 'hr', 'aptitude', 'combined'];
+    const types = ['coding', 'hr', 'aptitude'];
     let totalReadiness = 0;
     let activeTypes = 0;
     
