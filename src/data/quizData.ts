@@ -133,16 +133,24 @@ export const quizData: QuizMap = {
     },
     "logical-reasoning": {
       0: [
-        { question: "'All dogs are animals. Some animals are pets.' Which conclusion is valid?", options: ["All dogs are pets", "Some dogs are pets", "Some animals are dogs", "No dogs are pets"], correctAnswer: 2, explanation: "Since all dogs are animals, it's always true that some animals are dogs. 'Some dogs are pets' is not guaranteed." }
+        { question: "'All dogs are animals. Some animals are pets.' Which conclusion is valid?", options: ["All dogs are pets", "Some dogs are pets", "Some animals are dogs", "No dogs are pets"], correctAnswer: 2, explanation: "Since all dogs are animals, it's always true that some animals are dogs. 'Some dogs are pets' is not guaranteed." },
+        { question: "If all fruits are sweet and mangoes are fruits, then which statement is true?", options: ["Some mangoes are not sweet", "All mangoes are sweet", "No mangoes are sweet", "Fruits might be sour"], correctAnswer: 1, explanation: "By logical deduction: Mangoes are fruits → Mangoes are sweet (since all fruits are sweet)." },
+        { question: "'All students pass' and 'Ram is a student.' What can we conclude?", options: ["Ram might fail", "Ram must pass", "Ram is clever", "Nothing can be concluded"], correctAnswer: 1, explanation: "Direct deduction: If all students pass and Ram is a student, then Ram must pass." }
       ],
       1: [
-        { question: "In a circular seating arrangement of 6 people, how many unique arrangements are there?", options: ["720", "120", "360", "60"], correctAnswer: 1, explanation: "Circular arrangements of n people = (n-1)! = 5! = 120." }
+        { question: "In a circular seating arrangement of 6 people, how many unique arrangements are there?", options: ["720", "120", "360", "60"], correctAnswer: 1, explanation: "Circular arrangements of n people = (n-1)! = 5! = 120." },
+        { question: "How many ways can 4 people sit around a round table where rotations are considered the same?", options: ["24", "12", "6", "4"], correctAnswer: 2, explanation: "(4-1)! = 3! = 6. Fix one person and arrange the other 3." },
+        { question: "In how many ways can 5 beads be arranged in a circle if reflections are identical?", options: ["48", "24", "12", "60"], correctAnswer: 2, explanation: "For circular permutations with reflections: (n-1)!/2 = 4!/2 = 24/2 = 12." }
       ],
       2: [
-        { question: "If APPLE is coded as 17753, what is the code for PALE?", options: ["7153", "1753", "7135", "5173"], correctAnswer: 0, explanation: "A=1, P=7, L=5, E=3. PALE = 7-1-5-3 = 7153." }
+        { question: "If APPLE is coded as 17753, what is the code for PALE?", options: ["7153", "1753", "7135", "5173"], correctAnswer: 0, explanation: "A=1, P=7, L=5, E=3. PALE = 7-1-5-3 = 7153." },
+        { question: "If CAT = 3, DOG = 3, BIRD = 4, what does BUTTERFLY equal?", options: ["8", "9", "10", "11"], correctAnswer: 2, explanation: "Count the number of letters: B-U-T-T-E-R-F-L-Y = 9 letters." },
+        { question: "In a code, PAPER is written as 16-1-16-5-18. What is CODE?", options: ["3-15-4-5", "3-14-4-5", "3-15-4-6", "2-15-4-5"], correctAnswer: 0, explanation: "A=1, B=2...C=3, O=15, D=4, E=5. CODE = 3-15-4-5." }
       ],
       3: [
-        { question: "To find 1 heavy coin among 9 using a balance, minimum weighings needed?", options: ["1", "2", "3", "4"], correctAnswer: 1, explanation: "Split into 3 groups of 3. First weighing identifies the heavy group. Second weighing within that group finds the heavy coin." }
+        { question: "To find 1 heavy coin among 9 using a balance, minimum weighings needed?", options: ["1", "2", "3", "4"], correctAnswer: 1, explanation: "Split into 3 groups of 3. First weighing identifies the heavy group. Second weighing within that group finds the heavy coin." },
+        { question: "You have 12 coins, one is counterfeit (different weight). Minimum weighings to find it?", options: ["2", "3", "4", "5"], correctAnswer: 1, explanation: "Split into 3 groups of 4. Use balance strategically: 3 weighings are sufficient to identify the counterfeit and determine if it's heavy or light." },
+        { question: "5 pirates divide 100 gold coins. If the division is rejected (majority vote), restart with one less pirate. What's the optimal first proposal?", options: ["50-0-50-0-0", "98-0-1-0-1", "99-0-0-1-0", "97-1-1-1-0"], correctAnswer: 1, explanation: "Pirate 1 needs 2 votes (including himself). He offers 0 to P2, 1 to P3, 0 to P4, 1 to P5. P3 and P5 vote yes (better than nothing)." }
       ]
     },
     "data-interpretation": {
