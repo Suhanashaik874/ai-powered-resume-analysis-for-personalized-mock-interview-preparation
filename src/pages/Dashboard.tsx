@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, TrendingUp, BookOpen, GraduationCap } from "lucide-react";
+import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, TrendingUp, BookOpen, GraduationCap, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PreparationModule } from "@/components/PreparationModule";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Interview {
   id: string;
@@ -40,6 +44,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [resumeCount, setResumeCount] = useState(0);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [showReadinessDialog, setShowReadinessDialog] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -61,6 +66,45 @@ export default function Dashboard() {
   const avgScore = completedInterviews.length > 0
     ? Math.round(completedInterviews.reduce((a, b) => a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0) / completedInterviews.length)
     : 0;
+
+  // Calculate readiness score
+  const calculateReadiness = () => {
+    if (completedInterviews.length === 0) return 0;
+    
+    const types = ['coding', 'hr', 'aptitude'];
+    let totalReadiness = 0;
+    
+    types.forEach(type => {
+      const typeInterviews = completedInterviews.filter(i => i.interview_type === type);
+      if (typeInterviews.length > 0) {
+        const avgTypeScore = typeInterviews.reduce((a, b) => 
+          a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0
+        ) / typeInterviews.length;
+        totalReadiness += avgTypeScore / 3;
+      }
+    });
+    
+    return Math.round(totalReadiness);
+  };
+
+  const readinessScore = calculateReadiness();
+
+  // Calculate type-specific readiness
+  const getTypeReadiness = (type: string) => {
+    const typeInterviews = completedInterviews.filter(i => i.interview_type === type);
+    if (typeInterviews.length === 0) return { score: 0, count: 0, status: 'Not Started' };
+    
+    const avgScore = typeInterviews.reduce((a, b) => 
+      a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0
+    ) / typeInterviews.length;
+    
+    let status = 'Beginner';
+    if (avgScore >= 80) status = 'Ready';
+    else if (avgScore >= 60) status = 'Good Progress';
+    else if (avgScore >= 40) status = 'Improving';
+    
+    return { score: Math.round(avgScore), count: typeInterviews.length, status };
+  };
 
   const handleQuickStart = (type: string) => {
     navigate(`/interview/select?type=${type}`);
@@ -96,12 +140,16 @@ export default function Dashboard() {
           className="mb-8 grid gap-4 grid-cols-2 lg:grid-cols-4"
         >
           {[
-            { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary" },
-            { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald" },
-            { label: "Avg Score", value: `${avgScore}%`, icon: TrendingUp, color: "text-brand-amber" },
-            { label: "Resumes", value: resumeCount, icon: Upload, color: "text-brand-cyan" },
+            { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false },
+            { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false },
+            { label: "Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true },
+            { label: "Avg Score", value: `${avgScore}%`, icon: TrendingUp, color: "text-brand-amber", clickable: false },
           ].map((stat) => (
-            <div key={stat.label} className="glass-card rounded-xl p-5">
+            <div 
+              key={stat.label} 
+              className={`glass-card rounded-xl p-5 ${stat.clickable ? 'cursor-pointer hover:border-primary/40 transition-all' : ''}`}
+              onClick={() => stat.clickable && setShowReadinessDialog(true)}
+            >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-muted-foreground">{stat.label}</span>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
@@ -263,6 +311,96 @@ export default function Dashboard() {
             <PreparationModule />
           </TabsContent>
         </Tabs>
+
+        {/* Readiness Details Dialog */}
+        <Dialog open={showReadinessDialog} onOpenChange={setShowReadinessDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-primary" />
+                Interview Readiness Analysis
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Overall Readiness */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Overall Readiness</CardTitle>
+                  <CardDescription>Your aggregate performance across all interview types</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <div className="text-4xl font-bold text-primary">{readinessScore}%</div>
+                    <div className="flex-1">
+                      <Progress value={readinessScore} className="h-3" />
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {readinessScore >= 80 ? "Excellent! You're interview-ready." :
+                         readinessScore >= 60 ? "Good progress! Keep practicing." :
+                         readinessScore >= 40 ? "You're improving! More practice needed." :
+                         completedInterviews.length > 0 ? "Keep going! Practice makes perfect." :
+                         "Start your first interview to get assessed."}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Type-specific Readiness */}
+              <div className="space-y-4">
+                <h3 className="font-semibold">Readiness by Interview Type</h3>
+                
+                {[
+                  { type: 'coding', label: 'Coding Interview', icon: Code2, color: 'text-brand-cyan', bg: 'bg-cyan-500/15' },
+                  { type: 'hr', label: 'HR Interview', icon: MessageSquare, color: 'text-brand-emerald', bg: 'bg-emerald-500/15' },
+                  { type: 'aptitude', label: 'Aptitude Test', icon: Brain, color: 'text-brand-amber', bg: 'bg-amber-500/15' },
+                ].map(({ type, label, icon: Icon, color, bg }) => {
+                  const readiness = getTypeReadiness(type);
+                  return (
+                    <Card key={type}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${bg}`}>
+                            <Icon className={`h-6 w-6 ${color}`} />
+                          </div>
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="font-medium">{label}</h4>
+                                <p className="text-xs text-muted-foreground">
+                                  {readiness.count} {readiness.count === 1 ? 'interview' : 'interviews'} completed
+                                </p>
+                              </div>
+                              <Badge variant={
+                                readiness.status === 'Ready' ? 'default' :
+                                readiness.status === 'Not Started' ? 'outline' :
+                                'secondary'
+                              }>
+                                {readiness.status}
+                              </Badge>
+                            </div>
+                            <div className="space-y-1">
+                              <Progress value={readiness.score} className="h-2" />
+                              <div className="text-right text-sm font-medium text-muted-foreground">
+                                {readiness.score}%
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <Button onClick={() => setShowReadinessDialog(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
