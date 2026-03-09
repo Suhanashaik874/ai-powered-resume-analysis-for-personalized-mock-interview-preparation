@@ -149,7 +149,7 @@ export default function Dashboard() {
           {[
             { label: "Total Sessions", value: interviews.length, icon: Clock, color: "text-primary", clickable: false, onClick: null },
             { label: "Completed", value: completedInterviews.length, icon: Trophy, color: "text-brand-emerald", clickable: false, onClick: null },
-            { label: "Interview Readiness", value: `${readinessScore}%`, icon: Award, color: "text-primary", clickable: true, onClick: () => setShowReadinessDialog(true) },
+            { label: "Interview Readiness", value: readinessScore >= 80 ? "Good to Go!" : readinessScore >= 60 ? "Partially Ready" : readinessScore >= 40 ? "Needs Improvement" : completedInterviews.length > 0 ? "Needs Practice" : "Not Started", icon: Award, color: readinessScore >= 80 ? "text-brand-emerald" : readinessScore >= 60 ? "text-brand-amber" : readinessScore >= 40 ? "text-orange-400" : "text-brand-rose", clickable: true, onClick: () => setShowReadinessDialog(true) },
             { label: "Skills Identified", value: skillCount, icon: Brain, color: "text-brand-purple", clickable: true, onClick: () => setShowSkillsDialog(true) },
           ].map((stat) => (
             <div 
