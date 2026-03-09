@@ -74,9 +74,9 @@ Each question MUST have exactly 4 options (A, B, C, D) and one correct answer.
 Format: Include the options as part of the question or as a separate field.`,
 
       combined: `Generate ${count} mixed interview questions. ${difficultyInstruction}
-- 7 coding questions (DSA with test cases)
-- 7 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
-- 6 aptitude MCQ questions (with 4 options each)
+- 5 coding questions (DSA with test cases)
+- 5 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
+- 5 aptitude MCQ questions (with 4 options each)
 Skills: ${skillList}.${projectContext}`,
     };
 
