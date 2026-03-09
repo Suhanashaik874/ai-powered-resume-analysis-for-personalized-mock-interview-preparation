@@ -100,13 +100,18 @@ export const quizData: QuizMap = {
     "percentages-ratios": {
       0: [
         { question: "A price increases by 20% then decreases by 20%. What is the net change?", options: ["0%", "-4%", "+4%", "-2%"], correctAnswer: 1, explanation: "Net change = 20 + (-20) + (20×-20/100) = -4%. The price ends up 4% lower than the original." },
-        { question: "If 30% of x equals 40% of 150, what is x?", options: ["180", "200", "150", "160"], correctAnswer: 1, explanation: "0.3x = 0.4 × 150 = 60. So x = 60/0.3 = 200." }
+        { question: "If 30% of x equals 40% of 150, what is x?", options: ["180", "200", "150", "160"], correctAnswer: 1, explanation: "0.3x = 0.4 × 150 = 60. So x = 60/0.3 = 200." },
+        { question: "A student scores 70% in English and 80% in Math. If both have equal weightage, what is the average?", options: ["70%", "75%", "80%", "85%"], correctAnswer: 1, explanation: "Average = (70 + 80)/2 = 150/2 = 75%." }
       ],
       1: [
-        { question: "A shopkeeper marks goods 50% above CP and gives 20% discount. What is the profit%?", options: ["30%", "25%", "20%", "15%"], correctAnswer: 2, explanation: "Net effect = 50 + (-20) + (50×-20/100) = 50 - 20 - 10 = 20% profit." }
+        { question: "A shopkeeper marks goods 50% above CP and gives 20% discount. What is the profit%?", options: ["30%", "25%", "20%", "15%"], correctAnswer: 2, explanation: "Net effect = 50 + (-20) + (50×-20/100) = 50 - 20 - 10 = 20% profit." },
+        { question: "If a value increases by 25%, by what percent should it decrease to return to original?", options: ["20%", "25%", "33.33%", "50%"], correctAnswer: 0, explanation: "If increased by 25%, new value = 1.25x. To get back to x: 1.25x × (1-y) = x → 1-y = 0.8 → y = 20%." },
+        { question: "A mixture contains milk and water in ratio 3:2. What percent is milk?", options: ["40%", "50%", "60%", "66.67%"], correctAnswer: 2, explanation: "Total parts = 3+2 = 5. Milk percentage = (3/5) × 100 = 60%." }
       ],
       2: [
-        { question: "If A:B = 2:3 and B:C = 4:5, what is A:B:C?", options: ["2:3:5", "8:12:15", "4:6:5", "2:4:5"], correctAnswer: 1, explanation: "Make B common: A:B = 8:12, B:C = 12:15. So A:B:C = 8:12:15." }
+        { question: "If A:B = 2:3 and B:C = 4:5, what is A:B:C?", options: ["2:3:5", "8:12:15", "4:6:5", "2:4:5"], correctAnswer: 1, explanation: "Make B common: A:B = 8:12, B:C = 12:15. So A:B:C = 8:12:15." },
+        { question: "If x:y = 5:7, and y:z = 14:15, what is x:y:z?", options: ["5:7:7.5", "10:14:15", "5:14:15", "70:98:105"], correctAnswer: 1, explanation: "Make y common: x:y = 10:14, y:z = 14:15. So x:y:z = 10:14:15." },
+        { question: "In a ratio 3:4, if the second quantity is 36, what is the first?", options: ["27", "30", "45", "48"], correctAnswer: 0, explanation: "If 3:4 = x:36, then x = (3 × 36)/4 = 108/4 = 27." }
       ]
     },
     "time-work": {
