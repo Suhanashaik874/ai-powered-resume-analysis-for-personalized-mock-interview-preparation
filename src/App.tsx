@@ -14,6 +14,7 @@ import InterviewSelect from "./pages/InterviewSelect";
 import CodingInterview from "./pages/CodingInterview";
 import HRInterview from "./pages/HRInterview";
 import AptitudeInterview from "./pages/AptitudeInterview";
+import CombinedInterview from "./pages/CombinedInterview";
 import InterviewResults from "./pages/InterviewResults";
 import AllInterviews from "./pages/AllInterviews";
 import ResetPassword from "./pages/ResetPassword";
