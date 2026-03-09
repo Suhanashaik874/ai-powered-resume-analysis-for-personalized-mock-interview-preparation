@@ -55,7 +55,10 @@ export default function CombinedInterview() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalTimer, setTotalTimer] = useState(45 * 60); // 45 minutes
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoSubmitTriggered = useRef(false);
 
   // Coding state
   const [code, setCode] = useState("// Write your solution here");

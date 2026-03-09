@@ -44,7 +44,10 @@ export default function CodingInterview() {
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalTimer, setTotalTimer] = useState(30 * 60); // 30 minutes
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoSubmitTriggered = useRef(false);
   // Store code per question so it persists across navigation
   const codeMapRef = useRef<Record<string, string>>({});
 

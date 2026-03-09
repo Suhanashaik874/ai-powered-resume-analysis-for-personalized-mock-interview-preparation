@@ -39,8 +39,11 @@ export default function AptitudeInterview() {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalTimer, setTotalTimer] = useState(20 * 60); // 20 minutes
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoSubmitTriggered = useRef(false);
 
   useEffect(() => {
     if (!user || !id) return;
