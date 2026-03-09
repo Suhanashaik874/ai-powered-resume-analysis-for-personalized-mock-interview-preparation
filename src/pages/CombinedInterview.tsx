@@ -306,7 +306,7 @@ export default function CombinedInterview() {
             <Suspense fallback={<div className="flex flex-1 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}>
               <MonacoEditor
                 height="100%"
-                language={language === "cpp" ? "cpp" : language}
+                language="plaintext"
                 value={code}
                 onChange={(v) => { const c = v || ""; setCode(c); if (currentQ) codeMapRef.current[currentQ.id] = c; }}
                 theme="vs-dark"
