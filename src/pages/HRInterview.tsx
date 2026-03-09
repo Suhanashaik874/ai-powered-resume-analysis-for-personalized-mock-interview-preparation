@@ -234,11 +234,20 @@ export default function HRInterview() {
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-1.5 text-sm">
-            <Timer className="h-4 w-4 text-muted-foreground" />
-            <span className={`font-mono font-medium ${timer > 180 ? "text-destructive" : "text-foreground"}`}>
-              {formatTime(timer)}
-            </span>
+          <div className="flex items-center gap-4 text-sm">
+            {/* Total Time Remaining */}
+            <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${totalTimer <= 60 ? "bg-destructive/15 text-destructive" : totalTimer <= 300 ? "bg-yellow-500/15 text-yellow-500" : "bg-secondary"}`}>
+              <Timer className="h-4 w-4" />
+              <span className="font-mono font-semibold">{formatTime(totalTimer)}</span>
+              <span className="text-xs text-muted-foreground">left</span>
+            </div>
+            {/* Question Timer */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-muted-foreground">Q:</span>
+              <span className={`font-mono font-medium ${timer > 180 ? "text-destructive" : "text-foreground"}`}>
+                {formatTime(timer)}
+              </span>
+            </div>
           </div>
         </motion.div>
 
