@@ -46,6 +46,8 @@ export default function Dashboard() {
   const [resumeCount, setResumeCount] = useState(0);
   const [fullName, setFullName] = useState<string | null>(null);
   const [showReadinessDialog, setShowReadinessDialog] = useState(false);
+  const [showSkillsDialog, setShowSkillsDialog] = useState(false);
+  const [skillCount, setSkillCount] = useState(0);
 
   useEffect(() => {
     if (!user) return;
