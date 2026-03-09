@@ -105,16 +105,25 @@ The user did not answer this HR question. Provide response as JSON:
             const data = await resp.json();
             const content = data.choices?.[0]?.message?.content || '';
             console.log(`No-answer AI response for ${q.id}:`, content.substring(0, 200));
-            const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-            try {
-              const parsed = JSON.parse(cleaned);
-              feedback = parsed.feedback || feedback;
-            } catch {
-              // Try extracting JSON
-              const match = cleaned.match(/\{[\s\S]*\}/);
-              if (match) {
-                const parsed = JSON.parse(match[0]);
+            // Extract feedback value directly using regex to avoid nested code fence JSON issues
+            const feedbackMatch = content.match(/"feedback"\s*:\s*"([\s\S]*?)"\s*\}/)
+              || content.match(/"feedback"\s*:\s*"([\s\S]*?)$/);
+            if (feedbackMatch) {
+              feedback = feedbackMatch[1]
+                .replace(/\\n/g, '\n')
+                .replace(/\\"/g, '"')
+                .replace(/\\\\/g, '\\')
+                .replace(/\\`/g, '`');
+            } else {
+              // Fallback: try normal JSON parse
+              try {
+                const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                const parsed = JSON.parse(cleaned);
                 feedback = parsed.feedback || feedback;
+              } catch {
+                // Last resort: use content as-is minus JSON wrapper
+                const raw = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').replace(/^\s*\{\s*"feedback"\s*:\s*"/,'').replace(/"\s*\}\s*$/,'');
+                if (raw.length > 30) feedback = raw.replace(/\\n/g, '\n').replace(/\\"/g, '"');
               }
             }
           } else {
