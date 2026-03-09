@@ -327,7 +327,7 @@ export default function CombinedInterview() {
     <div className="min-h-screen bg-background pt-16">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
-        <HeaderBar questions={questions} currentIdx={currentIdx} timer={timer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
+        <HeaderBar questions={questions} currentIdx={currentIdx} totalTimer={totalTimer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
 
         <motion.div key={currentIdx} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card rounded-2xl p-8 mb-6 mt-6">
           <QuestionMeta currentQ={currentQ} />
