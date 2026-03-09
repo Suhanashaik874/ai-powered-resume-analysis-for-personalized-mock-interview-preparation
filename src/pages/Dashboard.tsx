@@ -282,7 +282,7 @@ export default function Dashboard() {
                                   ? "bg-emerald-500/15 text-emerald-400"
                                   : "bg-amber-500/15 text-amber-400"
                               }`}>
-                                {interview.status}
+                                {interview.status === "completed" ? "completed" : "incomplete"}
                               </span>
                             </div>
                             <div className="text-xs text-muted-foreground mt-0.5">{formatDate(interview.started_at)}</div>
