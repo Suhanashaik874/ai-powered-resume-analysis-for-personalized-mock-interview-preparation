@@ -311,6 +311,96 @@ export default function Dashboard() {
             <PreparationModule />
           </TabsContent>
         </Tabs>
+
+        {/* Readiness Details Dialog */}
+        <Dialog open={showReadinessDialog} onOpenChange={setShowReadinessDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5 text-primary" />
+                Interview Readiness Analysis
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Overall Readiness */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Overall Readiness</CardTitle>
+                  <CardDescription>Your aggregate performance across all interview types</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <div className="text-4xl font-bold text-primary">{readinessScore}%</div>
+                    <div className="flex-1">
+                      <Progress value={readinessScore} className="h-3" />
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {readinessScore >= 80 ? "Excellent! You're interview-ready." :
+                         readinessScore >= 60 ? "Good progress! Keep practicing." :
+                         readinessScore >= 40 ? "You're improving! More practice needed." :
+                         completedInterviews.length > 0 ? "Keep going! Practice makes perfect." :
+                         "Start your first interview to get assessed."}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Type-specific Readiness */}
+              <div className="space-y-4">
+                <h3 className="font-semibold">Readiness by Interview Type</h3>
+                
+                {[
+                  { type: 'coding', label: 'Coding Interview', icon: Code2, color: 'text-brand-cyan', bg: 'bg-cyan-500/15' },
+                  { type: 'hr', label: 'HR Interview', icon: MessageSquare, color: 'text-brand-emerald', bg: 'bg-emerald-500/15' },
+                  { type: 'aptitude', label: 'Aptitude Test', icon: Brain, color: 'text-brand-amber', bg: 'bg-amber-500/15' },
+                ].map(({ type, label, icon: Icon, color, bg }) => {
+                  const readiness = getTypeReadiness(type);
+                  return (
+                    <Card key={type}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${bg}`}>
+                            <Icon className={`h-6 w-6 ${color}`} />
+                          </div>
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="font-medium">{label}</h4>
+                                <p className="text-xs text-muted-foreground">
+                                  {readiness.count} {readiness.count === 1 ? 'interview' : 'interviews'} completed
+                                </p>
+                              </div>
+                              <Badge variant={
+                                readiness.status === 'Ready' ? 'default' :
+                                readiness.status === 'Not Started' ? 'outline' :
+                                'secondary'
+                              }>
+                                {readiness.status}
+                              </Badge>
+                            </div>
+                            <div className="space-y-1">
+                              <Progress value={readiness.score} className="h-2" />
+                              <div className="text-right text-sm font-medium text-muted-foreground">
+                                {readiness.score}%
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <Button onClick={() => setShowReadinessDialog(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
