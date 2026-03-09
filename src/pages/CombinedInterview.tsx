@@ -125,6 +125,20 @@ export default function CombinedInterview() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx, questions]);
 
+  // Total interview timer (45 minutes) with auto-submit
+  useEffect(() => {
+    totalTimerRef.current = setInterval(() => {
+      setTotalTimer((t) => {
+        if (t <= 1 && !autoSubmitTriggered.current) {
+          autoSubmitTriggered.current = true;
+          document.getElementById("auto-submit-trigger")?.click();
+        }
+        return t > 0 ? t - 1 : 0;
+      });
+    }, 1000);
+    return () => { if (totalTimerRef.current) clearInterval(totalTimerRef.current); };
+  }, []);
+
   const formatTime = (s: number) =>
     `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 

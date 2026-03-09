@@ -74,6 +74,20 @@ export default function AptitudeInterview() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx]);
 
+  // Total interview timer (20 minutes) with auto-submit
+  useEffect(() => {
+    totalTimerRef.current = setInterval(() => {
+      setTotalTimer((t) => {
+        if (t <= 1 && !autoSubmitTriggered.current) {
+          autoSubmitTriggered.current = true;
+          document.getElementById("auto-submit-trigger")?.click();
+        }
+        return t > 0 ? t - 1 : 0;
+      });
+    }, 1000);
+    return () => { if (totalTimerRef.current) clearInterval(totalTimerRef.current); };
+  }, []);
+
   // Sync selectedOption when navigating
   useEffect(() => {
     const q = questions[currentIdx];
