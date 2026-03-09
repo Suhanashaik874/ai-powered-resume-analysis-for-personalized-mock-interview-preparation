@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Dark purple/indigo theme */
+    /* Dark cyan/turquoise theme */
     --background: 230 25% 6%;
     --foreground: 220 20% 95%;
 
@@ -16,7 +16,7 @@
     --popover: 230 20% 9%;
     --popover-foreground: 220 20% 95%;
 
-    --primary: 258 90% 66%;
+    --primary: 191 100% 50%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 230 20% 13%;
@@ -25,23 +25,23 @@
     --muted: 230 18% 12%;
     --muted-foreground: 220 15% 55%;
 
-    --accent: 258 60% 20%;
-    --accent-foreground: 258 90% 85%;
+    --accent: 191 80% 25%;
+    --accent-foreground: 191 100% 85%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 230 20% 15%;
     --input: 230 20% 13%;
-    --ring: 258 90% 66%;
+    --ring: 191 100% 50%;
 
     --radius: 0.75rem;
 
     /* Brand */
-    --purple: 258 90% 66%;
-    --purple-glow: 258 90% 75%;
-    --indigo: 238 84% 65%;
-    --cyan: 188 94% 58%;
+    --purple: 191 100% 50%;
+    --purple-glow: 191 100% 60%;
+    --indigo: 191 100% 50%;
+    --cyan: 191 100% 50%;
     --emerald: 160 84% 39%;
     --amber: 43 96% 56%;
     --rose: 350 89% 60%;
@@ -51,26 +51,26 @@
     --glass-border: 230 20% 20%;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(258 90% 15%) 0%, hsl(230 25% 6%) 50%, hsl(238 60% 12%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(191 100% 15%) 0%, hsl(230 25% 6%) 50%, hsl(200 80% 12%) 100%);
     --gradient-card: linear-gradient(135deg, hsl(230 20% 11%) 0%, hsl(230 20% 8%) 100%);
-    --gradient-primary: linear-gradient(135deg, hsl(258 90% 66%) 0%, hsl(238 84% 65%) 100%);
-    --gradient-purple-glow: radial-gradient(ellipse at 50% 0%, hsl(258 90% 66% / 0.15) 0%, transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(191 100% 50%) 0%, hsl(186 100% 45%) 100%);
+    --gradient-purple-glow: radial-gradient(ellipse at 50% 0%, hsl(191 100% 50% / 0.15) 0%, transparent 70%);
 
     --sidebar-background: 230 25% 7%;
     --sidebar-foreground: 220 15% 70%;
-    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary: 191 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 230 20% 12%;
     --sidebar-accent-foreground: 220 20% 85%;
     --sidebar-border: 230 20% 13%;
-    --sidebar-ring: 258 90% 66%;
+    --sidebar-ring: 191 100% 50%;
 
     /* Shadow tokens */
     --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.4);
     --shadow-md: 0 4px 16px hsl(0 0% 0% / 0.5);
     --shadow-lg: 0 10px 40px hsl(0 0% 0% / 0.6);
-    --shadow-glow: 0 0 30px hsl(258 90% 66% / 0.25);
-    --shadow-glow-lg: 0 0 60px hsl(258 90% 66% / 0.2);
+    --shadow-glow: 0 0 30px hsl(191 100% 50% / 0.25);
+    --shadow-glow-lg: 0 0 60px hsl(191 100% 50% / 0.2);
   }
 }
 
