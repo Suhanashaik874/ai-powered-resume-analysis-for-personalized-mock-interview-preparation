@@ -105,11 +105,11 @@ export default function Dashboard() {
       a + (b.max_score > 0 ? (b.total_score / b.max_score) * 100 : 0), 0
     ) / typeInterviews.length;
     
-    let status = 'Beginner';
-    if (avgScore >= 80) status = 'Ready';
-    else if (avgScore >= 60) status = 'Good Progress';
-    else if (avgScore >= 40) status = 'Improving';
-    
+    let status = 'Needs Practice';
+    if (avgScore >= 80) status = 'Good to Go!';
+    else if (avgScore >= 60) status = 'Partially Ready';
+    else if (avgScore >= 40) status = 'Needs Improvement';
+
     return { score: Math.round(avgScore), count: typeInterviews.length, status };
   };
 
