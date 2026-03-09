@@ -44,7 +44,10 @@ export default function CodingInterview() {
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalTimer, setTotalTimer] = useState(30 * 60); // 30 minutes
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoSubmitTriggered = useRef(false);
   // Store code per question so it persists across navigation
   const codeMapRef = useRef<Record<string, string>>({});
 
@@ -81,6 +84,20 @@ export default function CodingInterview() {
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx]);
+
+  // Total interview timer (30 minutes) with auto-submit
+  useEffect(() => {
+    totalTimerRef.current = setInterval(() => {
+      setTotalTimer((t) => {
+        if (t <= 1 && !autoSubmitTriggered.current) {
+          autoSubmitTriggered.current = true;
+          document.getElementById("auto-submit-trigger")?.click();
+        }
+        return t > 0 ? t - 1 : 0;
+      });
+    }, 1000);
+    return () => { if (totalTimerRef.current) clearInterval(totalTimerRef.current); };
+  }, []);
 
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
@@ -200,9 +217,10 @@ export default function CodingInterview() {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 text-sm">
                 <Timer className="h-4 w-4 text-muted-foreground" />
-                <span className={`font-mono ${timer > 300 ? "text-destructive" : "text-foreground"}`}>
-                  {formatTime(timer)}
+                <span className={`font-mono ${totalTimer <= 60 ? "text-destructive" : totalTimer <= 300 ? "text-yellow-500" : "text-foreground"}`}>
+                  {formatTime(totalTimer)}
                 </span>
+                <span className="text-xs text-muted-foreground">remaining</span>
               </div>
               <span className="text-sm text-muted-foreground">
                 {currentIdx + 1} / {questions.length}
@@ -211,6 +229,7 @@ export default function CodingInterview() {
           </div>
         </div>
       </div>
+      <button id="auto-submit-trigger" onClick={handleSubmit} className="hidden" />
 
       {/* Split panel */}
       <div className="flex flex-1 overflow-hidden">

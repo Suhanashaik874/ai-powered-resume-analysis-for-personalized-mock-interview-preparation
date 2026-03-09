@@ -55,7 +55,10 @@ export default function CombinedInterview() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalTimer, setTotalTimer] = useState(45 * 60); // 45 minutes
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoSubmitTriggered = useRef(false);
 
   // Coding state
   const [code, setCode] = useState("// Write your solution here");
@@ -121,6 +124,20 @@ export default function CombinedInterview() {
 
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx, questions]);
+
+  // Total interview timer (45 minutes) with auto-submit
+  useEffect(() => {
+    totalTimerRef.current = setInterval(() => {
+      setTotalTimer((t) => {
+        if (t <= 1 && !autoSubmitTriggered.current) {
+          autoSubmitTriggered.current = true;
+          document.getElementById("auto-submit-trigger")?.click();
+        }
+        return t > 0 ? t - 1 : 0;
+      });
+    }, 1000);
+    return () => { if (totalTimerRef.current) clearInterval(totalTimerRef.current); };
+  }, []);
 
   const formatTime = (s: number) =>
     `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
@@ -258,8 +275,9 @@ export default function CombinedInterview() {
       <div className="flex h-screen flex-col bg-background overflow-hidden">
         <Navbar />
         <div className="pt-16 flex-shrink-0">
-          <HeaderBar questions={questions} currentIdx={currentIdx} timer={timer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
+          <HeaderBar questions={questions} currentIdx={currentIdx} totalTimer={totalTimer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
         </div>
+        <button id="auto-submit-trigger" onClick={handleSubmit} className="hidden" />
         <div className="flex flex-1 overflow-hidden">
           {/* Left: Question */}
           <div className="w-2/5 flex flex-col border-r border-border/50 overflow-y-auto">
@@ -310,7 +328,8 @@ export default function CombinedInterview() {
     <div className="min-h-screen bg-background pt-16">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
-        <HeaderBar questions={questions} currentIdx={currentIdx} timer={timer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
+        <HeaderBar questions={questions} currentIdx={currentIdx} totalTimer={totalTimer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
+        <button id="auto-submit-trigger" onClick={handleSubmit} className="hidden" />
 
         <motion.div key={currentIdx} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass-card rounded-2xl p-8 mb-6 mt-6">
           <QuestionMeta currentQ={currentQ} />
@@ -402,8 +421,8 @@ export default function CombinedInterview() {
 
 // --- Sub-components ---
 
-function HeaderBar({ questions, currentIdx, timer, formatTime, TypeInfo, qType }: {
-  questions: Question[]; currentIdx: number; timer: number; formatTime: (s: number) => string;
+function HeaderBar({ questions, currentIdx, totalTimer, formatTime, TypeInfo, qType }: {
+  questions: Question[]; currentIdx: number; totalTimer: number; formatTime: (s: number) => string;
   TypeInfo: { icon: typeof Code2; label: string; color: string }; qType: string;
 }) {
   return (
@@ -437,7 +456,8 @@ function HeaderBar({ questions, currentIdx, timer, formatTime, TypeInfo, qType }
         </span>
         <div className="flex items-center gap-1.5 text-sm">
           <Timer className="h-4 w-4 text-muted-foreground" />
-          <span className={`font-mono font-medium ${timer > 180 ? "text-destructive" : "text-foreground"}`}>{formatTime(timer)}</span>
+          <span className={`font-mono font-medium ${totalTimer <= 60 ? "text-destructive" : totalTimer <= 300 ? "text-yellow-500" : "text-foreground"}`}>{formatTime(totalTimer)}</span>
+          <span className="text-xs text-muted-foreground">remaining</span>
         </div>
         <span className="text-sm text-muted-foreground">{currentIdx + 1}/{questions.length}</span>
       </div>
