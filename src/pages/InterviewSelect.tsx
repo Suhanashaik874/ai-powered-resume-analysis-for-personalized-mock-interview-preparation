@@ -65,8 +65,8 @@ const interviewTypes = [
     border: "border-purple-500/30 hover:border-purple-400",
     iconBg: "bg-purple-500/15 border-purple-500/30",
     iconColor: "text-brand-purple",
-    questions: 20,
-    duration: "60 min",
+    questions: 15,
+    duration: "45 min",
   },
 ];
 
