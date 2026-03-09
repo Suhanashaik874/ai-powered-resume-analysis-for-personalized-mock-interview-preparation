@@ -78,6 +78,7 @@ export default function InterviewSelect() {
   const { toast } = useToast();
   const [selected, setSelected] = useState<string | null>(searchParams.get("type"));
   const [difficulty, setDifficulty] = useState<string>("medium");
+  const [solutionLanguage, setSolutionLanguage] = useState<string>("python");
   const [loading, setLoading] = useState(false);
 
   const handleStart = async () => {
