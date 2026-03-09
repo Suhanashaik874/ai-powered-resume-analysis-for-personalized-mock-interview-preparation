@@ -295,16 +295,9 @@ export default function CodingInterview() {
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Editor header */}
           <div className="flex items-center justify-between border-b border-border/50 px-4 py-2 bg-secondary/30">
-            <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-36 h-8 text-sm border-border/60 bg-secondary/50">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGES.map((l) => (
-                  <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="text-sm text-muted-foreground">
+              Write the solution here; AI will evaluate it
+            </div>
 
             <Button size="sm" onClick={handleRunCode} disabled={running} className="h-8 bg-gradient-primary text-primary-foreground hover:opacity-90">
               {running ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Play className="h-3.5 w-3.5 mr-1" />}
