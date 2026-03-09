@@ -150,11 +150,16 @@ Question: ${q.question_text}
 User's Code:
 ${userResponse}
 
+IMPORTANT FEEDBACK RULES:
+- If the solution is WRONG or doesn't work: Mark is_correct=false, provide the correct solution with explanation.
+- If the solution is CORRECT but can be improved: Mark is_correct=true, give improvement tips (better time/space complexity, cleaner code, edge cases). Do NOT provide a full solution.
+- If the solution is PERFECT (optimal, clean, handles edge cases): Mark is_correct=true, give a genuine compliment. No improvements needed.
+
 Return JSON:
 {
   "score": 0-10,
   "is_correct": true/false,
-  "feedback": "Use bullet points:\\n- **Correct?** Yes/No + brief reason\\n- **Time:** O(?)\\n- **Space:** O(?)\\n- **What's good:** [1 line]\\n- **Improve:** [1 line, skip if perfect]\\n\\nIf not optimal, add:\\n**Better Solution:**\\n\`\`\`\\n[code]\\n\`\`\`"
+  "feedback": "[Follow the rules above. Use bullet points and markdown formatting.]"
 }`;
       } else if (q.question_type === 'aptitude') {
         evalPrompt = `Evaluate this aptitude answer concisely.
@@ -163,11 +168,15 @@ Question: ${q.question_text}
 Correct Answer: ${q.expected_answer || 'N/A'}
 User's Answer: ${userResponse}
 
+IMPORTANT FEEDBACK RULES:
+- If WRONG: Show the correct answer with step-by-step explanation of how to solve it.
+- If CORRECT: Give a brief compliment. No need to re-explain the solution.
+
 Return JSON:
 {
   "score": 0 or 10,
   "is_correct": true/false,
-  "feedback": "- **Your answer:** [what they said]\\n- **Correct answer:** [correct]\\n- **Explanation:** [2-3 line step-by-step]"
+  "feedback": "[Follow the rules above]"
 }`;
       } else {
         evalPrompt = `Evaluate this HR interview answer concisely.
@@ -176,11 +185,16 @@ Question: ${q.question_text}
 Key Points: ${q.expected_answer || 'N/A'}
 User's Answer: ${userResponse}
 
+IMPORTANT FEEDBACK RULES:
+- If the answer is POOR or misses key points: Mark is_correct=false, provide a sample ideal answer using STAR method.
+- If the answer is DECENT but can improve: Mark is_correct=true, mention what was good and give specific improvement tips.
+- If the answer is EXCELLENT: Mark is_correct=true, give a genuine compliment. No improvements needed.
+
 Return JSON:
 {
   "score": 0-10,
   "is_correct": true/false,
-  "feedback": "- **Score:** X/10\\n- **Good:** [1 line strength]\\n- **Improve:** [1 line suggestion]\\n- **Missing:** [key points missed, if any]"
+  "feedback": "[Follow the rules above]"
 }`;
       }
 
