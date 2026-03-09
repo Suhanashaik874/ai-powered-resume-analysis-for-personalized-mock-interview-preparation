@@ -147,16 +147,24 @@ Skills: ${skillList}.${projectContext}`,
       const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
       if (arrayMatch) cleaned = arrayMatch[0];
       questions = JSON.parse(cleaned);
-    } catch {
-      console.error('Failed to parse questions JSON, attempting recovery...');
+    } catch (e1) {
+      console.error('Failed to parse questions JSON:', e1.message);
+      console.error('Raw content (first 500 chars):', content.substring(0, 500));
       try {
         let cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
         const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
         if (arrayMatch) cleaned = arrayMatch[0];
         cleaned = cleaned.replace(/\\'/g, "'");
+        // Try to fix truncated JSON by closing open brackets
+        let bracketCount = 0;
+        for (const ch of cleaned) { if (ch === '[') bracketCount++; if (ch === ']') bracketCount--; }
+        for (let i = 0; i < bracketCount; i++) cleaned += ']';
+        // Try to fix truncated objects
+        cleaned = cleaned.replace(/,\s*$/, '');
+        if (cleaned.endsWith('[')) cleaned += ']';
         questions = JSON.parse(cleaned);
       } catch {
-        console.error('Recovery also failed');
+        console.error('Recovery also failed, raw length:', content.length);
         questions = [];
       }
     }
