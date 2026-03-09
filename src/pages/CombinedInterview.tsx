@@ -124,7 +124,7 @@ export default function CombinedInterview() {
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
 
     if (q.question_type === "coding") {
-      setCode(codeMapRef.current[q.id] || DEFAULT_CODE[language]);
+      setCode(codeMapRef.current[q.id] || "// Write your solution here");
     } else if (q.question_type === "hr") {
       setHrAnswer(q.user_answer || answers[q.id] || "");
       baseTextRef.current = "";
