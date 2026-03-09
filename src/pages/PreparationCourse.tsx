@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, BookOpen, ChevronRight, CheckCircle2, Code2, Lightbulb, FileCode2, PenTool, BarChart3 } from "lucide-react";
 import { LessonQuiz } from "@/components/LessonQuiz";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { preparationCourses, type Topic, type Lesson } from "@/data/preparationCourses";
 import { quizData } from "@/data/quizData";
+import { Progress } from "@/components/ui/progress";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileCode2, Lightbulb, PenTool, BarChart3,
@@ -17,6 +18,26 @@ const difficultyColor: Record<string, string> = {
   Medium: "text-amber-400 bg-amber-500/15",
   Hard: "text-rose-400 bg-rose-500/15",
 };
+
+// Helper to get/set completed lessons from localStorage
+function getCompletedLessons(categoryId: string, topicId: string): Set<number> {
+  try {
+    const key = `prep_completed_${categoryId}_${topicId}`;
+    const data = localStorage.getItem(key);
+    if (data) return new Set(JSON.parse(data));
+  } catch {}
+  return new Set();
+}
+
+function saveCompletedLessons(categoryId: string, topicId: string, completed: Set<number>) {
+  const key = `prep_completed_${categoryId}_${topicId}`;
+  localStorage.setItem(key, JSON.stringify([...completed]));
+}
+
+function getTopicCompletionCount(categoryId: string, topicId: string, totalLessons: number): number {
+  const completed = getCompletedLessons(categoryId, topicId);
+  return completed.size;
+}
 
 export default function PreparationCourse() {
   const { categoryId, topicId } = useParams();
@@ -55,14 +76,14 @@ export default function PreparationCourse() {
     return <TopicDetail category={category} topic={topic} categoryId={categoryId!} />;
   }
 
-  // Category overview — list of topics
+  // Category overview — list of topics with completion status
   return (
     <div className="min-h-screen bg-background pt-16">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Button variant="ghost" size="sm" className="mb-4 text-muted-foreground" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Dashboard
+          <Button variant="ghost" size="sm" className="mb-4 text-muted-foreground" onClick={() => navigate("/preparation")}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Preparation
           </Button>
 
           <div className="flex items-center gap-4 mb-8">
@@ -76,33 +97,53 @@ export default function PreparationCourse() {
           </div>
 
           <div className="space-y-4">
-            {category.topics.map((topic, i) => (
-              <motion.div
-                key={topic.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-              >
-                <button
-                  onClick={() => navigate(`/preparation/${categoryId}/${topic.id}`)}
-                  className={`w-full text-left rounded-2xl border bg-gradient-to-br p-6 transition-all hover:shadow-glow group ${category.color} ${category.border}`}
+            {category.topics.map((topic, i) => {
+              const completedCount = getTopicCompletionCount(categoryId!, topic.id, topic.lessons.length);
+              const totalLessons = topic.lessons.length;
+              const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+              const isComplete = completedCount === totalLessons && totalLessons > 0;
+
+              return (
+                <motion.div
+                  key={topic.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08 }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className="text-lg font-semibold">{topic.title}</span>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${difficultyColor[topic.difficulty]}`}>
-                          {topic.difficulty}
-                        </span>
+                  <button
+                    onClick={() => navigate(`/preparation/${categoryId}/${topic.id}`)}
+                    className={`w-full text-left rounded-2xl border bg-gradient-to-br p-6 transition-all hover:shadow-glow group ${category.color} ${category.border}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-1">
+                          {isComplete ? (
+                            <CheckCircle2 className="h-5 w-5 text-brand-emerald shrink-0" />
+                          ) : null}
+                          <span className="text-lg font-semibold">{topic.title}</span>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${difficultyColor[topic.difficulty]}`}>
+                            {topic.difficulty}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{topic.desc}</p>
+                        <div className="mt-3 flex items-center gap-3">
+                          <div className="flex-1 h-1.5 rounded-full bg-muted/50 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-primary transition-all duration-500"
+                              style={{ width: `${progressPercent}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground shrink-0">
+                            {completedCount}/{totalLessons} concepts
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground">{topic.desc}</p>
-                      <p className="text-xs text-muted-foreground/70 mt-2">{topic.lessons.length} lesson{topic.lessons.length > 1 ? "s" : ""}</p>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0 ml-4" />
                     </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0 ml-4" />
-                  </div>
-                </button>
-              </motion.div>
-            ))}
+                  </button>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
       </div>
@@ -112,11 +153,15 @@ export default function PreparationCourse() {
 
 function TopicDetail({ category, topic, categoryId }: { category: typeof preparationCourses[0]; topic: Topic; categoryId: string }) {
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
-  const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
+  const [completedLessons, setCompletedLessons] = useState<Set<number>>(() => getCompletedLessons(categoryId, topic.id));
   const navigate = useNavigate();
 
   const markComplete = (idx: number) => {
-    setCompletedLessons(prev => new Set(prev).add(idx));
+    setCompletedLessons(prev => {
+      const next = new Set(prev).add(idx);
+      saveCompletedLessons(categoryId, topic.id, next);
+      return next;
+    });
   };
 
   const progress = Math.round((completedLessons.size / topic.lessons.length) * 100);
