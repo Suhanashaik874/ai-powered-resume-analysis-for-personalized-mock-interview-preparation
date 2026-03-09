@@ -128,7 +128,7 @@ Skills: ${skillList}.${projectContext}`,
           content: `${prompt}\n\nReturn a JSON array where each element has these exact fields:\n${jsonFields}\n\nReturn ONLY the JSON array, nothing else.`,
         }],
         temperature: 0.7,
-        max_tokens: 6000,
+        max_tokens: interviewType === 'combined' ? 12000 : interviewType === 'aptitude' ? 8000 : 6000,
       }),
     });
 
