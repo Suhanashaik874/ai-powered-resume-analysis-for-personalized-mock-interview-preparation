@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, TrendingUp, BookOpen, GraduationCap } from "lucide-react";
+import { LayoutDashboard, Code2, MessageSquare, Brain, Trophy, Clock, Upload, Plus, ChevronRight, Target, TrendingUp, BookOpen, GraduationCap, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { PreparationModule } from "@/components/PreparationModule";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Interview {
   id: string;
