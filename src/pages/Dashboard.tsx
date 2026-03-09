@@ -342,10 +342,10 @@ export default function Dashboard() {
                     <div className="flex-1">
                       <Progress value={readinessScore} className="h-3" />
                       <p className="text-sm text-muted-foreground mt-2">
-                        {readinessScore >= 80 ? "Excellent! You're interview-ready." :
-                         readinessScore >= 60 ? "Good progress! Keep practicing." :
-                         readinessScore >= 40 ? "You're improving! More practice needed." :
-                         completedInterviews.length > 0 ? "Keep going! Practice makes perfect." :
+                        {readinessScore >= 80 ? "🟢 Good to Go! You're interview-ready." :
+                         readinessScore >= 60 ? "🟡 Partially Ready — a few more sessions will help." :
+                         readinessScore >= 40 ? "🟠 Needs Improvement — keep practicing consistently." :
+                         completedInterviews.length > 0 ? "🔴 Needs Practice — practice more to build confidence." :
                          "Start your first interview to get assessed."}
                       </p>
                     </div>
