@@ -212,8 +212,18 @@ Return JSON:
         try {
           result = JSON.parse(cleaned);
         } catch {
-          const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-          if (jsonMatch) result = JSON.parse(jsonMatch[0]);
+          // Try regex extraction for score, is_correct, and feedback separately
+          const scoreMatch = cleaned.match(/"score"\s*:\s*(\d+)/);
+          const correctMatch = cleaned.match(/"is_correct"\s*:\s*(true|false)/);
+          const feedbackMatch = cleaned.match(/"feedback"\s*:\s*"([\s\S]*?)"\s*[,\}]/)
+            || cleaned.match(/"feedback"\s*:\s*"([\s\S]*?)$/);
+          if (scoreMatch || feedbackMatch) {
+            result = {
+              score: scoreMatch ? parseInt(scoreMatch[1]) : 0,
+              is_correct: correctMatch ? correctMatch[1] === 'true' : false,
+              feedback: feedbackMatch ? feedbackMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\').replace(/\\`/g, '`') : '',
+            };
+          }
         }
       } catch (err) {
         console.error(`Eval error for ${q.id}:`, err.message);
