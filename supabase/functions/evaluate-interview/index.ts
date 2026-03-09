@@ -29,6 +29,27 @@ serve(async (req) => {
 
     if (!questions?.length) throw new Error('No questions found');
 
+    // Fetch interview record for solution_language and user_id
+    const { data: interview } = await supabase
+      .from('interviews')
+      .select('solution_language, user_id, interview_type')
+      .eq('id', interviewId)
+      .single();
+
+    const solutionLanguage = interview?.solution_language || 'python';
+    const userId = interview?.user_id;
+    const langInstruction = `IMPORTANT: All code solutions, examples, and code snippets MUST be written in ${solutionLanguage.toUpperCase()}. Do not use any other programming language.`;
+
+    // Fetch user's extracted skills for skill gap analysis
+    let extractedSkills: { skill_name: string; proficiency_level: string }[] = [];
+    if (userId) {
+      const { data: skills } = await supabase
+        .from('extracted_skills')
+        .select('skill_name, proficiency_level')
+        .eq('user_id', userId);
+      extractedSkills = skills || [];
+    }
+
     const evaluations = [];
     let totalScore = 0;
     const maxScore = questions.length * 10;
@@ -36,16 +57,16 @@ serve(async (req) => {
     for (const q of questions) {
       const userResponse = q.user_code || q.user_answer || '';
       if (!userResponse.trim()) {
-        // Still get the correct solution from AI even when no answer provided
         let noAnswerPrompt = '';
         if (q.question_type === 'coding') {
           noAnswerPrompt = `The user did not attempt this coding question. Provide the correct solution.
+${langInstruction}
 
 Question: ${q.question_text}
 
 Return JSON:
 {
-  "feedback": "**No answer was provided.**\\n\\n**Correct Approach:**\\n[Explain the approach clearly]\\n\\n**Solution:**\\n\\\`\\\`\\\`\\n[Write the optimal solution code]\\n\\\`\\\`\\\`\\n\\n**Time Complexity:** O(?)\\n**Space Complexity:** O(?)",
+  "feedback": "**No answer was provided.**\\n\\n**Correct Approach:**\\n[Explain the approach clearly]\\n\\n**Solution:**\\n\\\`\\\`\\\`\\n[Write the optimal solution code in ${solutionLanguage}]\\n\\\`\\\`\\\`\\n\\n**Time Complexity:** O(?)\\n**Space Complexity:** O(?)",
   "correct_answer": "Brief description of correct approach"
 }`;
         } else if (q.question_type === 'aptitude') {
@@ -116,6 +137,7 @@ Return JSON:
       let evalPrompt = '';
       if (q.question_type === 'coding') {
         evalPrompt = `You are an expert coding interviewer. Evaluate this coding answer thoroughly.
+${langInstruction}
 
 Question: ${q.question_text}
 Expected Approach: ${q.expected_answer || 'N/A'}
@@ -125,13 +147,14 @@ CRITICAL RULES FOR OPTIMAL SOLUTION:
 - First determine the best possible time/space complexity for this problem.
 - If the user's solution ALREADY achieves the best possible complexity, set "optimal_solution" to "" (empty string) and clearly state in the feedback that the user's solution is already optimal. Do NOT repeat their code as the optimal solution.
 - ONLY if the user's solution is NOT optimal, provide a better approach in "optimal_solution" with a clear complexity comparison showing why it is better.
+- All code MUST be in ${solutionLanguage}.
 
 Return JSON with these fields:
 {
   "score": 0-10,
   "is_correct": true/false,
   "feedback": "Detailed markdown feedback including:\n- **Correctness**: Does the solution work for all test cases?\n- **Time Complexity**: What is the time complexity?\n- **Space Complexity**: What is the space complexity?\n- **Optimality**: Is this the best possible approach? If YES, clearly state 'Your solution is already optimal!' If NO, explain what a better approach would be.\n- **Strengths**: What did the user do well?\n- **Areas to Improve**: Only if applicable\n- **Edge Cases**: Any missed edge cases?",
-  "optimal_solution": "ONLY if the user's solution is NOT optimal. Provide a more efficient solution with complexity comparison. If user's solution IS already optimal, set this to empty string.",
+  "optimal_solution": "ONLY if the user's solution is NOT optimal. Provide a more efficient solution in ${solutionLanguage} with complexity comparison. If user's solution IS already optimal, set this to empty string.",
   "correct_answer": "Brief description of the correct approach"
 }`;
       } else if (q.question_type === 'aptitude') {
@@ -218,6 +241,43 @@ Return JSON:
       evaluations.push({ id: q.id, score: result.score });
     }
 
+    // Build skill gap data
+    let skillGapSection = '';
+    if (extractedSkills.length > 0) {
+      // Map skill performance from questions
+      const skillScores: Record<string, { total: number; count: number; claimed: string }> = {};
+      for (const skill of extractedSkills) {
+        skillScores[skill.skill_name.toLowerCase()] = { total: 0, count: 0, claimed: skill.proficiency_level };
+      }
+      for (const q of questions) {
+        if (q.skill_name) {
+          const key = q.skill_name.toLowerCase();
+          // Find matching extracted skill
+          for (const skill of extractedSkills) {
+            if (key.includes(skill.skill_name.toLowerCase()) || skill.skill_name.toLowerCase().includes(key)) {
+              if (!skillScores[skill.skill_name.toLowerCase()]) {
+                skillScores[skill.skill_name.toLowerCase()] = { total: 0, count: 0, claimed: skill.proficiency_level };
+              }
+              const qScore = evaluations.find(e => e.id === q.id)?.score || 0;
+              skillScores[skill.skill_name.toLowerCase()].total += qScore;
+              skillScores[skill.skill_name.toLowerCase()].count += 1;
+            }
+          }
+        }
+      }
+
+      const gapLines = Object.entries(skillScores)
+        .filter(([, v]) => v.count > 0)
+        .map(([skill, v]) => {
+          const avg = Math.round(v.total / v.count);
+          return `- ${skill}: Claimed "${v.claimed}", scored ${avg}/10 avg across ${v.count} question(s)`;
+        }).join('\n');
+
+      if (gapLines) {
+        skillGapSection = `\n\nSKILL GAP DATA (compare claimed proficiency vs actual performance):\n${gapLines}\n\nBased on this data, include a "📊 Skill Gap Analysis" section that:\n- Identifies any mismatches between claimed proficiency and actual scores\n- If someone claims "intermediate" or "advanced" but scores poorly, call it out constructively\n- Suggest realistic self-assessment adjustments\n- Highlight skills where performance matches or exceeds expectations`;
+      }
+    }
+
     // Overall feedback
     const overallResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -228,14 +288,15 @@ Return JSON:
           role: 'user',
           content: `Interview score: ${totalScore}/${maxScore} (${Math.round(totalScore/maxScore*100)}%).
 
-Write a SHORT, punchy interview summary in markdown. Be direct, no fluff. Max 5-6 lines total:
+Write a SHORT, punchy interview summary in markdown. Be direct, no fluff:
 - One bold opening line with the vibe (e.g. "🔥 Solid performance!" or "⚡ Room to grow")
 - 2-3 bullet points: mix of strengths and improvements, be specific not generic
 - One actionable tip to level up
+${skillGapSection ? skillGapSection : ''}
 
-Keep it conversational and motivating. No headers, no sections, no walls of text.`,
+Keep it conversational and motivating. ${skillGapSection ? 'Include the skill gap analysis section as described above.' : 'No headers, no sections, no walls of text.'}`,
         }],
-        max_tokens: 500,
+        max_tokens: 800,
       }),
     });
     const overallData = await overallResp.json();

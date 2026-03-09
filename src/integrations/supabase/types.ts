@@ -124,6 +124,7 @@ export type Database = {
           id: string
           interview_type: string
           max_score: number
+          solution_language: string
           started_at: string
           status: string
           total_score: number
@@ -135,6 +136,7 @@ export type Database = {
           id?: string
           interview_type?: string
           max_score?: number
+          solution_language?: string
           started_at?: string
           status?: string
           total_score?: number
@@ -146,6 +148,7 @@ export type Database = {
           id?: string
           interview_type?: string
           max_score?: number
+          solution_language?: string
           started_at?: string
           status?: string
           total_score?: number

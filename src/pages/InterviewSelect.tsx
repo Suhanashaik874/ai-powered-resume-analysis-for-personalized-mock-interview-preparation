@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Code2, MessageSquare, Brain, Target, ChevronRight, Loader2, Clock, Zap, Gauge } from "lucide-react";
+import { Code2, MessageSquare, Brain, Target, ChevronRight, Loader2, Clock, Zap, Gauge, Sparkles, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const interviewTypes = [
   {
@@ -71,6 +78,7 @@ export default function InterviewSelect() {
   const { toast } = useToast();
   const [selected, setSelected] = useState<string | null>(searchParams.get("type"));
   const [difficulty, setDifficulty] = useState<string>("medium");
+  const [solutionLanguage, setSolutionLanguage] = useState<string>("python");
   const [loading, setLoading] = useState(false);
 
   const handleStart = async () => {
@@ -78,12 +86,14 @@ export default function InterviewSelect() {
     setLoading(true);
 
     try {
-      const { data: interview, error: interviewError } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: interview, error: interviewError } = await (supabase as any)
         .from("interviews")
         .insert({
           user_id: user.id,
           interview_type: selected,
           status: "in_progress",
+          solution_language: solutionLanguage,
         })
         .select()
         .single();
@@ -224,23 +234,58 @@ export default function InterviewSelect() {
               <Gauge className="h-4 w-4" />
               Select Difficulty
             </h3>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 justify-center">
               {[
                 { value: "easy", label: "Easy", color: "border-emerald-500/40 hover:border-emerald-400 bg-emerald-500/10", active: "ring-2 ring-emerald-500 border-emerald-400 bg-emerald-500/20" },
                 { value: "medium", label: "Medium", color: "border-amber-500/40 hover:border-amber-400 bg-amber-500/10", active: "ring-2 ring-amber-500 border-amber-400 bg-amber-500/20" },
                 { value: "hard", label: "Hard", color: "border-rose-500/40 hover:border-rose-400 bg-rose-500/10", active: "ring-2 ring-rose-500 border-rose-400 bg-rose-500/20" },
+                { value: "adaptive", label: "Adaptive", color: "border-violet-500/40 hover:border-violet-400 bg-gradient-to-r from-violet-500/10 to-cyan-500/10", active: "ring-2 ring-violet-500 border-violet-400 bg-gradient-to-r from-violet-500/20 to-cyan-500/20" },
               ].map((d) => (
                 <button
                   key={d.value}
                   onClick={() => setDifficulty(d.value)}
-                  className={`px-5 py-2 rounded-full border text-sm font-medium transition-all ${
+                  className={`px-5 py-2 rounded-full border text-sm font-medium transition-all flex items-center gap-1.5 ${
                     difficulty === d.value ? d.active : d.color
                   }`}
                 >
+                  {d.value === "adaptive" && <Sparkles className="h-3.5 w-3.5" />}
                   {d.label}
                 </button>
               ))}
             </div>
+            {difficulty === "adaptive" && (
+              <p className="text-xs text-muted-foreground mt-2 text-center max-w-md">
+                Questions will match each skill's proficiency level from your resume
+              </p>
+            )}
+          </motion.div>
+        )}
+
+        {/* Solution Language Selection - Only for coding interviews */}
+        {selected && (selected === "coding" || selected === "combined") && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 flex flex-col items-center"
+          >
+            <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+              <Languages className="h-4 w-4" />
+              Preferred Solution Language
+            </h3>
+            <Select value={solutionLanguage} onValueChange={setSolutionLanguage}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="python">Python</SelectItem>
+                <SelectItem value="javascript">JavaScript</SelectItem>
+                <SelectItem value="java">Java</SelectItem>
+                <SelectItem value="cpp">C++</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              AI feedback & solutions will be provided in this language
+            </p>
           </motion.div>
         )}
 
