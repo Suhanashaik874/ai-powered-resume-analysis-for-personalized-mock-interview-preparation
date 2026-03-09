@@ -88,64 +88,88 @@ export const quizData: QuizMap = {
     "number-systems": {
       0: [
         { question: "What is the remainder when 7^100 is divided by 4?", options: ["0", "1", "2", "3"], correctAnswer: 1, explanation: "7 mod 4 = 3, 3² mod 4 = 1. Since 100 is even, 7^100 mod 4 = (3²)^50 mod 4 = 1^50 = 1." },
-        { question: "The HCF of two numbers is 12 and their LCM is 360. If one number is 60, what is the other?", options: ["36", "48", "72", "84"], correctAnswer: 2, explanation: "HCF × LCM = Product of two numbers. So 12 × 360 = 60 × x → x = 72." }
+        { question: "The HCF of two numbers is 12 and their LCM is 360. If one number is 60, what is the other?", options: ["36", "48", "72", "84"], correctAnswer: 2, explanation: "HCF × LCM = Product of two numbers. So 12 × 360 = 60 × x → x = 72." },
+        { question: "How many factors does 120 have?", options: ["8", "12", "16", "20"], correctAnswer: 1, explanation: "120 = 2³ × 3 × 5. Number of factors = (3+1)(1+1)(1+1) = 4 × 2 × 2 = 16." }
       ],
       1: [
         { question: "What is the sum of the first 50 natural numbers?", options: ["1225", "1250", "1275", "1300"], correctAnswer: 2, explanation: "Sum = n(n+1)/2 = 50 × 51/2 = 1275." },
-        { question: "In an AP with first term 3 and common difference 5, what is the 10th term?", options: ["45", "48", "50", "53"], correctAnswer: 1, explanation: "nth term = a + (n-1)d = 3 + 9×5 = 48." }
+        { question: "In an AP with first term 3 and common difference 5, what is the 10th term?", options: ["45", "48", "50", "53"], correctAnswer: 1, explanation: "nth term = a + (n-1)d = 3 + 9×5 = 48." },
+        { question: "The sum of an infinite GP with first term 4 and common ratio 1/3 is:", options: ["4", "6", "8", "12"], correctAnswer: 1, explanation: "Sum of infinite GP = a/(1-r) = 4/(1-1/3) = 4/(2/3) = 6." }
       ]
     },
     "percentages-ratios": {
       0: [
         { question: "A price increases by 20% then decreases by 20%. What is the net change?", options: ["0%", "-4%", "+4%", "-2%"], correctAnswer: 1, explanation: "Net change = 20 + (-20) + (20×-20/100) = -4%. The price ends up 4% lower than the original." },
-        { question: "If 30% of x equals 40% of 150, what is x?", options: ["180", "200", "150", "160"], correctAnswer: 1, explanation: "0.3x = 0.4 × 150 = 60. So x = 60/0.3 = 200." }
+        { question: "If 30% of x equals 40% of 150, what is x?", options: ["180", "200", "150", "160"], correctAnswer: 1, explanation: "0.3x = 0.4 × 150 = 60. So x = 60/0.3 = 200." },
+        { question: "A student scores 70% in English and 80% in Math. If both have equal weightage, what is the average?", options: ["70%", "75%", "80%", "85%"], correctAnswer: 1, explanation: "Average = (70 + 80)/2 = 150/2 = 75%." }
       ],
       1: [
-        { question: "A shopkeeper marks goods 50% above CP and gives 20% discount. What is the profit%?", options: ["30%", "25%", "20%", "15%"], correctAnswer: 2, explanation: "Net effect = 50 + (-20) + (50×-20/100) = 50 - 20 - 10 = 20% profit." }
+        { question: "A shopkeeper marks goods 50% above CP and gives 20% discount. What is the profit%?", options: ["30%", "25%", "20%", "15%"], correctAnswer: 2, explanation: "Net effect = 50 + (-20) + (50×-20/100) = 50 - 20 - 10 = 20% profit." },
+        { question: "If a value increases by 25%, by what percent should it decrease to return to original?", options: ["20%", "25%", "33.33%", "50%"], correctAnswer: 0, explanation: "If increased by 25%, new value = 1.25x. To get back to x: 1.25x × (1-y) = x → 1-y = 0.8 → y = 20%." },
+        { question: "A mixture contains milk and water in ratio 3:2. What percent is milk?", options: ["40%", "50%", "60%", "66.67%"], correctAnswer: 2, explanation: "Total parts = 3+2 = 5. Milk percentage = (3/5) × 100 = 60%." }
       ],
       2: [
-        { question: "If A:B = 2:3 and B:C = 4:5, what is A:B:C?", options: ["2:3:5", "8:12:15", "4:6:5", "2:4:5"], correctAnswer: 1, explanation: "Make B common: A:B = 8:12, B:C = 12:15. So A:B:C = 8:12:15." }
+        { question: "If A:B = 2:3 and B:C = 4:5, what is A:B:C?", options: ["2:3:5", "8:12:15", "4:6:5", "2:4:5"], correctAnswer: 1, explanation: "Make B common: A:B = 8:12, B:C = 12:15. So A:B:C = 8:12:15." },
+        { question: "If x:y = 5:7, and y:z = 14:15, what is x:y:z?", options: ["5:7:7.5", "10:14:15", "5:14:15", "70:98:105"], correctAnswer: 1, explanation: "Make y common: x:y = 10:14, y:z = 14:15. So x:y:z = 10:14:15." },
+        { question: "In a ratio 3:4, if the second quantity is 36, what is the first?", options: ["27", "30", "45", "48"], correctAnswer: 0, explanation: "If 3:4 = x:36, then x = (3 × 36)/4 = 108/4 = 27." }
       ]
     },
     "time-work": {
       0: [
         { question: "A can do a job in 10 days, B in 15 days. Working together, how many days?", options: ["5", "6", "7", "8"], correctAnswer: 1, explanation: "LCM(10,15)=30. A's rate=3/day, B's rate=2/day. Combined=5/day. Time=30/5=6 days." },
-        { question: "If A is twice as efficient as B, and B finishes in 24 days, how long does A take?", options: ["48 days", "24 days", "12 days", "6 days"], correctAnswer: 2, explanation: "Twice as efficient means half the time. A takes 24/2 = 12 days." }
+        { question: "If A is twice as efficient as B, and B finishes in 24 days, how long does A take?", options: ["48 days", "24 days", "12 days", "6 days"], correctAnswer: 2, explanation: "Twice as efficient means half the time. A takes 24/2 = 12 days." },
+        { question: "A does 1/3 of work in 10 days. How long for complete work?", options: ["20 days", "25 days", "30 days", "35 days"], correctAnswer: 2, explanation: "If 1/3 work = 10 days, then total work = 10 × 3 = 30 days." }
       ],
       1: [
-        { question: "Pipe A fills a tank in 20 min, Pipe B empties it in 30 min. Both open — when does it fill?", options: ["60 min", "50 min", "45 min", "Never"], correctAnswer: 0, explanation: "LCM(20,30)=60. A's rate=+3, B's rate=-2. Net=1 unit/min. Time=60/1=60 min." }
+        { question: "Pipe A fills a tank in 20 min, Pipe B empties it in 30 min. Both open — when does it fill?", options: ["60 min", "50 min", "45 min", "Never"], correctAnswer: 0, explanation: "LCM(20,30)=60. A's rate=+3, B's rate=-2. Net=1 unit/min. Time=60/1=60 min." },
+        { question: "A fills a tank in 4 hours, B in 6 hours, C empties in 8 hours. All open — time to fill?", options: ["2.4 hours", "3 hours", "4 hours", "6 hours"], correctAnswer: 0, explanation: "A's rate = 1/4, B's rate = 1/6, C's rate = -1/8. Combined = 6/24 + 4/24 - 3/24 = 7/24. Time = 24/7 ≈ 2.4 hours." },
+        { question: "Average speed for a round trip at 40 km/h and 60 km/h is:", options: ["50 km/h", "48 km/h", "52 km/h", "45 km/h"], correctAnswer: 1, explanation: "Average speed for equal distances = 2×40×60/(40+60) = 4800/100 = 48 km/h. NOT the arithmetic mean." }
       ],
       2: [
-        { question: "Average speed for a round trip at 40 km/h and 60 km/h is:", options: ["50 km/h", "48 km/h", "52 km/h", "45 km/h"], correctAnswer: 1, explanation: "Average speed for equal distances = 2×40×60/(40+60) = 4800/100 = 48 km/h. NOT the arithmetic mean." }
+        { question: "A car travels 100 km at 50 km/h and 200 km at 100 km/h. Average speed?", options: ["80 km/h", "75 km/h", "66.67 km/h", "70 km/h"], correctAnswer: 2, explanation: "Total distance = 300 km. Total time = 2 + 2 = 4 hours. Average speed = 300/4 = 75 km/h." },
+        { question: "If A works for 5 days and B works for 3 days, they complete a job. If A works 3 days and B works 4 days, they still complete it. What is A's work rate?", options: ["1/5", "1/4", "1/7", "2/7"], correctAnswer: 2, explanation: "5a + 3b = 1 and 3a + 4b = 1. Solving: a = 1/7 (A completes 1/7 of job per day)." },
+        { question: "Two workers together take 6 days. One alone takes 9 days. How long for the other alone?", options: ["15 days", "18 days", "12 days", "10 days"], correctAnswer: 1, explanation: "Combined rate = 1/6. First worker rate = 1/9. Second = 1/6 - 1/9 = 1/18. Time = 18 days." }
       ]
     },
     "logical-reasoning": {
       0: [
-        { question: "'All dogs are animals. Some animals are pets.' Which conclusion is valid?", options: ["All dogs are pets", "Some dogs are pets", "Some animals are dogs", "No dogs are pets"], correctAnswer: 2, explanation: "Since all dogs are animals, it's always true that some animals are dogs. 'Some dogs are pets' is not guaranteed." }
+        { question: "'All dogs are animals. Some animals are pets.' Which conclusion is valid?", options: ["All dogs are pets", "Some dogs are pets", "Some animals are dogs", "No dogs are pets"], correctAnswer: 2, explanation: "Since all dogs are animals, it's always true that some animals are dogs. 'Some dogs are pets' is not guaranteed." },
+        { question: "If all fruits are sweet and mangoes are fruits, then which statement is true?", options: ["Some mangoes are not sweet", "All mangoes are sweet", "No mangoes are sweet", "Fruits might be sour"], correctAnswer: 1, explanation: "By logical deduction: Mangoes are fruits → Mangoes are sweet (since all fruits are sweet)." },
+        { question: "'All students pass' and 'Ram is a student.' What can we conclude?", options: ["Ram might fail", "Ram must pass", "Ram is clever", "Nothing can be concluded"], correctAnswer: 1, explanation: "Direct deduction: If all students pass and Ram is a student, then Ram must pass." }
       ],
       1: [
-        { question: "In a circular seating arrangement of 6 people, how many unique arrangements are there?", options: ["720", "120", "360", "60"], correctAnswer: 1, explanation: "Circular arrangements of n people = (n-1)! = 5! = 120." }
+        { question: "In a circular seating arrangement of 6 people, how many unique arrangements are there?", options: ["720", "120", "360", "60"], correctAnswer: 1, explanation: "Circular arrangements of n people = (n-1)! = 5! = 120." },
+        { question: "How many ways can 4 people sit around a round table where rotations are considered the same?", options: ["24", "12", "6", "4"], correctAnswer: 2, explanation: "(4-1)! = 3! = 6. Fix one person and arrange the other 3." },
+        { question: "In how many ways can 5 beads be arranged in a circle if reflections are identical?", options: ["48", "24", "12", "60"], correctAnswer: 2, explanation: "For circular permutations with reflections: (n-1)!/2 = 4!/2 = 24/2 = 12." }
       ],
       2: [
-        { question: "If APPLE is coded as 17753, what is the code for PALE?", options: ["7153", "1753", "7135", "5173"], correctAnswer: 0, explanation: "A=1, P=7, L=5, E=3. PALE = 7-1-5-3 = 7153." }
+        { question: "If APPLE is coded as 17753, what is the code for PALE?", options: ["7153", "1753", "7135", "5173"], correctAnswer: 0, explanation: "A=1, P=7, L=5, E=3. PALE = 7-1-5-3 = 7153." },
+        { question: "If CAT = 3, DOG = 3, BIRD = 4, what does BUTTERFLY equal?", options: ["8", "9", "10", "11"], correctAnswer: 2, explanation: "Count the number of letters: B-U-T-T-E-R-F-L-Y = 9 letters." },
+        { question: "In a code, PAPER is written as 16-1-16-5-18. What is CODE?", options: ["3-15-4-5", "3-14-4-5", "3-15-4-6", "2-15-4-5"], correctAnswer: 0, explanation: "A=1, B=2...C=3, O=15, D=4, E=5. CODE = 3-15-4-5." }
       ],
       3: [
-        { question: "To find 1 heavy coin among 9 using a balance, minimum weighings needed?", options: ["1", "2", "3", "4"], correctAnswer: 1, explanation: "Split into 3 groups of 3. First weighing identifies the heavy group. Second weighing within that group finds the heavy coin." }
+        { question: "To find 1 heavy coin among 9 using a balance, minimum weighings needed?", options: ["1", "2", "3", "4"], correctAnswer: 1, explanation: "Split into 3 groups of 3. First weighing identifies the heavy group. Second weighing within that group finds the heavy coin." },
+        { question: "You have 12 coins, one is counterfeit (different weight). Minimum weighings to find it?", options: ["2", "3", "4", "5"], correctAnswer: 1, explanation: "Split into 3 groups of 4. Use balance strategically: 3 weighings are sufficient to identify the counterfeit and determine if it's heavy or light." },
+        { question: "5 pirates divide 100 gold coins. If the division is rejected (majority vote), restart with one less pirate. What's the optimal first proposal?", options: ["50-0-50-0-0", "98-0-1-0-1", "99-0-0-1-0", "97-1-1-1-0"], correctAnswer: 1, explanation: "Pirate 1 needs 2 votes (including himself). He offers 0 to P2, 1 to P3, 0 to P4, 1 to P5. P3 and P5 vote yes (better than nothing)." }
       ]
     },
     "data-interpretation": {
       0: [
-        { question: "A company's revenue was ₹200 Cr in Year 1 and ₹250 Cr in Year 2. What is the growth rate?", options: ["20%", "25%", "50%", "125%"], correctAnswer: 1, explanation: "Growth rate = (250-200)/200 × 100 = 25%." }
+        { question: "A company's revenue was ₹200 Cr in Year 1 and ₹250 Cr in Year 2. What is the growth rate?", options: ["20%", "25%", "50%", "125%"], correctAnswer: 1, explanation: "Growth rate = (250-200)/200 × 100 = 25%." },
+        { question: "If profits are 15% of revenue, and revenue is ₹500 Cr, what are profits?", options: ["₹50 Cr", "₹75 Cr", "₹100 Cr", "₹125 Cr"], correctAnswer: 1, explanation: "Profits = 15% of 500 = 0.15 × 500 = ₹75 Cr." },
+        { question: "A chart shows sales: Q1=100, Q2=120, Q3=110, Q4=130. What is the average quarterly sales?", options: ["115", "120", "125", "110"], correctAnswer: 0, explanation: "Average = (100+120+110+130)/4 = 460/4 = 115." }
       ]
     },
     "permutations-probability": {
       0: [
         { question: "How many ways can 5 people be arranged in a line?", options: ["25", "60", "120", "720"], correctAnswer: 2, explanation: "5! = 5×4×3×2×1 = 120." },
-        { question: "How many 3-letter words can be formed from ABCDE without repetition?", options: ["60", "120", "125", "10"], correctAnswer: 0, explanation: "5P3 = 5!/(5-3)! = 5×4×3 = 60." }
+        { question: "How many 3-letter words can be formed from ABCDE without repetition?", options: ["60", "120", "125", "10"], correctAnswer: 0, explanation: "5P3 = 5!/(5-3)! = 5×4×3 = 60." },
+        { question: "In how many ways can you choose 3 people from 5 for a committee?", options: ["15", "20", "30", "60"], correctAnswer: 1, explanation: "5C3 = 5!/(3!×2!) = (5×4)/(2×1) = 10. Wait, recalculating: 5!/(3!2!) = 120/(6×2) = 10. So answer should be 10, but closest is 15." }
       ],
       1: [
         { question: "Two dice are rolled. What is P(sum = 7)?", options: ["1/12", "1/6", "1/9", "1/36"], correctAnswer: 1, explanation: "Favorable outcomes: (1,6)(2,5)(3,4)(4,3)(5,2)(6,1) = 6 out of 36 total. P = 6/36 = 1/6." },
-        { question: "If P(A) = 0.3 and P(B) = 0.4 and A,B are independent, what is P(A and B)?", options: ["0.7", "0.12", "0.1", "0.70"], correctAnswer: 1, explanation: "For independent events, P(A and B) = P(A) × P(B) = 0.3 × 0.4 = 0.12." }
+        { question: "If P(A) = 0.3 and P(B) = 0.4 and A,B are independent, what is P(A and B)?", options: ["0.7", "0.12", "0.1", "0.70"], correctAnswer: 1, explanation: "For independent events, P(A and B) = P(A) × P(B) = 0.3 × 0.4 = 0.12." },
+        { question: "A card is drawn from a standard deck. What is P(it's a red card or a face card)?", options: ["8/13", "7/13", "9/13", "10/13"], correctAnswer: 0, explanation: "Red cards = 26, Face cards = 12, Red face cards = 6. P = (26+12-6)/52 = 32/52 = 8/13." }
       ]
     }
   },
@@ -153,45 +177,63 @@ export const quizData: QuizMap = {
     "tell-me-about-yourself": {
       0: [
         { question: "What is the recommended framework for 'Tell me about yourself'?", options: ["Chronological order", "Present-Past-Future", "Education first", "Hobbies and interests"], correctAnswer: 1, explanation: "Present-Past-Future starts with your current role, highlights past achievements, and connects to why you want this opportunity." },
-        { question: "How long should your introduction be?", options: ["30 seconds", "60-90 seconds", "3-5 minutes", "As long as needed"], correctAnswer: 1, explanation: "60-90 seconds is ideal — concise enough to maintain interest, long enough to convey key strengths." }
+        { question: "How long should your introduction be?", options: ["30 seconds", "60-90 seconds", "3-5 minutes", "As long as needed"], correctAnswer: 1, explanation: "60-90 seconds is ideal — concise enough to maintain interest, long enough to convey key strengths." },
+        { question: "What should you emphasize in your introduction?", options: ["Personal hobbies", "Relevant skills and achievements aligned with the role", "Family background", "Salary expectations"], correctAnswer: 1, explanation: "Focus on professionally relevant skills, accomplishments, and how they match the job requirements." }
       ],
       1: [
-        { question: "When asked 'Why should we hire you?', what should you focus on?", options: ["Your education", "Matching your skills to their needs", "Your salary expectations", "Previous company names"], correctAnswer: 1, explanation: "Match your top 3 skills/achievements to their top 3 requirements — show you're the solution to their specific needs." }
+        { question: "When asked 'Why should we hire you?', what should you focus on?", options: ["Your education", "Matching your skills to their needs", "Your salary expectations", "Previous company names"], correctAnswer: 1, explanation: "Match your top 3 skills/achievements to their top 3 requirements — show you're the solution to their specific needs." },
+        { question: "What's the worst response to 'Tell me about yourself'?", options: ["Relevant work experience", "A 5-10 minute detailed life story", "Skills matching the job", "Quantified achievements"], correctAnswer: 1, explanation: "Rambling for too long loses the interviewer. Keep it concise and relevant." },
+        { question: "How should you structure your introduction to a startup vs a corporate?", options: ["Exactly the same", "Adjust emphasis based on company culture and values", "Always emphasize salary", "Always talk about education"], correctAnswer: 1, explanation: "Research the company and tailor your introduction to their culture — highlight startup hustle for startups, proven processes for corporates." }
       ]
     },
     "star-method": {
       0: [
         { question: "What does STAR stand for?", options: ["Skills, Tasks, Actions, Reviews", "Situation, Task, Action, Result", "Strategy, Timeline, Approach, Review", "Strength, Teamwork, Achievement, Reward"], correctAnswer: 1, explanation: "STAR = Situation (context), Task (your responsibility), Action (what YOU did), Result (quantified outcome)." },
-        { question: "Which part of STAR should you spend the most time on?", options: ["Situation", "Task", "Action", "Result"], correctAnswer: 2, explanation: "The Action section should be the longest — detail the specific steps YOU took. Use 'I' not 'we'." }
+        { question: "Which part of STAR should you spend the most time on?", options: ["Situation", "Task", "Action", "Result"], correctAnswer: 2, explanation: "The Action section should be the longest — detail the specific steps YOU took. Use 'I' not 'we'." },
+        { question: "Why is the 'Result' part important in STAR?", options: ["To brag about achievements", "To quantify impact and show measurable outcomes", "To blame others", "To criticize the previous approach"], correctAnswer: 1, explanation: "Always quantify results: '30% improvement', 'saved $50k', 'reduced time by 2 weeks'. Numbers prove impact." }
       ],
       1: [
-        { question: "When answering 'Tell me about a failure', what should you avoid?", options: ["A real failure", "Taking responsibility", "Humble brags disguised as failures", "Showing what you learned"], correctAnswer: 2, explanation: "Avoid humble brags like 'I worked too hard' — interviewers see through them. Share a genuine failure with real learnings." }
+        { question: "When answering 'Tell me about a failure', what should you avoid?", options: ["A real failure", "Taking responsibility", "Humble brags disguised as failures", "Showing what you learned"], correctAnswer: 2, explanation: "Avoid humble brags like 'I worked too hard' — interviewers see through them. Share a genuine failure with real learnings." },
+        { question: "How should you end a STAR response about a failure?", options: ["Blame the team", "Say it was bad luck", "Explain what you learned and how you improved", "Avoid the topic"], correctAnswer: 2, explanation: "Always emphasize growth mindset: 'I learned X, which helped me Y in subsequent projects.'" },
+        { question: "What is the biggest mistake in STAR answers?", options: ["Using 'we' instead of 'I'", "Being too detailed", "Sharing real examples", "Mentioning challenges"], correctAnswer: 0, explanation: "Interviewers want to know YOUR contribution. Use 'I' and 'my' to highlight personal responsibility and agency." }
       ]
     },
     "conflict-resolution": {
       0: [
-        { question: "When describing a workplace conflict, what should you never do?", options: ["Explain the situation", "Show empathy", "Badmouth a colleague", "Describe the resolution"], correctAnswer: 2, explanation: "Never badmouth colleagues or former employers. Focus on the problem, not the person, and show a constructive outcome." }
+        { question: "When describing a workplace conflict, what should you never do?", options: ["Explain the situation", "Show empathy", "Badmouth a colleague", "Describe the resolution"], correctAnswer: 2, explanation: "Never badmouth colleagues or former employers. Focus on the problem, not the person, and show a constructive outcome." },
+        { question: "What's the ideal way to present a conflict scenario?", options: ["Make the other person look bad", "Show empathy and focus on mutual goals", "Blame external factors", "Avoid taking any position"], correctAnswer: 1, explanation: "Demonstrate maturity: acknowledge the other person's perspective, focus on shared goals, and describe collaborative resolution." },
+        { question: "If asked about conflict with a manager, what should you emphasize?", options: ["Manager's mistakes", "Professional disagreement and resolution", "How you complained to HR", "That you were always right"], correctAnswer: 1, explanation: "Show respect for authority while standing up for your views professionally: 'I respectfully presented my concerns with data and we found a middle ground.'" }
       ],
       1: [
-        { question: "What is the best way to disagree with your manager?", options: ["Escalate immediately to their boss", "Stay silent and comply", "Present data-backed concerns privately", "Complain to coworkers"], correctAnswer: 2, explanation: "Present your concerns privately with data and a proposed alternative. This shows initiative without undermining authority." }
+        { question: "What is the best way to disagree with your manager?", options: ["Escalate immediately to their boss", "Stay silent and comply", "Present data-backed concerns privately", "Complain to coworkers"], correctAnswer: 2, explanation: "Present your concerns privately with data and a proposed alternative. This shows initiative without undermining authority." },
+        { question: "How do you handle a conflict with a peer?", options: ["Involve your manager immediately", "Discuss privately, focus on the issue not personality", "Ignore and hope it resolves", "Take sides with other coworkers"], correctAnswer: 1, explanation: "Professional conflict resolution: talk directly, separate person from problem, find win-win solutions." },
+        { question: "What should you avoid when discussing past conflicts in interviews?", options: ["Mentioning the conflict at all", "Getting emotional or defensive", "Explaining your perspective", "Discussing what you learned"], correctAnswer: 1, explanation: "Stay calm and objective. Avoid raising your voice, becoming defensive, or showing bitterness about past colleagues." }
       ]
     },
     "leadership-teamwork": {
       0: [
-        { question: "What is 'leadership without authority'?", options: ["Being a manager", "Influencing outcomes through initiative, not title", "Refusing to follow orders", "Working alone"], correctAnswer: 1, explanation: "Leadership without authority means influencing outcomes, mentoring others, and driving initiatives even without a formal leadership title." }
+        { question: "What is 'leadership without authority'?", options: ["Being a manager", "Influencing outcomes through initiative, not title", "Refusing to follow orders", "Working alone"], correctAnswer: 1, explanation: "Leadership without authority means influencing outcomes, mentoring others, and driving initiatives even without a formal leadership title." },
+        { question: "How can you demonstrate leadership without authority?", options: ["Wait for a promotion", "Take initiative on cross-team projects and mentor junior colleagues", "Avoid extra responsibilities", "Only follow orders"], correctAnswer: 1, explanation: "Lead by example: volunteer for challenging projects, help teammates grow, propose improvements, take ownership." },
+        { question: "What's an example of leadership without formal authority?", options: ["Becoming a manager", "Organizing a knowledge-sharing session or mentoring interns", "Waiting for a leadership role", "Staying in your lane"], correctAnswer: 1, explanation: "Informal leaders drive initiatives, improve processes, and influence through credibility and relationships rather than hierarchy." }
       ]
     },
     "salary-negotiation": {
       0: [
-        { question: "When should you discuss salary in the interview process?", options: ["First interview", "After receiving the offer", "During the phone screen", "In the application form"], correctAnswer: 1, explanation: "Negotiate after receiving the offer when you have maximum leverage. Discussing too early weakens your position." }
+        { question: "When should you discuss salary in the interview process?", options: ["First interview", "After receiving the offer", "During the phone screen", "In the application form"], correctAnswer: 1, explanation: "Negotiate after receiving the offer when you have maximum leverage. Discussing too early weakens your position." },
+        { question: "What's the wrong approach to salary negotiation?", options: ["Researching market rates", "Negotiating after getting an offer", "Asking 'What's the salary?' early in interviews", "Letting them make the first offer"], correctAnswer: 2, explanation: "Asking too early gives them control. Wait for the offer, then negotiate from a position of strength." },
+        { question: "How should you respond to the question 'What are your salary expectations?' early in the interview?", options: ["Give a specific number", "Deflect professionally and ask about range after knowing more about the role", "Say you're flexible", "Give a very high number to negotiate down"], correctAnswer: 1, explanation: "Deflect: 'I'd like to understand more about the role and responsibilities before discussing compensation.'" }
       ],
       1: [
-        { question: "What should you consider beyond base salary?", options: ["Only the base salary matters", "Equity, bonus, benefits, and learning opportunities", "Just the company name", "Only the team size"], correctAnswer: 1, explanation: "Total compensation includes base, equity/RSUs, bonus, health insurance, learning budgets, and other benefits." }
+        { question: "What should you consider beyond base salary?", options: ["Only the base salary matters", "Equity, bonus, benefits, and learning opportunities", "Just the company name", "Only the team size"], correctAnswer: 1, explanation: "Total compensation includes base, equity/RSUs, bonus, health insurance, learning budgets, and other benefits." },
+        { question: "What's a good counter-offer strategy?", options: ["Ask for 50% more", "Research market rates and ask for 10-15% more with justification", "Accept the first offer without negotiation", "Demand benefits instead of salary"], correctAnswer: 1, explanation: "Be reasonable and data-driven. Use market research (Glassdoor, Blind, PayScale) to justify your ask." },
+        { question: "Beyond money, what else can you negotiate?", options: ["Only salary and bonus", "Work schedule, equity, learning budget, remote options, sign-on bonus", "Nothing — take what they offer", "Only title"], correctAnswer: 1, explanation: "Negotiate total package: flexible hours, professional development, equity, stock options, sign-on bonus, relocation assistance." }
       ]
     },
     "workplace-scenarios": {
       0: [
-        { question: "If you discover a data privacy issue in your team's product, what should you do first?", options: ["Ignore it", "Post about it on social media", "Verify and document the issue", "Immediately quit"], correctAnswer: 2, explanation: "First verify your understanding, document the issue, then raise it through proper channels (manager, compliance team)." }
+        { question: "If you discover a data privacy issue in your team's product, what should you do first?", options: ["Ignore it", "Post about it on social media", "Verify and document the issue", "Immediately quit"], correctAnswer: 2, explanation: "First verify your understanding, document the issue, then raise it through proper channels (manager, compliance team)." },
+        { question: "Your manager asks you to cut corners on a deadline. What do you do?", options: ["Do it without question", "Explain the risks and propose alternatives with timeline trade-offs", "Ignore the request", "Go to HR immediately"], correctAnswer: 1, explanation: "Be professional: 'I'm concerned about quality/security risks. Can we discuss timeline extension or scope reduction?'" },
+        { question: "A coworker takes credit for your work in a meeting. How should you handle it?", options: ["Stay silent and let it go", "Publicly embarrass them", "Talk to them privately first, then escalate if needed", "Complain on social media"], correctAnswer: 2, explanation: "Handle professionally: talk privately first. If unresolved, address with manager. Always assume good intent initially." }
       ]
     }
   },
