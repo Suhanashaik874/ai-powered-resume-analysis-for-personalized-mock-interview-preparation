@@ -225,14 +225,10 @@ export default function CodingInterview() {
               <span className="text-sm text-muted-foreground">
                 {currentIdx + 1} / {questions.length}
               </span>
-            </div>
           </div>
         </div>
       </div>
       <button id="auto-submit-trigger" onClick={handleSubmit} className="hidden" />
-          </div>
-        </div>
-      </div>
 
       {/* Split panel */}
       <div className="flex flex-1 overflow-hidden">
