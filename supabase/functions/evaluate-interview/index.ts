@@ -210,7 +210,7 @@ Return JSON:
             content: evalPrompt,
           }],
           temperature: 0.3,
-          max_tokens: 1200,
+          max_tokens: 2000,
         }),
       });
 
