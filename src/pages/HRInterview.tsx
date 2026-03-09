@@ -36,10 +36,13 @@ export default function HRInterview() {
   const [listening, setListening] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [totalTimer, setTotalTimer] = useState(20 * 60); // 20 minutes in seconds
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const recognitionRef = useRef<SpeechRecognitionAPI>(null);
   const baseTextRef = useRef("");
   const finalTranscriptRef = useRef("");
+  const autoSubmitTriggered = useRef(false);
 
   useEffect(() => {
     if (!user || !id) return;
@@ -55,6 +58,25 @@ export default function HRInterview() {
     };
     fetchQuestions();
   }, [user, id]);
+
+  // Total interview timer (20 minutes auto-submit)
+  useEffect(() => {
+    totalTimerRef.current = setInterval(() => {
+      setTotalTimer((t) => {
+        if (t <= 1 && !autoSubmitTriggered.current) {
+          autoSubmitTriggered.current = true;
+          // Auto-submit when time runs out
+          setTimeout(() => {
+            const submitBtn = document.getElementById("auto-submit-trigger");
+            if (submitBtn) submitBtn.click();
+          }, 100);
+          return 0;
+        }
+        return t > 0 ? t - 1 : 0;
+      });
+    }, 1000);
+    return () => { if (totalTimerRef.current) clearInterval(totalTimerRef.current); };
+  }, []);
 
   // Load saved answer when changing question
   useEffect(() => {
@@ -212,11 +234,20 @@ export default function HRInterview() {
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-1.5 text-sm">
-            <Timer className="h-4 w-4 text-muted-foreground" />
-            <span className={`font-mono font-medium ${timer > 180 ? "text-destructive" : "text-foreground"}`}>
-              {formatTime(timer)}
-            </span>
+          <div className="flex items-center gap-4 text-sm">
+            {/* Total Time Remaining */}
+            <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${totalTimer <= 60 ? "bg-destructive/15 text-destructive" : totalTimer <= 300 ? "bg-yellow-500/15 text-yellow-500" : "bg-secondary"}`}>
+              <Timer className="h-4 w-4" />
+              <span className="font-mono font-semibold">{formatTime(totalTimer)}</span>
+              <span className="text-xs text-muted-foreground">left</span>
+            </div>
+            {/* Question Timer */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-muted-foreground">Q:</span>
+              <span className={`font-mono font-medium ${timer > 180 ? "text-destructive" : "text-foreground"}`}>
+                {formatTime(timer)}
+              </span>
+            </div>
           </div>
         </motion.div>
 
@@ -293,6 +324,9 @@ export default function HRInterview() {
             </Button>
           )}
         </div>
+        
+        {/* Hidden auto-submit trigger for 20-minute timeout */}
+        <button id="auto-submit-trigger" onClick={handleSubmit} className="hidden" />
       </div>
     </div>
   );
