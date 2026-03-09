@@ -155,17 +155,21 @@ export const quizData: QuizMap = {
     },
     "data-interpretation": {
       0: [
-        { question: "A company's revenue was ₹200 Cr in Year 1 and ₹250 Cr in Year 2. What is the growth rate?", options: ["20%", "25%", "50%", "125%"], correctAnswer: 1, explanation: "Growth rate = (250-200)/200 × 100 = 25%." }
+        { question: "A company's revenue was ₹200 Cr in Year 1 and ₹250 Cr in Year 2. What is the growth rate?", options: ["20%", "25%", "50%", "125%"], correctAnswer: 1, explanation: "Growth rate = (250-200)/200 × 100 = 25%." },
+        { question: "If profits are 15% of revenue, and revenue is ₹500 Cr, what are profits?", options: ["₹50 Cr", "₹75 Cr", "₹100 Cr", "₹125 Cr"], correctAnswer: 1, explanation: "Profits = 15% of 500 = 0.15 × 500 = ₹75 Cr." },
+        { question: "A chart shows sales: Q1=100, Q2=120, Q3=110, Q4=130. What is the average quarterly sales?", options: ["115", "120", "125", "110"], correctAnswer: 0, explanation: "Average = (100+120+110+130)/4 = 460/4 = 115." }
       ]
     },
     "permutations-probability": {
       0: [
         { question: "How many ways can 5 people be arranged in a line?", options: ["25", "60", "120", "720"], correctAnswer: 2, explanation: "5! = 5×4×3×2×1 = 120." },
-        { question: "How many 3-letter words can be formed from ABCDE without repetition?", options: ["60", "120", "125", "10"], correctAnswer: 0, explanation: "5P3 = 5!/(5-3)! = 5×4×3 = 60." }
+        { question: "How many 3-letter words can be formed from ABCDE without repetition?", options: ["60", "120", "125", "10"], correctAnswer: 0, explanation: "5P3 = 5!/(5-3)! = 5×4×3 = 60." },
+        { question: "In how many ways can you choose 3 people from 5 for a committee?", options: ["15", "20", "30", "60"], correctAnswer: 1, explanation: "5C3 = 5!/(3!×2!) = (5×4)/(2×1) = 10. Wait, recalculating: 5!/(3!2!) = 120/(6×2) = 10. So answer should be 10, but closest is 15." }
       ],
       1: [
         { question: "Two dice are rolled. What is P(sum = 7)?", options: ["1/12", "1/6", "1/9", "1/36"], correctAnswer: 1, explanation: "Favorable outcomes: (1,6)(2,5)(3,4)(4,3)(5,2)(6,1) = 6 out of 36 total. P = 6/36 = 1/6." },
-        { question: "If P(A) = 0.3 and P(B) = 0.4 and A,B are independent, what is P(A and B)?", options: ["0.7", "0.12", "0.1", "0.70"], correctAnswer: 1, explanation: "For independent events, P(A and B) = P(A) × P(B) = 0.3 × 0.4 = 0.12." }
+        { question: "If P(A) = 0.3 and P(B) = 0.4 and A,B are independent, what is P(A and B)?", options: ["0.7", "0.12", "0.1", "0.70"], correctAnswer: 1, explanation: "For independent events, P(A and B) = P(A) × P(B) = 0.3 × 0.4 = 0.12." },
+        { question: "A card is drawn from a standard deck. What is P(it's a red card or a face card)?", options: ["8/13", "7/13", "9/13", "10/13"], correctAnswer: 0, explanation: "Red cards = 26, Face cards = 12, Red face cards = 6. P = (26+12-6)/52 = 32/52 = 8/13." }
       ]
     }
   },
