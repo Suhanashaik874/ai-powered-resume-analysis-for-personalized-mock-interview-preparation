@@ -275,7 +275,7 @@ export default function CombinedInterview() {
       <div className="flex h-screen flex-col bg-background overflow-hidden">
         <Navbar />
         <div className="pt-16 flex-shrink-0">
-          <HeaderBar questions={questions} currentIdx={currentIdx} timer={timer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
+          <HeaderBar questions={questions} currentIdx={currentIdx} totalTimer={totalTimer} formatTime={formatTime} TypeInfo={TypeInfo} qType={qType} />
         </div>
         <div className="flex flex-1 overflow-hidden">
           {/* Left: Question */}
