@@ -96,19 +96,6 @@ export default function CodingInterview() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx]);
 
-  // When language changes, only update if the current code is still a default template
-  useEffect(() => {
-    const currentQ = questions[currentIdx];
-    if (!currentQ) return;
-    const savedCode = codeMapRef.current[currentQ.id];
-    // Check if current code is a default template from any language
-    const isDefault = Object.values(DEFAULT_CODE).includes(savedCode || "");
-    if (isDefault || !savedCode) {
-      const newCode = DEFAULT_CODE[language] || DEFAULT_CODE.python;
-      setCode(newCode);
-      codeMapRef.current[currentQ.id] = newCode;
-    }
-  }, [language]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
