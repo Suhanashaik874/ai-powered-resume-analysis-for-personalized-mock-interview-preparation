@@ -32,19 +32,6 @@ interface Question {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SpeechRecognitionAPI = any;
 
-const LANGUAGES = [
-  { value: "javascript", label: "JavaScript" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "cpp", label: "C++" },
-];
-
-const DEFAULT_CODE: Record<string, string> = {
-  javascript: `// Write your solution here\nfunction solution() {\n  \n}\n\nsolution();`,
-  python: `# Write your solution here\ndef solution():\n    pass\n\nsolution()`,
-  java: `public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}`,
-  cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    return 0;\n}`,
-};
 
 const difficultyColors: Record<string, string> = {
   easy: "text-brand-emerald bg-emerald-500/15 border-emerald-500/30",
