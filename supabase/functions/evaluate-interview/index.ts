@@ -55,7 +55,9 @@ serve(async (req) => {
       const userResponse = q.user_code || q.user_answer || '';
       // Detect empty or default template answers
       const stripped = userResponse.replace(/\/\/.*|#.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
-      const isTemplate = !stripped || stripped.length < 5;
+      // For MCQ/aptitude questions, single-letter answers (A, B, C, D) are valid
+      const isMcq = q.question_type === 'aptitude' && q.options;
+      const isTemplate = !stripped || (!isMcq && stripped.length < 5);
 
       if (isTemplate) {
         // No answer provided - generate solution
