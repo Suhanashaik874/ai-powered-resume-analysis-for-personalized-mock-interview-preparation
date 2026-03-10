@@ -86,6 +86,21 @@ export default function InterviewSelect() {
     setLoading(true);
 
     try {
+      // Check if user has uploaded a resume with extracted skills
+      const { count } = await (supabase as any)
+        .from("extracted_skills")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+
+      if (!count || count === 0) {
+        toast({
+          title: "Resume Required",
+          description: "Please upload a resume first so we can extract your skills and generate personalized questions.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: interview, error: interviewError } = await (supabase as any)
         .from("interviews")
