@@ -158,9 +158,24 @@ export default function CodingInterview() {
   };
 
   const handleSubmit = async () => {
-    if (!questions[currentIdx] || !id) return;
+    if (!id) return;
     setSubmitting(true);
-    await saveAnswer(questions[currentIdx].id, code, timer);
+
+    // Save current code to local map
+    if (questions[currentIdx]) {
+      codeMapRef.current[questions[currentIdx].id] = code;
+    }
+
+    // Bulk-save ALL code answers to DB before completing
+    const savePromises = questions.map((question) => {
+      const userCode = codeMapRef.current[question.id] || "";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (supabase as any)
+        .from("interview_questions")
+        .update({ user_code: userCode })
+        .eq("id", question.id);
+    });
+    await Promise.all(savePromises);
 
     // Mark interview complete
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
