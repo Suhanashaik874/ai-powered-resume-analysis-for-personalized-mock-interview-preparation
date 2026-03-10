@@ -177,9 +177,25 @@ export default function HRInterview() {
   };
 
   const handleSubmit = async () => {
-    if (!questions[currentIdx] || !id) return;
+    if (!id) return;
     setSubmitting(true);
-    await saveAnswer(questions[currentIdx].id, answer, timer);
+
+    // Update current question's answer in local state
+    const currentQ = questions[currentIdx];
+    const updatedQuestions = questions.map((q, i) =>
+      i === currentIdx ? { ...q, user_answer: answer } : q
+    );
+
+    // Bulk-save ALL answers to DB before completing
+    const savePromises = updatedQuestions.map((q) => {
+      const userAnswer = q.user_answer || "";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (supabase as any)
+        .from("interview_questions")
+        .update({ user_answer: userAnswer })
+        .eq("id", q.id);
+    });
+    await Promise.all(savePromises);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any).from("interviews").update({

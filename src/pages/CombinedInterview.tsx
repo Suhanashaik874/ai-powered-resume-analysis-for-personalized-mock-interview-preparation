@@ -177,7 +177,34 @@ export default function CombinedInterview() {
   const handleSubmit = async () => {
     if (!id) return;
     setSubmitting(true);
-    await saveCurrentAnswer();
+
+    // Save current question's state to local maps
+    const q = questions[currentIdx];
+    if (q) {
+      if (q.question_type === "coding") {
+        codeMapRef.current[q.id] = code;
+      } else if (q.question_type === "hr") {
+        setAnswers(prev => ({ ...prev, [q.id]: hrAnswer }));
+      }
+    }
+    const allAnswers = { ...answers, ...(q?.question_type === "hr" ? { [q.id]: hrAnswer } : {}), ...(q?.question_type === "aptitude" ? { [q.id]: selectedOption } : {}) };
+
+    // Bulk-save ALL answers to DB before completing
+    const savePromises = questions.map((question) => {
+      if (question.question_type === "coding") {
+        const userCode = codeMapRef.current[question.id] || "";
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (supabase as any).from("interview_questions")
+          .update({ user_code: userCode }).eq("id", question.id);
+      } else {
+        const userAnswer = allAnswers[question.id] || "";
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (supabase as any).from("interview_questions")
+          .update({ user_answer: userAnswer }).eq("id", question.id);
+      }
+    });
+    await Promise.all(savePromises);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any).from("interviews").update({
       status: "completed", completed_at: new Date().toISOString(),

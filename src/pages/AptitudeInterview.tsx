@@ -134,10 +134,26 @@ export default function AptitudeInterview() {
   };
 
   const handleSubmit = async () => {
-    const q = questions[currentIdx];
-    if (!q || !id) return;
+    if (!id) return;
     setSubmitting(true);
-    await saveAnswer(q.id, selectedOption, timer);
+
+    // Save current question's answer to local state
+    const q = questions[currentIdx];
+    const allAnswers = { ...answers };
+    if (q) {
+      allAnswers[q.id] = selectedOption;
+    }
+
+    // Bulk-save ALL answers to DB before completing
+    const savePromises = questions.map((question) => {
+      const userAnswer = allAnswers[question.id] || "";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (supabase as any)
+        .from("interview_questions")
+        .update({ user_answer: userAnswer })
+        .eq("id", question.id);
+    });
+    await Promise.all(savePromises);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any).from("interviews").update({
