@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, BookOpen, Brain, ChevronRight, Loader2, Wrench, Lightbulb, Code2, Target, Briefcase, AlertCircle, ThumbsUp, ThumbsDown, Link2 } from "lucide-react";
+
+// Safely convert any value to a renderable string
+const toStr = (val: unknown): string => {
+  if (typeof val === "string") return val;
+  if (val && typeof val === "object") return Object.entries(val).map(([k, v]) => `${k}: ${v}`).join(" — ");
+  return String(val ?? "");
+};
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
