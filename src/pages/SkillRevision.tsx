@@ -237,7 +237,7 @@ export default function SkillRevision() {
                             {summaryData.commonUseCases.map((u, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                <span>{u}</span>
+                                <span>{toStr(u)}</span>
                               </li>
                             ))}
                           </ul>
