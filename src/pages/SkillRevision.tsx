@@ -329,7 +329,7 @@ export default function SkillRevision() {
                           <div className="flex flex-wrap gap-2">
                             {summaryData.relatedTechnologies.map((tech, i) => (
                               <span key={i} className="rounded-full border border-border/60 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
-                                {tech}
+                                {toStr(tech)}
                               </span>
                             ))}
                           </div>
