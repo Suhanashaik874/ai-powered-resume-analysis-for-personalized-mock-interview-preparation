@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, BookOpen, Brain, ChevronRight, Loader2, Wrench, Lightbulb, Code2, Target, Briefcase, AlertCircle, ThumbsUp, ThumbsDown, Link2 } from "lucide-react";
+
+// Safely convert any value to a renderable string
+const toStr = (val: unknown): string => {
+  if (typeof val === "string") return val;
+  if (val && typeof val === "object") return Object.entries(val).map(([k, v]) => `${k}: ${v}`).join(" — ");
+  return String(val ?? "");
+};
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -212,7 +219,7 @@ export default function SkillRevision() {
                             {summaryData.keyConcepts.map((c, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                <span>{c}</span>
+                                <span>{toStr(c)}</span>
                               </li>
                             ))}
                           </ul>
@@ -230,7 +237,7 @@ export default function SkillRevision() {
                             {summaryData.commonUseCases.map((u, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                <span>{u}</span>
+                                <span>{toStr(u)}</span>
                               </li>
                             ))}
                           </ul>
@@ -261,7 +268,7 @@ export default function SkillRevision() {
                             {summaryData.interviewTips.map((t, i) => (
                               <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                <span>{t}</span>
+                                <span>{toStr(t)}</span>
                               </li>
                             ))}
                           </ul>
@@ -283,7 +290,7 @@ export default function SkillRevision() {
                                 ) : (
                                   <ThumbsDown className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
                                 )}
-                                <span>{item.text}</span>
+                                <span>{toStr(item.text)}</span>
                               </div>
                             ))}
                           </div>
@@ -322,7 +329,7 @@ export default function SkillRevision() {
                           <div className="flex flex-wrap gap-2">
                             {summaryData.relatedTechnologies.map((tech, i) => (
                               <span key={i} className="rounded-full border border-border/60 bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
-                                {tech}
+                                {toStr(tech)}
                               </span>
                             ))}
                           </div>
