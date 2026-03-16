@@ -290,7 +290,7 @@ export default function SkillRevision() {
                                 ) : (
                                   <ThumbsDown className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
                                 )}
-                                <span>{item.text}</span>
+                                <span>{toStr(item.text)}</span>
                               </div>
                             ))}
                           </div>
