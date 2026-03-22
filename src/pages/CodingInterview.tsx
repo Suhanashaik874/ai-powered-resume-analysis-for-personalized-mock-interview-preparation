@@ -314,7 +314,7 @@ export default function CodingInterview() {
           <Suspense fallback={<div className="flex flex-1 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}>
             <MonacoEditor
               height="100%"
-              language="plaintext"
+              language="python"
               value={code}
               onChange={(v) => {
                 const newCode = v || "";
@@ -329,8 +329,17 @@ export default function CodingInterview() {
                 lineNumbers: "on",
                 scrollBeyondLastLine: false,
                 padding: { top: 16, bottom: 16 },
-                tabSize: 2,
+                tabSize: 4,
+                autoClosingBrackets: "always",
+                autoClosingQuotes: "always",
+                bracketPairColorization: { enabled: true },
+                suggest: { showKeywords: true, showSnippets: true },
+                quickSuggestions: true,
+                parameterHints: { enabled: true },
+                formatOnPaste: true,
+                renderWhitespace: "selection",
               }}
+            />
             />
           </Suspense>
         </div>
