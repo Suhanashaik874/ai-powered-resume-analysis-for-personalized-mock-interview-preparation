@@ -160,6 +160,7 @@ export default function InterviewSelect() {
             expected_answer: q.expected_answer || null,
             difficulty: q.difficulty || 'medium',
             skill_name: q.skill_name || null,
+            user_code: q.starter_code || null,
           }))
         );
         if (insertError) throw insertError;
