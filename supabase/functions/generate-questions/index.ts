@@ -183,6 +183,7 @@ Skills: ${skillList}.${projectContext}`,
       expected_answer: q.expected_answer || null,
       difficulty: q.difficulty || difficulty,
       skill_name: q.skill_name || null,
+      starter_code: q.starter_code || null,
     }));
 
     return new Response(JSON.stringify({ questions, interviewId }), {
