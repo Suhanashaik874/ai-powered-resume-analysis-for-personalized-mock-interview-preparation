@@ -152,7 +152,7 @@ export default function CodingInterview() {
       const prevIdx = currentIdx - 1;
       setCurrentIdx(prevIdx);
       // Load saved code for previous question
-      setCode(codeMapRef.current[questions[prevIdx].id] || "// Write your solution here");
+      setCode(codeMapRef.current[questions[prevIdx].id] || "# Write your solution here\n");
       setOutput("");
     }
   };
