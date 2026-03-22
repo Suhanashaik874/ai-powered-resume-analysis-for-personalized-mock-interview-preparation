@@ -49,6 +49,17 @@ serve(async (req) => {
       }[difficulty] || '';
     }
 
+    const langDisplayName: Record<string, string> = { python: 'Python', javascript: 'JavaScript', java: 'Java', cpp: 'C++' };
+    const langName = langDisplayName[solutionLanguage] || 'Python';
+
+    const starterCodeExamples: Record<string, string> = {
+      python: 'def solve(nums):\\n    # Write your solution here\\n    pass',
+      javascript: 'function solve(nums) {\\n    // Write your solution here\\n}',
+      java: 'class Solution {\\n    public int solve(int[] nums) {\\n        // Write your solution here\\n        return 0;\\n    }\\n}',
+      cpp: '#include <vector>\\nusing namespace std;\\n\\nint solve(vector<int>& nums) {\\n    // Write your solution here\\n    return 0;\\n}',
+    };
+    const starterExample = starterCodeExamples[solutionLanguage] || starterCodeExamples.python;
+
     const typePrompts: Record<string, string> = {
       coding: `Generate ${count} ALGORITHMIC CODING problems. Candidate skills: ${skillList}. ${difficultyInstruction}
 CRITICAL RULES:
@@ -59,7 +70,8 @@ CRITICAL RULES:
 - NEVER generate: system design, cloud architecture, theoretical questions, or anything requiring a written description as the answer
 - Each problem must include: input/output format, constraints, and 2-3 test cases with concrete input/output
 - Keep each problem under 250 words. Be engaging but concise.
-- Include a "starter_code" field with a Python function signature as starter template (e.g. "def solve(nums):\\n    # Write your solution here\\n    pass")`,
+- Include a "starter_code" field with a ${langName} function/class as starter template (e.g. "${starterExample}")
+- ALL starter code MUST be in ${langName}.`,
 
       hr: `Generate ${count} HR behavioral interview questions for a candidate. ${difficultyInstruction}${projectContext}
 Requirements:
