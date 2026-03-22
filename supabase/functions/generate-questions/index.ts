@@ -50,13 +50,16 @@ serve(async (req) => {
     }
 
     const typePrompts: Record<string, string> = {
-      coding: `Generate ${count} ALGORITHMIC CODING problems solvable by writing a function in a code editor. Candidate skills: ${skillList}. ${difficultyInstruction}
+      coding: `Generate ${count} ALGORITHMIC CODING problems. Candidate skills: ${skillList}. ${difficultyInstruction}
 CRITICAL RULES:
-- Every problem MUST be solvable by writing actual executable code (a function that takes input and returns output)
+- Every problem MUST be presented as a REAL-WORLD SCENARIO or STORY. Do NOT just say "find the maximum subarray" — instead describe a situation like "A stock trader wants to find the best time window to maximize profit from daily prices..." or "A delivery driver needs to find the shortest route visiting all warehouses..."
+- The problem description should paint a vivid scenario first, then clearly state what needs to be solved
+- DO NOT include any function signature, starter code, or code template in the question_text — those go in the "starter_code" field
 - ONLY generate: array/string manipulation, tree/graph traversal, dynamic programming, sorting, searching, linked lists, stacks, queues, recursion, math problems
 - NEVER generate: system design, cloud architecture, theoretical questions, or anything requiring a written description as the answer
-- Each problem must include: function signature, input/output format, constraints, and 2-3 test cases with concrete input/output
-- Keep each problem under 200 words. Be concise.`,
+- Each problem must include: input/output format, constraints, and 2-3 test cases with concrete input/output
+- Keep each problem under 250 words. Be engaging but concise.
+- Include a "starter_code" field with a Python function signature as starter template (e.g. "def solve(nums):\\n    # Write your solution here\\n    pass")`,
 
       hr: `Generate ${count} HR behavioral interview questions for a candidate. ${difficultyInstruction}${projectContext}
 Requirements:
@@ -74,7 +77,7 @@ Each question MUST have exactly 4 options (A, B, C, D) and one correct answer.
 Format: Include the options as part of the question or as a separate field.`,
 
       combined: `Generate ${count} mixed interview questions. ${difficultyInstruction}
-- 5 coding questions (DSA with test cases)
+- 5 coding questions (DSA with STORY-BASED scenarios, include starter_code field with function signature)
 - 5 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
 - 5 aptitude MCQ questions (with 4 options each)
 Skills: ${skillList}.${projectContext}`,
@@ -93,7 +96,8 @@ Skills: ${skillList}.${projectContext}`,
 - "order_index": integer starting from 0`;
     } else if (interviewType === 'coding') {
       jsonFields = `- "question_type": "coding"
-- "question_text": full problem with test cases and complexity hints embedded in markdown
+- "question_text": full scenario/story-based problem description with test cases and constraints (NO function signatures or code here)
+- "starter_code": a Python function signature as starter code template (e.g. "def find_max_profit(prices):\\n    # Write your solution here\\n    pass")
 - "expected_answer": brief description of optimal approach with time/space complexity
 - "difficulty": "easy", "medium", or "hard"
 - "skill_name": relevant skill (e.g. "Arrays", "Dynamic Programming")
