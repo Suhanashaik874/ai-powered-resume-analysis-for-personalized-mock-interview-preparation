@@ -109,7 +109,7 @@ Skills: ${skillList}.${projectContext}`,
     } else if (interviewType === 'coding') {
       jsonFields = `- "question_type": "coding"
 - "question_text": full scenario/story-based problem description with test cases and constraints (NO function signatures or code here)
-- "starter_code": a Python function signature as starter code template (e.g. "def find_max_profit(prices):\\n    # Write your solution here\\n    pass")
+- "starter_code": a ${langName} function/class as starter code template (e.g. "${starterExample}")
 - "expected_answer": brief description of optimal approach with time/space complexity
 - "difficulty": "easy", "medium", or "hard"
 - "skill_name": relevant skill (e.g. "Arrays", "Dynamic Programming")
