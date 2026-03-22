@@ -340,7 +340,6 @@ export default function CodingInterview() {
                 renderWhitespace: "selection",
               }}
             />
-            />
           </Suspense>
         </div>
       </div>
