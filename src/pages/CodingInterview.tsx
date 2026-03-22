@@ -138,7 +138,7 @@ export default function CodingInterview() {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
       // Load saved code for next question
-      setCode(codeMapRef.current[questions[nextIdx].id] || "// Write your solution here");
+      setCode(codeMapRef.current[questions[nextIdx].id] || "# Write your solution here\n");
       setOutput("");
     }
   };
