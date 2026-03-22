@@ -36,6 +36,13 @@ serve(async (req) => {
       .single();
 
     const userId = interview?.user_id;
+    const solutionLanguage = interview?.solution_language || 'python';
+
+    // Map language names for display
+    const langDisplayName: Record<string, string> = {
+      python: 'Python', javascript: 'JavaScript', java: 'Java', cpp: 'C++',
+    };
+    const langName = langDisplayName[solutionLanguage] || 'Python';
 
     // Fetch user's extracted skills for skill gap analysis
     let extractedSkills: { skill_name: string; proficiency_level: string }[] = [];
@@ -65,9 +72,9 @@ serve(async (req) => {
         if (q.question_type === 'coding') {
           prompt = `Question: ${q.question_text}
 
-The user did not answer. Provide a clear, concise response as JSON:
+The user did not answer. Provide the solution in ${langName}. Respond as JSON:
 {
-  "feedback": "**No answer provided.**\\n\\n**Solution:**\\n\`\`\`python\\n[write clean solution]\\n\`\`\`\\n\\n- **Approach:** [1 line explanation]\\n- **Time:** O(?)\\n- **Space:** O(?)"
+  "feedback": "**No answer provided.**\\n\\n**Solution:**\\n\`\`\`${solutionLanguage}\\n[write clean solution in ${langName}]\\n\`\`\`\\n\\n- **Approach:** [1 line explanation]\\n- **Time:** O(?)\\n- **Space:** O(?)"
 }`;
         } else if (q.question_type === 'aptitude') {
           prompt = `Question: ${q.question_text}
@@ -107,7 +114,6 @@ The user did not answer this HR question. Provide response as JSON:
             const data = await resp.json();
             const content = data.choices?.[0]?.message?.content || '';
             console.log(`No-answer AI response for ${q.id}:`, content.substring(0, 200));
-            // Extract feedback value directly using regex to avoid nested code fence JSON issues
             const feedbackMatch = content.match(/"feedback"\s*:\s*"([\s\S]*?)"\s*\}/)
               || content.match(/"feedback"\s*:\s*"([\s\S]*?)$/);
             if (feedbackMatch) {
@@ -117,13 +123,11 @@ The user did not answer this HR question. Provide response as JSON:
                 .replace(/\\\\/g, '\\')
                 .replace(/\\`/g, '`');
             } else {
-              // Fallback: try normal JSON parse
               try {
                 const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
                 const parsed = JSON.parse(cleaned);
                 feedback = parsed.feedback || feedback;
               } catch {
-                // Last resort: use content as-is minus JSON wrapper
                 const raw = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').replace(/^\s*\{\s*"feedback"\s*:\s*"/,'').replace(/"\s*\}\s*$/,'');
                 if (raw.length > 30) feedback = raw.replace(/\\n/g, '\n').replace(/\\"/g, '"');
               }
@@ -146,22 +150,23 @@ The user did not answer this HR question. Provide response as JSON:
       // Build evaluation prompt based on question type
       let evalPrompt = '';
       if (q.question_type === 'coding') {
-        evalPrompt = `Evaluate this coding answer. Be concise.
+        evalPrompt = `Evaluate this coding answer. Be concise. The user's preferred language is ${langName}.
 
 Question: ${q.question_text}
 User's Code:
 ${userResponse}
 
 IMPORTANT FEEDBACK RULES:
-- If the solution is WRONG or doesn't work: Mark is_correct=false, provide the correct solution with explanation.
+- If the solution is WRONG or doesn't work: Mark is_correct=false, provide the correct solution IN ${langName} with explanation.
 - If the solution is CORRECT but can be improved: Mark is_correct=true, give improvement tips (better time/space complexity, cleaner code, edge cases). Do NOT provide a full solution.
 - If the solution is PERFECT (optimal, clean, handles edge cases): Mark is_correct=true, give a genuine compliment. No improvements needed.
+- ALL code examples and solutions MUST be written in ${langName}.
 
 Return JSON:
 {
   "score": 0-10,
   "is_correct": true/false,
-  "feedback": "[Follow the rules above. Use bullet points and markdown formatting.]"
+  "feedback": "[Follow the rules above. Use bullet points and markdown formatting. Code blocks must use \`\`\`${solutionLanguage}]"
 }`;
       } else if (q.question_type === 'aptitude') {
         evalPrompt = `Evaluate this aptitude answer concisely.
@@ -228,7 +233,6 @@ Return JSON:
         try {
           result = JSON.parse(cleaned);
         } catch {
-          // Try regex extraction for score, is_correct, and feedback separately
           const scoreMatch = cleaned.match(/"score"\s*:\s*(\d+)/);
           const correctMatch = cleaned.match(/"is_correct"\s*:\s*(true|false)/);
           const feedbackMatch = cleaned.match(/"feedback"\s*:\s*"([\s\S]*?)"\s*[,\}]/)
@@ -292,7 +296,7 @@ Return JSON:
       }
     }
 
-    // Overall feedback - keep it short
+    // Overall feedback
     const overallResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
