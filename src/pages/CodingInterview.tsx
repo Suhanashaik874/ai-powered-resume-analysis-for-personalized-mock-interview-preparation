@@ -39,7 +39,7 @@ export default function CodingInterview() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [code, setCode] = useState("// Write your solution here");
+  const [code, setCode] = useState("");
   const [output, setOutput] = useState("");
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -65,12 +65,12 @@ export default function CodingInterview() {
         // Initialize code map from any previously saved code
         const map: Record<string, string> = {};
         data.forEach((q: Question) => {
-          map[q.id] = q.user_code || "// Write your solution here";
+          map[q.id] = q.user_code || "# Write your solution here\n";
         });
         codeMapRef.current = map;
         // Load code for first question
         if (data.length > 0) {
-          setCode(data[0].user_code || "// Write your solution here");
+          setCode(data[0].user_code || "# Write your solution here\n");
         }
       }
       setLoading(false);
@@ -138,7 +138,7 @@ export default function CodingInterview() {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
       // Load saved code for next question
-      setCode(codeMapRef.current[questions[nextIdx].id] || "// Write your solution here");
+      setCode(codeMapRef.current[questions[nextIdx].id] || "# Write your solution here\n");
       setOutput("");
     }
   };
@@ -152,7 +152,7 @@ export default function CodingInterview() {
       const prevIdx = currentIdx - 1;
       setCurrentIdx(prevIdx);
       // Load saved code for previous question
-      setCode(codeMapRef.current[questions[prevIdx].id] || "// Write your solution here");
+      setCode(codeMapRef.current[questions[prevIdx].id] || "# Write your solution here\n");
       setOutput("");
     }
   };
@@ -314,7 +314,7 @@ export default function CodingInterview() {
           <Suspense fallback={<div className="flex flex-1 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}>
             <MonacoEditor
               height="100%"
-              language="plaintext"
+              language="python"
               value={code}
               onChange={(v) => {
                 const newCode = v || "";
@@ -329,7 +329,15 @@ export default function CodingInterview() {
                 lineNumbers: "on",
                 scrollBeyondLastLine: false,
                 padding: { top: 16, bottom: 16 },
-                tabSize: 2,
+                tabSize: 4,
+                autoClosingBrackets: "always",
+                autoClosingQuotes: "always",
+                bracketPairColorization: { enabled: true },
+                suggest: { showKeywords: true, showSnippets: true },
+                quickSuggestions: true,
+                parameterHints: { enabled: true },
+                formatOnPaste: true,
+                renderWhitespace: "selection",
               }}
             />
           </Suspense>
