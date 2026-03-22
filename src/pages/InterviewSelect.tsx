@@ -141,6 +141,7 @@ export default function InterviewSelect() {
           skills: skills || [],
           resumeText,
           difficulty,
+          solutionLanguage,
         },
       });
 

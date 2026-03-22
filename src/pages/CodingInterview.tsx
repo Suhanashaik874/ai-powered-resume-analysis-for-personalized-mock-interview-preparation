@@ -8,6 +8,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Lazy load Monaco editor
 import { lazy, Suspense } from "react";
@@ -44,16 +51,26 @@ export default function CodingInterview() {
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [timer, setTimer] = useState(0);
-  const [totalTimer, setTotalTimer] = useState(30 * 60); // 30 minutes
+  const [totalTimer, setTotalTimer] = useState(30 * 60);
+  const [editorLanguage, setEditorLanguage] = useState("python");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSubmitTriggered = useRef(false);
-  // Store code per question so it persists across navigation
   const codeMapRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     if (!user || !id) return;
     const fetchQuestions = async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: interview } = await (supabase as any)
+        .from("interviews")
+        .select("solution_language")
+        .eq("id", id)
+        .single();
+      if (interview?.solution_language) {
+        setEditorLanguage(interview.solution_language === "cpp" ? "cpp" : interview.solution_language);
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data } = await (supabase as any)
         .from("interview_questions")
@@ -62,15 +79,13 @@ export default function CodingInterview() {
         .order("order_index", { ascending: true });
       if (data) {
         setQuestions(data);
-        // Initialize code map from any previously saved code
         const map: Record<string, string> = {};
         data.forEach((q: Question) => {
-          map[q.id] = q.user_code || "# Write your solution here\n";
+          map[q.id] = q.user_code || "";
         });
         codeMapRef.current = map;
-        // Load code for first question
         if (data.length > 0) {
-          setCode(data[0].user_code || "# Write your solution here\n");
+          setCode(data[0].user_code || "");
         }
       }
       setLoading(false);
@@ -78,14 +93,12 @@ export default function CodingInterview() {
     fetchQuestions();
   }, [user, id]);
 
-  // Timer per question
   useEffect(() => {
     setTimer(0);
     timerRef.current = setInterval(() => setTimer((t) => t + 1), 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [currentIdx]);
 
-  // Total interview timer (30 minutes) with auto-submit
   useEffect(() => {
     totalTimerRef.current = setInterval(() => {
       setTotalTimer((t) => {
@@ -99,7 +112,6 @@ export default function CodingInterview() {
     return () => { if (totalTimerRef.current) clearInterval(totalTimerRef.current); };
   }, []);
 
-
   const formatTime = (s: number) => `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
 
   const handleRunCode = async () => {
@@ -107,7 +119,7 @@ export default function CodingInterview() {
     setOutput("");
     try {
       const { data, error } = await supabase.functions.invoke("execute-code", {
-        body: { code, language: "any", questionText: currentQ?.question_text || "" },
+        body: { code, language: editorLanguage, questionText: currentQ?.question_text || "" },
       });
       if (error) throw error;
       setOutput(data?.output || data?.stderr || "No output");
@@ -119,9 +131,7 @@ export default function CodingInterview() {
   };
 
   const saveAnswer = useCallback(async (questionId: string, userCode: string, timeTaken: number) => {
-    // Save to local map
     codeMapRef.current[questionId] = userCode;
-    // Save to DB
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any)
       .from("interview_questions")
@@ -131,28 +141,24 @@ export default function CodingInterview() {
 
   const handleNext = async () => {
     if (!questions[currentIdx]) return;
-    // Save current code before navigating
     codeMapRef.current[questions[currentIdx].id] = code;
     await saveAnswer(questions[currentIdx].id, code, timer);
     if (currentIdx < questions.length - 1) {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
-      // Load saved code for next question
-      setCode(codeMapRef.current[questions[nextIdx].id] || "# Write your solution here\n");
+      setCode(codeMapRef.current[questions[nextIdx].id] || "");
       setOutput("");
     }
   };
 
   const handlePrev = async () => {
     if (!questions[currentIdx]) return;
-    // Save current code before navigating
     codeMapRef.current[questions[currentIdx].id] = code;
     await saveAnswer(questions[currentIdx].id, code, timer);
     if (currentIdx > 0) {
       const prevIdx = currentIdx - 1;
       setCurrentIdx(prevIdx);
-      // Load saved code for previous question
-      setCode(codeMapRef.current[questions[prevIdx].id] || "# Write your solution here\n");
+      setCode(codeMapRef.current[questions[prevIdx].id] || "");
       setOutput("");
     }
   };
@@ -161,12 +167,10 @@ export default function CodingInterview() {
     if (!id) return;
     setSubmitting(true);
 
-    // Save current code to local map
     if (questions[currentIdx]) {
       codeMapRef.current[questions[currentIdx].id] = code;
     }
 
-    // Bulk-save ALL code answers to DB before completing
     const savePromises = questions.map((question) => {
       const userCode = codeMapRef.current[question.id] || "";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -177,7 +181,6 @@ export default function CodingInterview() {
     });
     await Promise.all(savePromises);
 
-    // Mark interview complete
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase as any).from("interviews").update({
       status: "completed",
@@ -188,6 +191,13 @@ export default function CodingInterview() {
   };
 
   const currentQ = questions[currentIdx];
+
+  const monacoLangMap: Record<string, string> = {
+    python: "python",
+    javascript: "javascript",
+    java: "java",
+    cpp: "cpp",
+  };
 
   if (loading) {
     return (
@@ -299,11 +309,19 @@ export default function CodingInterview() {
 
         {/* Right: Code Editor */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Editor header */}
+          {/* Editor header with language selector */}
           <div className="flex items-center justify-between border-b border-border/50 px-4 py-2 bg-secondary/30">
-            <div className="text-sm text-muted-foreground">
-              Write the solution here; AI will evaluate it
-            </div>
+            <Select value={editorLanguage} onValueChange={setEditorLanguage}>
+              <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="python">Python</SelectItem>
+                <SelectItem value="javascript">JavaScript</SelectItem>
+                <SelectItem value="java">Java</SelectItem>
+                <SelectItem value="cpp">C++</SelectItem>
+              </SelectContent>
+            </Select>
 
             <Button size="sm" onClick={handleRunCode} disabled={running} className="h-8 bg-gradient-primary text-primary-foreground hover:opacity-90">
               {running ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Play className="h-3.5 w-3.5 mr-1" />}
@@ -314,7 +332,7 @@ export default function CodingInterview() {
           <Suspense fallback={<div className="flex flex-1 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>}>
             <MonacoEditor
               height="100%"
-              language="python"
+              language={monacoLangMap[editorLanguage] || "python"}
               value={code}
               onChange={(v) => {
                 const newCode = v || "";

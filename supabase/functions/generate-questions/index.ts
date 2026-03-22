@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const { interviewType, skills = [], interviewId, resumeText = '', difficulty = 'medium' } = await req.json();
+    const { interviewType, skills = [], interviewId, resumeText = '', difficulty = 'medium', solutionLanguage = 'python' } = await req.json();
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
 
     if (!apiKey) {
@@ -49,6 +49,17 @@ serve(async (req) => {
       }[difficulty] || '';
     }
 
+    const langDisplayName: Record<string, string> = { python: 'Python', javascript: 'JavaScript', java: 'Java', cpp: 'C++' };
+    const langName = langDisplayName[solutionLanguage] || 'Python';
+
+    const starterCodeExamples: Record<string, string> = {
+      python: 'def solve(nums):\\n    # Write your solution here\\n    pass',
+      javascript: 'function solve(nums) {\\n    // Write your solution here\\n}',
+      java: 'class Solution {\\n    public int solve(int[] nums) {\\n        // Write your solution here\\n        return 0;\\n    }\\n}',
+      cpp: '#include <vector>\\nusing namespace std;\\n\\nint solve(vector<int>& nums) {\\n    // Write your solution here\\n    return 0;\\n}',
+    };
+    const starterExample = starterCodeExamples[solutionLanguage] || starterCodeExamples.python;
+
     const typePrompts: Record<string, string> = {
       coding: `Generate ${count} ALGORITHMIC CODING problems. Candidate skills: ${skillList}. ${difficultyInstruction}
 CRITICAL RULES:
@@ -59,7 +70,8 @@ CRITICAL RULES:
 - NEVER generate: system design, cloud architecture, theoretical questions, or anything requiring a written description as the answer
 - Each problem must include: input/output format, constraints, and 2-3 test cases with concrete input/output
 - Keep each problem under 250 words. Be engaging but concise.
-- Include a "starter_code" field with a Python function signature as starter template (e.g. "def solve(nums):\\n    # Write your solution here\\n    pass")`,
+- Include a "starter_code" field with a ${langName} function/class as starter template (e.g. "${starterExample}")
+- ALL starter code MUST be in ${langName}.`,
 
       hr: `Generate ${count} HR behavioral interview questions for a candidate. ${difficultyInstruction}${projectContext}
 Requirements:
@@ -77,7 +89,7 @@ Each question MUST have exactly 4 options (A, B, C, D) and one correct answer.
 Format: Include the options as part of the question or as a separate field.`,
 
       combined: `Generate ${count} mixed interview questions. ${difficultyInstruction}
-- 5 coding questions (DSA with STORY-BASED scenarios, include starter_code field with function signature)
+- 5 coding questions (DSA with STORY-BASED scenarios, include starter_code field with ${langName} function signature)
 - 5 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
 - 5 aptitude MCQ questions (with 4 options each)
 Skills: ${skillList}.${projectContext}`,
@@ -97,7 +109,7 @@ Skills: ${skillList}.${projectContext}`,
     } else if (interviewType === 'coding') {
       jsonFields = `- "question_type": "coding"
 - "question_text": full scenario/story-based problem description with test cases and constraints (NO function signatures or code here)
-- "starter_code": a Python function signature as starter code template (e.g. "def find_max_profit(prices):\\n    # Write your solution here\\n    pass")
+- "starter_code": a ${langName} function/class as starter code template (e.g. "${starterExample}")
 - "expected_answer": brief description of optimal approach with time/space complexity
 - "difficulty": "easy", "medium", or "hard"
 - "skill_name": relevant skill (e.g. "Arrays", "Dynamic Programming")
@@ -112,7 +124,7 @@ Skills: ${skillList}.${projectContext}`,
     } else {
       jsonFields = `- "question_type": one of "coding", "hr", "aptitude"
 - "question_text": the question (for aptitude include options in text, for coding use story-based scenarios WITHOUT code)
-- "starter_code": for coding questions only — Python function signature as starter code
+- "starter_code": for coding questions only — ${langName} function/class as starter code
 - "options": for aptitude questions only: {"A": "...", "B": "...", "C": "...", "D": "..."}
 - "expected_answer": correct answer or key points
 - "difficulty": "easy", "medium", or "hard"
