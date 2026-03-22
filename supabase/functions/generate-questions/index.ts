@@ -89,7 +89,7 @@ Each question MUST have exactly 4 options (A, B, C, D) and one correct answer.
 Format: Include the options as part of the question or as a separate field.`,
 
       combined: `Generate ${count} mixed interview questions. ${difficultyInstruction}
-- 5 coding questions (DSA with STORY-BASED scenarios, include starter_code field with function signature)
+- 5 coding questions (DSA with STORY-BASED scenarios, include starter_code field with ${langName} function signature)
 - 5 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
 - 5 aptitude MCQ questions (with 4 options each)
 Skills: ${skillList}.${projectContext}`,
