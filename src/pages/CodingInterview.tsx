@@ -65,7 +65,7 @@ export default function CodingInterview() {
         // Initialize code map from any previously saved code
         const map: Record<string, string> = {};
         data.forEach((q: Question) => {
-          map[q.id] = q.user_code || "// Write your solution here";
+          map[q.id] = q.user_code || "# Write your solution here\n";
         });
         codeMapRef.current = map;
         // Load code for first question
