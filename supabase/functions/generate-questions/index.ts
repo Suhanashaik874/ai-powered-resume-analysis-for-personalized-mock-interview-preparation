@@ -111,7 +111,8 @@ Skills: ${skillList}.${projectContext}`,
 - "order_index": integer starting from 0`;
     } else {
       jsonFields = `- "question_type": one of "coding", "hr", "aptitude"
-- "question_text": the question (for aptitude include options in text)
+- "question_text": the question (for aptitude include options in text, for coding use story-based scenarios WITHOUT code)
+- "starter_code": for coding questions only — Python function signature as starter code
 - "options": for aptitude questions only: {"A": "...", "B": "...", "C": "...", "D": "..."}
 - "expected_answer": correct answer or key points
 - "difficulty": "easy", "medium", or "hard"
