@@ -70,7 +70,7 @@ export default function CodingInterview() {
         codeMapRef.current = map;
         // Load code for first question
         if (data.length > 0) {
-          setCode(data[0].user_code || "// Write your solution here");
+          setCode(data[0].user_code || "# Write your solution here\n");
         }
       }
       setLoading(false);
