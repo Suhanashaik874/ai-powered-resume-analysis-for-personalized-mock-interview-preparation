@@ -63,14 +63,17 @@ serve(async (req) => {
     const typePrompts: Record<string, string> = {
       coding: `Generate ${count} ALGORITHMIC CODING problems. Candidate skills: ${skillList}. ${difficultyInstruction}
 CRITICAL RULES:
-- Every problem MUST be presented as a REAL-WORLD SCENARIO or STORY. Do NOT just say "find the maximum subarray" — instead describe a situation like "A stock trader wants to find the best time window to maximize profit from daily prices..." or "A delivery driver needs to find the shortest route visiting all warehouses..."
-- The problem description should paint a vivid scenario first, then clearly state what needs to be solved
-- DO NOT include any function signature, starter code, or code template in the question_text — those go in the "starter_code" field
+- Every problem MUST be a CLEAR, EASY-TO-UNDERSTAND real-world story or scenario. Write as if explaining to a friend. Examples:
+  * "You run a small bookstore. Every day you record how many books you sold. Given a list of daily sales, find the best consecutive days where total sales were highest."
+  * "A group of friends are planning a road trip. They have a map with cities and distances. Help them find the shortest route that visits all cities exactly once."
+- The scenario should make the algorithm obvious when you think about it, but don't mention the algorithm name
+- Use simple language, short sentences. Avoid jargon. The scenario IS the problem.
+- DO NOT include any function signature, starter code, or code template in question_text — those go in "starter_code"
 - ONLY generate: array/string manipulation, tree/graph traversal, dynamic programming, sorting, searching, linked lists, stacks, queues, recursion, math problems
-- NEVER generate: system design, cloud architecture, theoretical questions, or anything requiring a written description as the answer
-- Each problem must include: input/output format, constraints, and 2-3 test cases with concrete input/output
-- Keep each problem under 250 words. Be engaging but concise.
-- Include a "starter_code" field with a ${langName} function/class as starter template (e.g. "${starterExample}")
+- NEVER generate: system design, cloud architecture, theoretical questions
+- Each problem must include: clear input/output format, constraints, and 2-3 test cases with concrete examples
+- Keep each problem under 250 words
+- Include a "starter_code" field with a ${langName} function/class template (e.g. "${starterExample}")
 - ALL starter code MUST be in ${langName}.`,
 
       hr: `Generate ${count} HR behavioral interview questions for a candidate. ${difficultyInstruction}${projectContext}

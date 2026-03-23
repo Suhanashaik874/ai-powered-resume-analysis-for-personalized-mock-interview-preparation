@@ -30,6 +30,21 @@ interface Question {
   time_taken_seconds: number | null;
 }
 
+const starterTemplates: Record<string, string> = {
+  python: "def solve():\n    # Write your solution here\n    pass",
+  javascript: "function solve() {\n    // Write your solution here\n}",
+  java: "class Solution {\n    public int solve() {\n        // Write your solution here\n        return 0;\n    }\n}",
+  cpp: "#include <vector>\nusing namespace std;\n\nint solve() {\n    // Write your solution here\n    return 0;\n}",
+};
+
+const getStarterTemplate = (lang: string) => starterTemplates[lang] || starterTemplates.python;
+
+const isStarterCode = (code: string): boolean => {
+  const stripped = code.replace(/\/\/.*|#.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
+  if (stripped.length < 20) return true;
+  const markers = ['Write your solution here', 'pass', 'return 0'];
+  return markers.some(m => stripped.includes(m)) && stripped.length < 150;
+};
 
 const difficultyColors: Record<string, string> = {
   easy: "text-brand-emerald bg-emerald-500/15 border-emerald-500/30",
@@ -311,7 +326,19 @@ export default function CodingInterview() {
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Editor header with language selector */}
           <div className="flex items-center justify-between border-b border-border/50 px-4 py-2 bg-secondary/30">
-            <Select value={editorLanguage} onValueChange={setEditorLanguage}>
+            <Select value={editorLanguage} onValueChange={(lang) => {
+              setEditorLanguage(lang);
+              // Generate new starter code template for the selected language
+              if (currentQ) {
+                const currentCode = codeMapRef.current[currentQ.id] || "";
+                const isStarterOrEmpty = !currentCode.trim() || isStarterCode(currentCode);
+                if (isStarterOrEmpty) {
+                  const newStarter = getStarterTemplate(lang);
+                  setCode(newStarter);
+                  codeMapRef.current[currentQ.id] = newStarter;
+                }
+              }
+            }}>
               <SelectTrigger className="w-36 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
