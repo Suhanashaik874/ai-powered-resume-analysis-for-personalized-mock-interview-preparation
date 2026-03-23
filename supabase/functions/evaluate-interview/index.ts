@@ -157,16 +157,17 @@ User's Code:
 ${userResponse}
 
 IMPORTANT FEEDBACK RULES:
-- If the solution is WRONG or doesn't work: Mark is_correct=false, provide the correct solution IN ${langName} with explanation.
+- If the solution is WRONG or doesn't work: Mark is_correct=false, provide the correct solution IN ${langName} with explanation. Include time and space complexity of the correct solution.
 - If the solution is CORRECT but can be improved: Mark is_correct=true, give improvement tips (better time/space complexity, cleaner code, edge cases). Do NOT provide a full solution.
 - If the solution is PERFECT (optimal, clean, handles edge cases): Mark is_correct=true, give a genuine compliment. No improvements needed.
 - ALL code examples and solutions MUST be written in ${langName}.
+- ALWAYS include a "**Time Complexity:** O(...)" and "**Space Complexity:** O(...)" line at the end of your feedback, analyzing the user's submitted code.
 
 Return JSON:
 {
   "score": 0-10,
   "is_correct": true/false,
-  "feedback": "[Follow the rules above. Use bullet points and markdown formatting. Code blocks must use \`\`\`${solutionLanguage}]"
+  "feedback": "[Follow the rules above. Use bullet points and markdown formatting. Code blocks must use \`\`\`${solutionLanguage}. Always end with Time and Space complexity analysis.]"
 }`;
       } else if (q.question_type === 'aptitude') {
         evalPrompt = `Evaluate this aptitude answer concisely.

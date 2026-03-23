@@ -311,7 +311,19 @@ export default function CodingInterview() {
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Editor header with language selector */}
           <div className="flex items-center justify-between border-b border-border/50 px-4 py-2 bg-secondary/30">
-            <Select value={editorLanguage} onValueChange={setEditorLanguage}>
+            <Select value={editorLanguage} onValueChange={(lang) => {
+              setEditorLanguage(lang);
+              // Generate new starter code template for the selected language
+              if (currentQ) {
+                const currentCode = codeMapRef.current[currentQ.id] || "";
+                const isStarterOrEmpty = !currentCode.trim() || isStarterCode(currentCode);
+                if (isStarterOrEmpty) {
+                  const newStarter = getStarterTemplate(lang);
+                  setCode(newStarter);
+                  codeMapRef.current[currentQ.id] = newStarter;
+                }
+              }
+            }}>
               <SelectTrigger className="w-36 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
