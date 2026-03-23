@@ -39,11 +39,10 @@ const starterTemplates: Record<string, string> = {
 
 const getStarterTemplate = (lang: string) => starterTemplates[lang] || starterTemplates.python;
 
-const isStarterCode = (code: string): boolean => {
-  const stripped = code.replace(/\/\/.*|#.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
-  if (stripped.length < 20) return true;
-  const markers = ['Write your solution here', 'pass', 'return 0'];
-  return markers.some(m => stripped.includes(m)) && stripped.length < 150;
+const normalizeLanguage = (lang?: string) => {
+  if (lang === "c++") return "cpp";
+  if (!lang) return "python";
+  return ["python", "javascript", "java", "cpp"].includes(lang) ? lang : "python";
 };
 
 const difficultyColors: Record<string, string> = {
@@ -72,6 +71,7 @@ export default function CodingInterview() {
   const totalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoSubmitTriggered = useRef(false);
   const codeMapRef = useRef<Record<string, string>>({});
+  const codeByLanguageRef = useRef<Record<string, Record<string, string>>>({});
 
   useEffect(() => {
     if (!user || !id) return;
@@ -82,9 +82,8 @@ export default function CodingInterview() {
         .select("solution_language")
         .eq("id", id)
         .single();
-      if (interview?.solution_language) {
-        setEditorLanguage(interview.solution_language === "cpp" ? "cpp" : interview.solution_language);
-      }
+      const initialLanguage = normalizeLanguage(interview?.solution_language);
+      setEditorLanguage(initialLanguage);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data } = await (supabase as any)
@@ -95,12 +94,16 @@ export default function CodingInterview() {
       if (data) {
         setQuestions(data);
         const map: Record<string, string> = {};
+        const languageMap: Record<string, Record<string, string>> = {};
         data.forEach((q: Question) => {
-          map[q.id] = q.user_code || "";
+          const initialCode = q.user_code?.trim() ? q.user_code : getStarterTemplate(initialLanguage);
+          map[q.id] = initialCode;
+          languageMap[q.id] = { [initialLanguage]: initialCode };
         });
         codeMapRef.current = map;
+        codeByLanguageRef.current = languageMap;
         if (data.length > 0) {
-          setCode(data[0].user_code || "");
+          setCode(map[data[0].id] || getStarterTemplate(initialLanguage));
         }
       }
       setLoading(false);
@@ -154,26 +157,53 @@ export default function CodingInterview() {
       .eq("id", questionId);
   }, []);
 
+  const getCodeForQuestionLanguage = useCallback((questionId: string, language: string) => {
+    const languageCodes = codeByLanguageRef.current[questionId] || {};
+    const existingCode = languageCodes[language];
+    if (typeof existingCode === "string") return existingCode;
+
+    const fallbackCode = codeMapRef.current[questionId]?.trim()
+      ? codeMapRef.current[questionId]
+      : getStarterTemplate(language);
+
+    codeByLanguageRef.current[questionId] = {
+      ...languageCodes,
+      [language]: fallbackCode,
+    };
+
+    return fallbackCode;
+  }, []);
+
   const handleNext = async () => {
     if (!questions[currentIdx]) return;
-    codeMapRef.current[questions[currentIdx].id] = code;
-    await saveAnswer(questions[currentIdx].id, code, timer);
+    const currentQuestionId = questions[currentIdx].id;
+    codeMapRef.current[currentQuestionId] = code;
+    codeByLanguageRef.current[currentQuestionId] = {
+      ...(codeByLanguageRef.current[currentQuestionId] || {}),
+      [editorLanguage]: code,
+    };
+    await saveAnswer(currentQuestionId, code, timer);
     if (currentIdx < questions.length - 1) {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
-      setCode(codeMapRef.current[questions[nextIdx].id] || "");
+      setCode(getCodeForQuestionLanguage(questions[nextIdx].id, editorLanguage));
       setOutput("");
     }
   };
 
   const handlePrev = async () => {
     if (!questions[currentIdx]) return;
-    codeMapRef.current[questions[currentIdx].id] = code;
-    await saveAnswer(questions[currentIdx].id, code, timer);
+    const currentQuestionId = questions[currentIdx].id;
+    codeMapRef.current[currentQuestionId] = code;
+    codeByLanguageRef.current[currentQuestionId] = {
+      ...(codeByLanguageRef.current[currentQuestionId] || {}),
+      [editorLanguage]: code,
+    };
+    await saveAnswer(currentQuestionId, code, timer);
     if (currentIdx > 0) {
       const prevIdx = currentIdx - 1;
       setCurrentIdx(prevIdx);
-      setCode(codeMapRef.current[questions[prevIdx].id] || "");
+      setCode(getCodeForQuestionLanguage(questions[prevIdx].id, editorLanguage));
       setOutput("");
     }
   };
@@ -183,7 +213,12 @@ export default function CodingInterview() {
     setSubmitting(true);
 
     if (questions[currentIdx]) {
-      codeMapRef.current[questions[currentIdx].id] = code;
+      const currentQuestionId = questions[currentIdx].id;
+      codeMapRef.current[currentQuestionId] = code;
+      codeByLanguageRef.current[currentQuestionId] = {
+        ...(codeByLanguageRef.current[currentQuestionId] || {}),
+        [editorLanguage]: code,
+      };
     }
 
     const savePromises = questions.map((question) => {
@@ -327,17 +362,27 @@ export default function CodingInterview() {
           {/* Editor header with language selector */}
           <div className="flex items-center justify-between border-b border-border/50 px-4 py-2 bg-secondary/30">
             <Select value={editorLanguage} onValueChange={(lang) => {
-              setEditorLanguage(lang);
-              // Generate new starter code template for the selected language
-              if (currentQ) {
-                const currentCode = codeMapRef.current[currentQ.id] || "";
-                const isStarterOrEmpty = !currentCode.trim() || isStarterCode(currentCode);
-                if (isStarterOrEmpty) {
-                  const newStarter = getStarterTemplate(lang);
-                  setCode(newStarter);
-                  codeMapRef.current[currentQ.id] = newStarter;
-                }
+              const nextLanguage = normalizeLanguage(lang);
+
+              if (!currentQ) {
+                setEditorLanguage(nextLanguage);
+                return;
               }
+
+              const currentQuestionCodes = codeByLanguageRef.current[currentQ.id] || {};
+              currentQuestionCodes[editorLanguage] = code;
+
+              const nextCode = currentQuestionCodes[nextLanguage] ?? getStarterTemplate(nextLanguage);
+
+              codeByLanguageRef.current[currentQ.id] = {
+                ...currentQuestionCodes,
+                [nextLanguage]: nextCode,
+              };
+              codeMapRef.current[currentQ.id] = nextCode;
+
+              setEditorLanguage(nextLanguage);
+              setCode(nextCode);
+              setOutput("");
             }}>
               <SelectTrigger className="w-36 h-8 text-xs">
                 <SelectValue />
@@ -364,7 +409,13 @@ export default function CodingInterview() {
               onChange={(v) => {
                 const newCode = v || "";
                 setCode(newCode);
-                if (currentQ) codeMapRef.current[currentQ.id] = newCode;
+                if (currentQ) {
+                  codeMapRef.current[currentQ.id] = newCode;
+                  codeByLanguageRef.current[currentQ.id] = {
+                    ...(codeByLanguageRef.current[currentQ.id] || {}),
+                    [editorLanguage]: newCode,
+                  };
+                }
               }}
               theme="vs-dark"
               options={{
