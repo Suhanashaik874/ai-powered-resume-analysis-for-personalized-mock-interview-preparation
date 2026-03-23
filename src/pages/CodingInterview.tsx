@@ -30,6 +30,21 @@ interface Question {
   time_taken_seconds: number | null;
 }
 
+const starterTemplates: Record<string, string> = {
+  python: "def solve():\n    # Write your solution here\n    pass",
+  javascript: "function solve() {\n    // Write your solution here\n}",
+  java: "class Solution {\n    public int solve() {\n        // Write your solution here\n        return 0;\n    }\n}",
+  cpp: "#include <vector>\nusing namespace std;\n\nint solve() {\n    // Write your solution here\n    return 0;\n}",
+};
+
+const getStarterTemplate = (lang: string) => starterTemplates[lang] || starterTemplates.python;
+
+const isStarterCode = (code: string): boolean => {
+  const stripped = code.replace(/\/\/.*|#.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
+  if (stripped.length < 20) return true;
+  const markers = ['Write your solution here', 'pass', 'return 0'];
+  return markers.some(m => stripped.includes(m)) && stripped.length < 150;
+};
 
 const difficultyColors: Record<string, string> = {
   easy: "text-brand-emerald bg-emerald-500/15 border-emerald-500/30",
