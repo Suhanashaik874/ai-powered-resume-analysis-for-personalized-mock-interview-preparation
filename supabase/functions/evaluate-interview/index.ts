@@ -64,7 +64,16 @@ serve(async (req) => {
       const stripped = userResponse.replace(/\/\/.*|#.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
       // For MCQ/aptitude questions, single-letter answers (A, B, C, D) are valid
       const isMcq = q.question_type === 'aptitude' && q.options;
-      const isTemplate = !stripped || (!isMcq && stripped.length < 5);
+      
+      // Check if user just submitted the unchanged starter code template
+      const starterCodePatterns = [
+        /^\s*def\s+\w+\(.*?\)\s*:\s*(#.*\n?\s*)*(pass\s*)?$/s,
+        /^\s*function\s+\w+\(.*?\)\s*\{\s*(\/\/.*\n?\s*)*\}\s*$/s,
+        /^\s*class\s+Solution\s*\{\s*(public\s+\w+\s+\w+\(.*?\)\s*\{\s*(\/\/.*\n?\s*)*(return\s+\w+;\s*)?\}\s*)*\}\s*$/s,
+        /^\s*#include[\s\S]*?(\/\/.*\n?\s*)*(return\s+\w+;\s*)?\}\s*$/s,
+      ];
+      const isUnmodifiedStarter = q.question_type === 'coding' && starterCodePatterns.some(p => p.test(userResponse.trim()));
+      const isTemplate = !stripped || (!isMcq && stripped.length < 5) || isUnmodifiedStarter;
 
       if (isTemplate) {
         // No answer provided - generate solution
