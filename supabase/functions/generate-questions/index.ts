@@ -71,8 +71,7 @@ CRITICAL RULES:
 - DO NOT include any function signature, starter code, or code template in question_text — those go in "starter_code"
 - ONLY generate: array/string manipulation, tree/graph traversal, dynamic programming, sorting, searching, linked lists, stacks, queues, recursion, math problems
 - NEVER generate: system design, cloud architecture, theoretical questions
-- Each problem must include: clear input/output format and constraints ONLY in the question_text
-- Do NOT include example test cases or sample inputs/outputs in the question_text — put 2-3 test cases as comments inside the "starter_code" field instead
+- Each problem must include: clear input/output format, constraints, and exactly 2 test cases showing Input and expected Output
 - Keep each problem under 200 words
 - Include a "starter_code" field with a ${langName} function/class template (e.g. "${starterExample}")
 - ALL starter code MUST be in ${langName}.`,
@@ -93,7 +92,7 @@ Each question MUST have exactly 4 options (A, B, C, D) and one correct answer.
 Format: Include the options as part of the question or as a separate field.`,
 
       combined: `Generate ${count} mixed interview questions. ${difficultyInstruction}
-- 5 coding questions (DSA with STORY-BASED scenarios, include starter_code field with ${langName} function signature. Do NOT put example test cases in question_text — put them as comments in starter_code instead)
+- 5 coding questions (DSA with STORY-BASED scenarios with 2 test cases showing Input/Output, include starter_code field with ${langName} function signature)
 - 5 HR behavioral questions${projectContext ? ' (include project-specific ones)' : ''}
 - 5 aptitude MCQ questions (with 4 options each)
 Skills: ${skillList}.${projectContext}`,
