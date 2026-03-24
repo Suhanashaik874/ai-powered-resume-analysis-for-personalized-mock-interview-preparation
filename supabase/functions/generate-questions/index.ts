@@ -71,8 +71,9 @@ CRITICAL RULES:
 - DO NOT include any function signature, starter code, or code template in question_text — those go in "starter_code"
 - ONLY generate: array/string manipulation, tree/graph traversal, dynamic programming, sorting, searching, linked lists, stacks, queues, recursion, math problems
 - NEVER generate: system design, cloud architecture, theoretical questions
-- Each problem must include: clear input/output format, constraints, and 2-3 test cases with concrete examples
-- Keep each problem under 250 words
+- Each problem must include: clear input/output format and constraints ONLY in the question_text
+- Do NOT include example test cases or sample inputs/outputs in the question_text — put 2-3 test cases as comments inside the "starter_code" field instead
+- Keep each problem under 200 words
 - Include a "starter_code" field with a ${langName} function/class template (e.g. "${starterExample}")
 - ALL starter code MUST be in ${langName}.`,
 
