@@ -71,6 +71,9 @@ export default function Profile() {
       if (profileRes.data) {
         setProfile(profileRes.data);
         setEditName(profileRes.data.full_name || "");
+        setEditLocation(profileRes.data.location || "");
+        setEditBio(profileRes.data.bio || "");
+        setEditExperience(profileRes.data.experience_level || "beginner");
       } else {
         // Profile doesn't exist, create one
         const fullName = user.user_metadata?.full_name || null;
@@ -82,6 +85,9 @@ export default function Profile() {
         if (newProfile) {
           setProfile(newProfile);
           setEditName(newProfile.full_name || "");
+          setEditLocation(newProfile.location || "");
+          setEditBio(newProfile.bio || "");
+          setEditExperience(newProfile.experience_level || "beginner");
         }
       }
 
