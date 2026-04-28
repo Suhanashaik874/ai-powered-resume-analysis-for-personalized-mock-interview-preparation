@@ -48,6 +48,9 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editName, setEditName] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editExperience, setEditExperience] = useState("beginner");
   const [totalInterviews, setTotalInterviews] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
   const [overallAvg, setOverallAvg] = useState(0);
