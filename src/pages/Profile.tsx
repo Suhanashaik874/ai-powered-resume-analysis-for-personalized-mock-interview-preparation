@@ -365,32 +365,23 @@ export default function Profile() {
           </motion.div>
         )}
 
-        {/* Account Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="glass-card rounded-2xl p-6"
-        >
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" />
-            Account
-          </h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between py-2 border-b border-border/40">
-              <span className="text-muted-foreground">Email</span>
-              <span>{user?.email}</span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-border/40">
-              <span className="text-muted-foreground">User ID</span>
-              <span className="font-mono text-xs text-muted-foreground">{user?.id?.slice(0, 8)}...</span>
-            </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-muted-foreground">Auth Provider</span>
-              <span className="capitalize">{user?.app_metadata?.provider || "email"}</span>
-            </div>
-          </div>
-        </motion.div>
+        {/* About Section */}
+        {profile?.bio && !editing && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="glass-card rounded-2xl p-6"
+          >
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              About
+            </h2>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+              {profile.bio}
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );
