@@ -197,12 +197,6 @@ export default function Profile() {
                       placeholder="Your name"
                       autoFocus
                     />
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-brand-emerald" onClick={handleSaveName} disabled={saving}>
-                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" onClick={() => { setEditing(false); setEditName(profile?.full_name || ""); }}>
-                      <X className="h-4 w-4" />
-                    </Button>
                   </div>
                 ) : (
                   <>
@@ -228,9 +222,83 @@ export default function Profile() {
                 <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-secondary border border-border/60 text-muted-foreground">
                   <Trophy className="h-3 w-3" /> {completedCount} interviews completed
                 </span>
+                {profile?.location && !editing && (
+                  <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-secondary border border-border/60 text-muted-foreground">
+                    <MapPin className="h-3 w-3" /> {profile.location}
+                  </span>
+                )}
+                {profile?.experience_level && !editing && (
+                  <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-secondary border border-border/60 text-muted-foreground capitalize">
+                    <Briefcase className="h-3 w-3" /> {profile.experience_level}
+                  </span>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Edit form */}
+          {editing && (
+            <div className="mt-6 pt-6 border-t border-border/40 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="location" className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3" /> Location
+                  </Label>
+                  <Input
+                    id="location"
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    placeholder="City, Country"
+                    className="bg-secondary/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="experience" className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Briefcase className="h-3 w-3" /> Experience Level
+                  </Label>
+                  <Select value={editExperience} onValueChange={setEditExperience}>
+                    <SelectTrigger id="experience" className="bg-secondary/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="advanced">Advanced</SelectItem>
+                      <SelectItem value="expert">Expert</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="bio" className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <FileText className="h-3 w-3" /> Bio
+                </Label>
+                <Textarea
+                  id="bio"
+                  value={editBio}
+                  onChange={(e) => setEditBio(e.target.value)}
+                  placeholder="A short introduction about yourself..."
+                  rows={3}
+                  className="bg-secondary/50 resize-none"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" onClick={() => {
+                  setEditing(false);
+                  setEditName(profile?.full_name || "");
+                  setEditLocation(profile?.location || "");
+                  setEditBio(profile?.bio || "");
+                  setEditExperience(profile?.experience_level || "beginner");
+                }}>
+                  <X className="h-4 w-4 mr-1.5" /> Cancel
+                </Button>
+                <Button onClick={handleSaveName} disabled={saving}>
+                  {saving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Check className="h-4 w-4 mr-1.5" />}
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
         </motion.div>
 
         {/* Stats Grid */}
