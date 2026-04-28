@@ -15,22 +15,38 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [checking, setChecking] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Listen for PASSWORD_RECOVERY event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    // Listen for PASSWORD_RECOVERY event (fires when user lands via recovery link)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
         setIsRecovery(true);
+        setChecking(false);
+      } else if (event === "SIGNED_IN" && session) {
+        // Supabase auto-signs-in on recovery link click
+        setIsRecovery(true);
+        setChecking(false);
       }
     });
 
-    // Check hash for recovery type
+    // Check hash/query for recovery type
     const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
+    const search = window.location.search;
+    if (hash.includes("type=recovery") || search.includes("type=recovery")) {
       setIsRecovery(true);
+      setChecking(false);
     }
+
+    // Fallback: if a session already exists (recovery link consumed), allow reset
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsRecovery(true);
+      }
+      setChecking(false);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
