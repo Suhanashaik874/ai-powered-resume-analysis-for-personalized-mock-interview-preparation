@@ -4,9 +4,13 @@ import { motion } from "framer-motion";
 import {
   User, Mail, Calendar, Trophy, Code2, MessageSquare, Brain,
   TrendingUp, Clock, Target, Edit3, Check, X, Loader2,
+  MapPin, Briefcase, FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
