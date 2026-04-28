@@ -4,9 +4,13 @@ import { motion } from "framer-motion";
 import {
   User, Mail, Calendar, Trophy, Code2, MessageSquare, Brain,
   TrendingUp, Clock, Target, Edit3, Check, X, Loader2,
+  MapPin, Briefcase, FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +20,9 @@ interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   created_at: string;
+  location: string | null;
+  bio: string | null;
+  experience_level: string | null;
 }
 
 interface InterviewStat {
@@ -41,6 +48,9 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editName, setEditName] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editExperience, setEditExperience] = useState("beginner");
   const [totalInterviews, setTotalInterviews] = useState(0);
   const [completedCount, setCompletedCount] = useState(0);
   const [overallAvg, setOverallAvg] = useState(0);
@@ -61,6 +71,9 @@ export default function Profile() {
       if (profileRes.data) {
         setProfile(profileRes.data);
         setEditName(profileRes.data.full_name || "");
+        setEditLocation(profileRes.data.location || "");
+        setEditBio(profileRes.data.bio || "");
+        setEditExperience(profileRes.data.experience_level || "beginner");
       } else {
         // Profile doesn't exist, create one
         const fullName = user.user_metadata?.full_name || null;
@@ -72,6 +85,9 @@ export default function Profile() {
         if (newProfile) {
           setProfile(newProfile);
           setEditName(newProfile.full_name || "");
+          setEditLocation(newProfile.location || "");
+          setEditBio(newProfile.bio || "");
+          setEditExperience(newProfile.experience_level || "beginner");
         }
       }
 
@@ -114,15 +130,21 @@ export default function Profile() {
   const handleSaveName = async () => {
     if (!user) return;
     setSaving(true);
+    const updates = {
+      full_name: editName.trim() || null,
+      location: editLocation.trim() || null,
+      bio: editBio.trim() || null,
+      experience_level: editExperience,
+    };
     const { error } = await (supabase as any)
       .from("profiles")
-      .update({ full_name: editName.trim() || null })
+      .update(updates)
       .eq("user_id", user.id);
 
     if (error) {
-      toast({ title: "Error", description: "Failed to update name", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to update profile", variant: "destructive" });
     } else {
-      setProfile((p) => p ? { ...p, full_name: editName.trim() || null } : p);
+      setProfile((p) => p ? { ...p, ...updates } : p);
       setEditing(false);
       toast({ title: "Profile updated!" });
     }
@@ -175,12 +197,6 @@ export default function Profile() {
                       placeholder="Your name"
                       autoFocus
                     />
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-brand-emerald" onClick={handleSaveName} disabled={saving}>
-                      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" onClick={() => { setEditing(false); setEditName(profile?.full_name || ""); }}>
-                      <X className="h-4 w-4" />
-                    </Button>
                   </div>
                 ) : (
                   <>
@@ -206,9 +222,83 @@ export default function Profile() {
                 <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-secondary border border-border/60 text-muted-foreground">
                   <Trophy className="h-3 w-3" /> {completedCount} interviews completed
                 </span>
+                {profile?.location && !editing && (
+                  <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-secondary border border-border/60 text-muted-foreground">
+                    <MapPin className="h-3 w-3" /> {profile.location}
+                  </span>
+                )}
+                {profile?.experience_level && !editing && (
+                  <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-secondary border border-border/60 text-muted-foreground capitalize">
+                    <Briefcase className="h-3 w-3" /> {profile.experience_level}
+                  </span>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Edit form */}
+          {editing && (
+            <div className="mt-6 pt-6 border-t border-border/40 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="location" className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3" /> Location
+                  </Label>
+                  <Input
+                    id="location"
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    placeholder="City, Country"
+                    className="bg-secondary/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="experience" className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Briefcase className="h-3 w-3" /> Experience Level
+                  </Label>
+                  <Select value={editExperience} onValueChange={setEditExperience}>
+                    <SelectTrigger id="experience" className="bg-secondary/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Beginner</SelectItem>
+                      <SelectItem value="intermediate">Intermediate</SelectItem>
+                      <SelectItem value="advanced">Advanced</SelectItem>
+                      <SelectItem value="expert">Expert</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="bio" className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <FileText className="h-3 w-3" /> Bio
+                </Label>
+                <Textarea
+                  id="bio"
+                  value={editBio}
+                  onChange={(e) => setEditBio(e.target.value)}
+                  placeholder="A short introduction about yourself..."
+                  rows={3}
+                  className="bg-secondary/50 resize-none"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="ghost" onClick={() => {
+                  setEditing(false);
+                  setEditName(profile?.full_name || "");
+                  setEditLocation(profile?.location || "");
+                  setEditBio(profile?.bio || "");
+                  setEditExperience(profile?.experience_level || "beginner");
+                }}>
+                  <X className="h-4 w-4 mr-1.5" /> Cancel
+                </Button>
+                <Button onClick={handleSaveName} disabled={saving}>
+                  {saving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Check className="h-4 w-4 mr-1.5" />}
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          )}
         </motion.div>
 
         {/* Stats Grid */}
@@ -275,32 +365,23 @@ export default function Profile() {
           </motion.div>
         )}
 
-        {/* Account Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="glass-card rounded-2xl p-6"
-        >
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" />
-            Account
-          </h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between py-2 border-b border-border/40">
-              <span className="text-muted-foreground">Email</span>
-              <span>{user?.email}</span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-border/40">
-              <span className="text-muted-foreground">User ID</span>
-              <span className="font-mono text-xs text-muted-foreground">{user?.id?.slice(0, 8)}...</span>
-            </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-muted-foreground">Auth Provider</span>
-              <span className="capitalize">{user?.app_metadata?.provider || "email"}</span>
-            </div>
-          </div>
-        </motion.div>
+        {/* About Section */}
+        {profile?.bio && !editing && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="glass-card rounded-2xl p-6"
+          >
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              About
+            </h2>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+              {profile.bio}
+            </p>
+          </motion.div>
+        )}
       </div>
     </div>
   );
