@@ -20,6 +20,9 @@ interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   created_at: string;
+  location: string | null;
+  bio: string | null;
+  experience_level: string | null;
 }
 
 interface InterviewStat {
