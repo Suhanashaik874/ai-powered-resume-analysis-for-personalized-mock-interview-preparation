@@ -15,22 +15,38 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [checking, setChecking] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Listen for PASSWORD_RECOVERY event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    // Listen for PASSWORD_RECOVERY event (fires when user lands via recovery link)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
         setIsRecovery(true);
+        setChecking(false);
+      } else if (event === "SIGNED_IN" && session) {
+        // Supabase auto-signs-in on recovery link click
+        setIsRecovery(true);
+        setChecking(false);
       }
     });
 
-    // Check hash for recovery type
+    // Check hash/query for recovery type
     const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
+    const search = window.location.search;
+    if (hash.includes("type=recovery") || search.includes("type=recovery")) {
       setIsRecovery(true);
+      setChecking(false);
     }
+
+    // Fallback: if a session already exists (recovery link consumed), allow reset
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsRecovery(true);
+      }
+      setChecking(false);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
@@ -95,11 +111,16 @@ export default function ResetPassword() {
               <h2 className="text-xl font-bold mb-2">Password Updated!</h2>
               <p className="text-sm text-muted-foreground">Redirecting to dashboard...</p>
             </div>
+          ) : checking ? (
+            <div className="text-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+              <p className="text-sm text-muted-foreground mt-3">Verifying reset link...</p>
+            </div>
           ) : !isRecovery ? (
             <div className="text-center py-4">
               <h2 className="text-xl font-bold mb-2">Invalid or Expired Link</h2>
               <p className="text-sm text-muted-foreground mb-4">
-                This password reset link is invalid or has expired.
+                This password reset link is invalid or has expired. Please request a new one.
               </p>
               <Link to="/auth">
                 <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90">
