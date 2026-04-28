@@ -111,11 +111,16 @@ export default function ResetPassword() {
               <h2 className="text-xl font-bold mb-2">Password Updated!</h2>
               <p className="text-sm text-muted-foreground">Redirecting to dashboard...</p>
             </div>
+          ) : checking ? (
+            <div className="text-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+              <p className="text-sm text-muted-foreground mt-3">Verifying reset link...</p>
+            </div>
           ) : !isRecovery ? (
             <div className="text-center py-4">
               <h2 className="text-xl font-bold mb-2">Invalid or Expired Link</h2>
               <p className="text-sm text-muted-foreground mb-4">
-                This password reset link is invalid or has expired.
+                This password reset link is invalid or has expired. Please request a new one.
               </p>
               <Link to="/auth">
                 <Button className="bg-gradient-primary text-primary-foreground hover:opacity-90">
