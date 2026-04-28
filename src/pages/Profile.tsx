@@ -130,15 +130,21 @@ export default function Profile() {
   const handleSaveName = async () => {
     if (!user) return;
     setSaving(true);
+    const updates = {
+      full_name: editName.trim() || null,
+      location: editLocation.trim() || null,
+      bio: editBio.trim() || null,
+      experience_level: editExperience,
+    };
     const { error } = await (supabase as any)
       .from("profiles")
-      .update({ full_name: editName.trim() || null })
+      .update(updates)
       .eq("user_id", user.id);
 
     if (error) {
-      toast({ title: "Error", description: "Failed to update name", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to update profile", variant: "destructive" });
     } else {
-      setProfile((p) => p ? { ...p, full_name: editName.trim() || null } : p);
+      setProfile((p) => p ? { ...p, ...updates } : p);
       setEditing(false);
       toast({ title: "Profile updated!" });
     }
